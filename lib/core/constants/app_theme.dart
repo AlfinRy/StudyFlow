@@ -48,7 +48,10 @@ class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.navyDark,
           foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52),
+          // Tinggi min. 52 tanpa memaksa lebar (lebar penuh dicapai via
+          // CrossAxisAlignment.stretch). Memaksa lebar tak-hingga membuat
+          // button crash jika diletakkan di dalam Row.
+          minimumSize: const Size(0, 52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           ),

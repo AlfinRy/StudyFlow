@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../auth/auth_providers.dart';
 import '../../../shared_widgets/empty_state.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../../shared_widgets/section_header.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final name =
+        (user?.name.isNotEmpty ?? false) ? user!.name : 'Pengguna';
+
     final now = DateTime.now();
     final dateLabel =
         '${_weekday(now.weekday)}, ${now.day} ${_month(now.month)} ${now.year}';
@@ -32,9 +38,9 @@ class HomeScreen extends StatelessWidget {
                 style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const SizedBox(height: AppSpacing.sm),
-              const Text(
-                'Halo, Andi Pratama!',
-                style: TextStyle(
+              Text(
+                'Halo, $name!',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w700,
@@ -42,7 +48,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.xs),
               const Text(
-                'Kamu punya 3 jadwal dan 2 tugas hari ini. Semangat! 💪',
+                'Kelola jadwal dan tugasmu agar tetap produktif hari ini. 💪',
                 style: TextStyle(color: Colors.white70, fontSize: 13),
               ),
               const Divider(height: AppSpacing.xl, color: Colors.white24),
@@ -58,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '85%',
+                          '0%',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -73,17 +79,17 @@ class HomeScreen extends StatelessWidget {
                     width: 56,
                     child: Stack(
                       fit: StackFit.expand,
-                      children: [
+                      children: const [
                         CircularProgressIndicator(
-                          value: 0.85,
+                          value: 0,
                           strokeWidth: 6,
                           backgroundColor: Colors.white24,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                              AppColors.accent),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(AppColors.accent),
                         ),
-                        const Center(
-                          child: Icon(Icons.check_circle,
-                              color: Colors.white, size: 22),
+                        Center(
+                          child: Icon(Icons.school_outlined,
+                              color: Colors.white70, size: 22),
                         ),
                       ],
                     ),

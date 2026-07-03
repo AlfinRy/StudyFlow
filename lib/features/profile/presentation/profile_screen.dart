@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../auth/auth_providers.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final isDemo = ref.watch(isDemoModeProvider);
+
+    final name = (user?.name.isNotEmpty ?? false) ? user!.name : 'Pengguna';
+    final roleLabel = user?.role?.label ?? 'Pengguna';
+
+    Future<void> logout() async {
+      await ref.read(authRepositoryProvider).signOut();
+    }
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 96),
+          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 96),
       children: [
         Row(
           children: [
@@ -23,19 +35,19 @@ class ProfileScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'Andi Pratama',
-                    style: TextStyle(
+                    name,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'Mahasiswa',
-                    style: TextStyle(
+                    roleLabel,
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
@@ -45,6 +57,11 @@ class ProfileScreen extends StatelessWidget {
             ),
           ],
         ),
+        if (isDemo)
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: _DemoBadge(),
+          ),
         const SizedBox(height: AppSpacing.lg),
         Row(
           children: const [
@@ -65,23 +82,12 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(color: AppColors.surfaceBorder),
-          ),
-          child: Column(
-            children: const [
-              _MenuTile(icon: Icons.person_outline, label: 'Edit Profil'),
-              Divider(height: 1, color: AppColors.surfaceBorder),
-              _MenuTile(icon: Icons.notifications_none, label: 'Notifikasi'),
-              Divider(height: 1, color: AppColors.surfaceBorder),
-              _MenuTile(
-                  icon: Icons.language, label: 'Bahasa', trailing: 'Indonesia'),
-            ],
-          ),
-        ),
+        _MenuGroup(children: const [
+          _MenuTile(icon: Icons.person_outline, label: 'Edit Profil'),
+          _MenuTile(icon: Icons.notifications_none, label: 'Notifikasi'),
+          _MenuTile(
+              icon: Icons.language, label: 'Bahasa', trailing: 'Indonesia'),
+        ]),
         const SizedBox(height: AppSpacing.xl),
         const Text(
           'Dukungan',
@@ -92,36 +98,65 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(color: AppColors.surfaceBorder),
-          ),
-          child: Column(
-            children: const [
-              _MenuTile(icon: Icons.help_outline, label: 'Bantuan'),
-              Divider(height: 1, color: AppColors.surfaceBorder),
-              _MenuTile(
-                  icon: Icons.info_outline, label: 'Tentang Aplikasi'),
-            ],
-          ),
-        ),
+        const _MenuGroup(children: [
+          _MenuTile(icon: Icons.help_outline, label: 'Bantuan'),
+          _MenuTile(icon: Icons.info_outline, label: 'Tentang Aplikasi'),
+        ]),
         const SizedBox(height: AppSpacing.xl),
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(color: AppColors.surfaceBorder),
-          ),
-          child: const _MenuTile(
+        _MenuGroup(children: [
+          _MenuTile(
             icon: Icons.logout,
             label: 'Keluar',
             iconColor: AppColors.danger,
             textColor: AppColors.danger,
+            onTap: logout,
           ),
-        ),
+        ]),
       ],
+    );
+  }
+}
+
+class _DemoBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.warning.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppColors.warning.withValues(alpha: 0.5)),
+      ),
+      child: const Text(
+        'Mode demo — data tersimpan lokal di perangkat ini.',
+        style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
+      ),
+    );
+  }
+}
+
+class _MenuGroup extends StatelessWidget {
+  const _MenuGroup({required this.children});
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppColors.surfaceBorder),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i != children.length - 1)
+              const Divider(height: 1, color: AppColors.surfaceBorder),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -173,12 +208,15 @@ class _MenuTile extends StatelessWidget {
     this.trailing,
     this.iconColor = AppColors.textSecondary,
     this.textColor = AppColors.textPrimary,
+    this.onTap,
   });
+
   final IconData icon;
   final String label;
   final String? trailing;
   final Color iconColor;
   final Color textColor;
+  final Future<void> Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -201,11 +239,12 @@ class _MenuTile extends StatelessWidget {
                   style: const TextStyle(
                       color: AppColors.textSecondary, fontSize: 13),
                 ),
-                const Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+                const Icon(Icons.chevron_right,
+                    color: AppColors.surfaceBorder),
               ],
             )
           : const Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
-      onTap: () {},
+      onTap: onTap,
     );
   }
 }

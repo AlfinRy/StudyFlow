@@ -6,7 +6,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 |------|-----|--------|
 | 1. Foundation | Struktur folder, dependencies, design tokens, Hive init, app shell + bottom nav, top bar, shared widgets, 5 placeholder screens | ✅ Selesai |
 | 2. Local Data Layer | Model + repository Hive (schedules, tasks, materials) + Riverpod providers + unit test | ✅ Selesai |
-| 3. Auth | Firebase Auth (login/register/onboarding). *Butuh `flutterfire configure`.* | ⏳ Berikutnya |
+| 3. Auth | Firebase Auth (login/register/onboarding) + fallback demo lokal. *Butuh `flutterfire configure` untuk mode produksi.* | ✅ Selesai |
 | 3. Auth | Firebase Auth (login/register/onboarding). *Butuh `flutterfire configure`.* | ⬜ |
 | 4. Jadwal (CRUD) | Tambah/edit/hapus jadwal, horizontal date selector | ⬜ |
 | 5. Tugas (CRUD + filter + sort) | To-do list, filter tab, sort by deadline | ⬜ |

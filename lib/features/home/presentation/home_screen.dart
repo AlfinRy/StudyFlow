@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/utils/date_labels.dart';
 import '../../auth/auth_providers.dart';
 import '../../../shared_widgets/empty_state.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
@@ -19,7 +20,7 @@ class HomeScreen extends ConsumerWidget {
 
     final now = DateTime.now();
     final dateLabel =
-        '${_weekday(now.weekday)}, ${now.day} ${_month(now.month)} ${now.year}';
+        '${idnWeekday(now.weekday)}, ${now.day} ${idnMonth(now.month)} ${now.year}';
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -118,13 +119,5 @@ class HomeScreen extends ConsumerWidget {
       ],
     );
   }
-
-  static String _weekday(int i) => const [
-        'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu',
-      ][(i - 1) % 7];
-
-  static String _month(int i) => const [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-        'Agustus', 'September', 'Oktober', 'November', 'Desember',
-      ][(i - 1) % 12];
 }
+

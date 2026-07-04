@@ -1,10 +1,15 @@
-// Root gate tests (Phase 3). Uses provider overrides so no Hive/Firebase is
-// required. Screens' deeper flows are exercised manually on a device.
+// Root gate tests (Phase 3). Uses provider overrides so no Firebase is
+// required. Hive diinisialisasi di temp dir karena MainShell kini membangun
+// layar sungguhan yang membaca provider data lokal (Fase 4+).
+
+import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
 
 import 'package:study_flow/app.dart';
+import 'package:study_flow/core/services/hive_service.dart';
 import 'package:study_flow/features/auth/auth_providers.dart';
 import 'package:study_flow/features/auth/data/auth_repository.dart';
 import 'package:study_flow/features/auth/domain/app_user.dart';
@@ -67,6 +72,12 @@ Future<void> _pump(WidgetTester tester, List<Override> overrides) async {
 }
 
 void main() {
+  setUpAll(() async {
+    final dir = await Directory.systemTemp.createTemp('studyflow_widget_test');
+    Hive.init(dir.absolute.path);
+    await HiveService.instance.initialize();
+  });
+
   testWidgets('onboarding tampil saat first run', (tester) async {
     await _pump(tester, [
       authRepositoryProvider.overrideWithValue(_FakeAuthRepo(null)),

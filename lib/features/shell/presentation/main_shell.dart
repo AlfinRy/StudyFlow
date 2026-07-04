@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../shared_widgets/study_flow_top_bar.dart';
 import '../../home/presentation/home_screen.dart';
+import '../../schedule/presentation/schedule_form_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../progress/presentation/progress_screen.dart';
 import '../../schedule/presentation/schedule_screen.dart';
@@ -31,13 +32,24 @@ class _MainShellState extends State<MainShell> {
   // FAB appears on Beranda, Jadwal, and Tugas (UI_DESIGN.md 1.3).
   bool get _showFab => _index == 0 || _index == 1 || _index == 2;
 
+  /// FAB context-aware per tab aktif (UI_DESIGN.md §1.3: FAB di Beranda,
+  /// Jadwal, dan Tugas). Saat ini Jadwal sudah terhubung ke form; Beranda &
+  /// Tugas menyusul di fase masing-masing.
   void _onFabPressed() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Form tambah akan diimplementasikan di fase berikutnya.'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    switch (_index) {
+      case 1: // Jadwal
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const ScheduleFormScreen()),
+        );
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Form tambah untuk tab ini menyusul di fase berikutnya.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+    }
   }
 
   @override

@@ -8,7 +8,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 2. Local Data Layer | Model + repository Hive (schedules, tasks, materials) + Riverpod providers + unit test | ✅ Selesai |
 | 3. Auth | Firebase Auth (login/register/onboarding) + fallback demo lokal. *Butuh `flutterfire configure` untuk mode produksi.* | ✅ Selesai |
 | 3. Auth | Firebase Auth (login/register/onboarding). *Butuh `flutterfire configure`.* | ⬜ |
-| 4. Jadwal (CRUD) | Tambah/edit/hapus jadwal, horizontal date selector | ⬜ |
+| 4. Jadwal (CRUD) | Tambah/edit/hapus jadwal, horizontal date selector | ✅ Selesai |
 | 5. Tugas (CRUD + filter + sort) | To-do list, filter tab, sort by deadline | ⬜ |
 | 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ⬜ |
 | 7. Beranda | Agregasi jadwal hari ini + tugas mendatang (data real) | ⬜ |

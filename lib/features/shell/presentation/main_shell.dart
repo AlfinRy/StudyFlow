@@ -4,6 +4,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../shared_widgets/study_flow_top_bar.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../schedule/presentation/schedule_form_screen.dart';
+import '../../tasks/presentation/task_form_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../progress/presentation/progress_screen.dart';
 import '../../schedule/presentation/schedule_screen.dart';
@@ -40,6 +41,11 @@ class _MainShellState extends State<MainShell> {
       case 1: // Jadwal
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const ScheduleFormScreen()),
+        );
+        break;
+      case 2: // Tugas
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const TaskFormScreen()),
         );
         break;
       default:

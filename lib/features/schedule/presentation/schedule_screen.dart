@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/utils/date_labels.dart';
+import '../../../shared_widgets/confirm_delete_dialog.dart';
 import '../../../shared_widgets/empty_state.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../tasks/task_providers.dart';
@@ -44,25 +45,12 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
   }
 
   Future<bool> _confirmDelete(Schedule schedule) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Hapus jadwal?'),
-        content: Text('Jadwal "${schedule.title}" akan dihapus permanen.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Batal'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDeleteDialog(
+      context,
+      title: 'Hapus jadwal?',
+      message: 'Jadwal "${schedule.title}" akan dihapus permanen.',
     );
-    if (confirmed == true) {
+    if (confirmed) {
       await ref.read(scheduleListProvider.notifier).remove(schedule.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

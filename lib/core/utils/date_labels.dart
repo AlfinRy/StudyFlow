@@ -40,11 +40,32 @@ const List<String> idnMonths = [
   'Desember',
 ];
 
+const List<String> idnShortMonths = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'Mei',
+  'Jun',
+  'Jul',
+  'Agu',
+  'Sep',
+  'Okt',
+  'Nov',
+  'Des',
+];
+
 String idnWeekday(int weekday) => idnWeekdays[(weekday - 1) % 7];
 
 String idnShortWeekday(int weekday) => idnShortWeekdays[(weekday - 1) % 7];
 
 String idnMonth(int month) => idnMonths[(month - 1) % 12];
+
+String idnShortMonth(int month) => idnShortMonths[(month - 1) % 12];
+
+/// Format tanggal compact, mis. "15 Okt 2026".
+String idnFormatDateCompact(DateTime d) =>
+    '${d.day} ${idnShortMonth(d.month)} ${d.year}';
 
 /// Format "HH:mm" dari [TimeOfDay].
 String formatTimeOfDay(TimeOfDay t) =>

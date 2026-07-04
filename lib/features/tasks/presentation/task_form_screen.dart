@@ -274,7 +274,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Notifikasi 1 jam sebelum deadline',
+                          'Pengingat H-1 & hari-H, pukul 08.00',
                           style: TextStyle(
                             fontSize: 11.5,
                             color: AppColors.textSecondary,

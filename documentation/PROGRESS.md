@@ -10,7 +10,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 3. Auth | Firebase Auth (login/register/onboarding). *Butuh `flutterfire configure`.* | ⬜ |
 | 4. Jadwal (CRUD) | Tambah/edit/hapus jadwal, horizontal date selector | ✅ Selesai |
 | 5. Tugas (CRUD + filter + sort) | To-do list, filter tab, sort by deadline | ✅ Selesai |
-| 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ⬜ |
+| 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ✅ Selesai |
 | 7. Beranda | Agregasi jadwal hari ini + tugas mendatang (data real) | ⬜ |
 | 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ⬜ |
 | 9. Forum Diskusi | Firestore real-time (topik + reply) | ⬜ |

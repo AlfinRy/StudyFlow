@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'app.dart';
 import 'core/services/firebase_service.dart';
 import 'core/services/hive_service.dart';
+import 'core/services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,9 @@ Future<void> main() async {
 
   // Coba inisialisasi Firebase (auth/forum). Gagal gracefully → mode demo.
   await FirebaseService.initialize();
+
+  // Notifikasi lokal untuk reminder deadline (PRD §5.4). Gagal gracefully.
+  await NotificationService.instance.initialize();
 
   runApp(
     const ProviderScope(child: StudyFlowApp()),

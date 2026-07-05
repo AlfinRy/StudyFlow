@@ -34,9 +34,15 @@ class TaskRepository {
 
   Future<void> remove(String id) async => _box.delete(id);
 
-  /// Toggle status selesai.
-  Future<Task> toggleDone(Task task) async {
-    final updated = task.copyWith(isDone: !task.isDone);
+  /// Toggle status selesai. Saat ditandai selesai, `completedAt` diisi dengan
+  /// [now] (default: waktu sekarang) agar dapat dipakai menghitung progres
+  /// mingguan & streak (Fase 8). Saat dibuka kembali, `completedAt` di-null-kan.
+  Future<Task> toggleDone(Task task, {DateTime? now}) async {
+    final completing = !task.isDone;
+    final updated = task.copyWith(
+      isDone: completing,
+      completedAt: completing ? (now ?? DateTime.now()) : null,
+    );
     await _box.put(updated.id, updated.toMap());
     return updated;
   }

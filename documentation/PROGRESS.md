@@ -12,7 +12,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 5. Tugas (CRUD + filter + sort) | To-do list, filter tab, sort by deadline | ✅ Selesai |
 | 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ✅ Selesai |
 | 7. Beranda | Agregasi jadwal hari ini + tugas mendatang (data real) | ✅ Selesai |
-| 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ⬜ |
+| 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ✅ Selesai |
 | 9. Forum Diskusi | Firestore real-time (topik + reply) | ⬜ |
 | 10. Profil + Materi | Edit profil (Firestore) + materi pembelajaran | ⬜ |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
@@ -24,3 +24,19 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
   1. Buat project di [Firebase Console](https://console.firebase.google.com).
   2. Jalankan `dart pub global activate flutterfire_cli` lalu `flutterfire configure`.
   3. Tambahkan plugin `google-services` di `android/build.gradle` (otomatis via flutterfire CLI).
+
+## Catatan Fase 8 (Progres Belajar)
+
+- **Perubahan model:** field `completedAt` (nullable) ditambahkan ke `Task`
+  (penyimpangan terdokumentasi, backward-compatible via Hive map) agar progres
+  mingguan, heatmap aktivitas, dan streak bisa dihitung akurat. Di-set saat
+  tugas ditandai selesai, di-null-kan saat dibuka kembali.
+- **Semua metrik real (bukan difabrikasi):** persen tugas selesai, jumlah
+  tugas, waktu belajar terjadwal (dari durasi jadwal), streak harian, XP/level
+  (deterministik dari tugas selesai), dan pencapaian (milestone dari jumlah
+  tugas/streak).
+- **Sinkronisasi cloud `progress/{uid}` (PRD §5.5)** belum aktif — menunggu
+  konfigurasi Firebase (Fase 9). Seluruh perhitungan sudah akurat dari sumber
+  lokal dan reaktif lewat Riverpod.
+- **Widget test** memakai provider override in-memory (bukan tulis Hive) untuk
+  menghindari interaksi Hive + flutter_test FakeAsync.

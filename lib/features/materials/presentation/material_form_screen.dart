@@ -1,0 +1,302 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/navy_hero_card.dart';
+import '../domain/material_file_type.dart';
+import '../domain/study_material.dart';
+import '../material_providers.dart';
+import 'material_form_validation.dart';
+
+/// Form tambah/edit materi (PRD §4.2 box `materials`, UI_DESIGN.md §9.1).
+/// Konsisten dengan pola form tugas/jadwal.
+///
+/// Upload file fisik belum diimplementasi (tidak ada file picker). Untuk tipe
+/// PDF/Gambar, pengguna memasukkan URL/path referensi; untuk Tautan URL
+/// (divalidasi); untuk Catatan, isi teks.
+///
+/// Kirim [material] untuk mode edit; kosongkan untuk mode tambah.
+class MaterialFormScreen extends ConsumerStatefulWidget {
+  const MaterialFormScreen({super.key, this.material});
+
+  final StudyMaterial? material;
+
+  @override
+  ConsumerState<MaterialFormScreen> createState() => _MaterialFormScreenState();
+}
+
+class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
+  final _titleCtrl = TextEditingController();
+  final _sourceCtrl = TextEditingController();
+
+  late MaterialFileType _type;
+  late String _category;
+  bool _saving = false;
+
+  bool get _isEdit => widget.material != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final m = widget.material;
+    _titleCtrl.text = m?.title ?? '';
+    _sourceCtrl.text = m?.filePathOrUrl ?? '';
+    _type = m?.fileType ?? MaterialFileType.note;
+    _category = (m?.category.isNotEmpty ?? false) ? m!.category : 'Umum';
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _sourceCtrl.dispose();
+    super.dispose();
+  }
+
+  String get _sourceLabel {
+    switch (_type) {
+      case MaterialFileType.pdf:
+        return 'URL / Path File PDF';
+      case MaterialFileType.image:
+        return 'URL / Path Gambar';
+      case MaterialFileType.link:
+        return 'Tautan URL';
+      case MaterialFileType.note:
+        return 'Isi Catatan';
+    }
+  }
+
+  String? get _sourceHint {
+    switch (_type) {
+      case MaterialFileType.pdf:
+        return 'cth. https://situs.com/materi.pdf';
+      case MaterialFileType.image:
+        return 'cth. https://situs.com/gambar.jpg';
+      case MaterialFileType.link:
+        return 'cth. https://situs.com';
+      case MaterialFileType.note:
+        return 'Tuliskan ringkasan / catatan materi di sini...';
+    }
+  }
+
+  IconData get _sourceIcon {
+    switch (_type) {
+      case MaterialFileType.pdf:
+        return Icons.picture_as_pdf_outlined;
+      case MaterialFileType.image:
+        return Icons.image_outlined;
+      case MaterialFileType.link:
+        return Icons.link_outlined;
+      case MaterialFileType.note:
+        return Icons.notes_rounded;
+    }
+  }
+
+  Future<void> _save() async {
+    final error = validateMaterialForm(
+      title: _titleCtrl.text,
+      source: _sourceCtrl.text,
+      type: _type,
+    );
+    if (error != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), behavior: SnackBarBehavior.floating),
+      );
+      return;
+    }
+
+    setState(() => _saving = true);
+    final notifier = ref.read(materialListProvider.notifier);
+    final title = _titleCtrl.text.trim();
+    final source = _sourceCtrl.text.trim();
+
+    if (_isEdit) {
+      await notifier.update(widget.material!.copyWith(
+        title: title,
+        filePathOrUrl: source,
+        fileType: _type,
+        category: _category,
+      ));
+    } else {
+      await notifier.add(StudyMaterial(
+        id: '',
+        title: title,
+        filePathOrUrl: source,
+        fileType: _type,
+        category: _category,
+        createdAt: DateTime.now(),
+      ));
+    }
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text(_isEdit ? 'Materi diperbarui.' : 'Materi "$title" ditambahkan.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isNote = _type == MaterialFileType.note;
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          onPressed: () => Navigator.of(context).maybePop(),
+          tooltip: 'Kembali',
+        ),
+        title: Text(_isEdit ? 'Edit Materi' : 'Materi Baru'),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+          children: [
+            NavyHeroCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _isEdit ? 'Edit Materi' : 'Materi Baru',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Simpan PDF, gambar, tautan, atau catatan materi belajarmu.',
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            // Judul
+            TextFormField(
+              controller: _titleCtrl,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Judul Materi',
+                hintText: 'cth. Modul Fisika Bab 3',
+                prefixIcon: Icon(Icons.folder_outlined),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Kategori + Tipe
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _CategoryDropdown(
+                    value: _category,
+                    onChanged: (v) => setState(() => _category = v ?? 'Umum'),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.md),
+                Expanded(
+                  child: _TypeDropdown(
+                    value: _type,
+                    onChanged: (v) => setState(() => _type = v),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Sumber (URL/path/catatan) — label & ikon menyesuaikan tipe
+            TextFormField(
+              controller: _sourceCtrl,
+              maxLines: isNote ? 4 : 1,
+              keyboardType:
+                  isNote ? TextInputType.multiline : TextInputType.url,
+              textCapitalization: isNote
+                  ? TextCapitalization.sentences
+                  : TextCapitalization.none,
+              decoration: InputDecoration(
+                labelText: _sourceLabel,
+                hintText: _sourceHint,
+                prefixIcon: Icon(_sourceIcon),
+                alignLabelWithHint: isNote,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+
+            FilledButton.icon(
+              onPressed: _saving ? null : _save,
+              icon: _saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.save_outlined),
+              label: Text(_isEdit ? 'Simpan Perubahan' : 'Simpan Materi'),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            TextButton(
+              onPressed: _saving ? null : () => Navigator.of(context).maybePop(),
+              child: const Text('Batalkan'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryDropdown extends StatelessWidget {
+  const _CategoryDropdown({required this.value, required this.onChanged});
+  final String value;
+  final ValueChanged<String?> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      initialValue: value,
+      decoration: const InputDecoration(
+        labelText: 'Kategori',
+        prefixIcon: Icon(Icons.label_outlined),
+      ),
+      items: defaultMaterialCategories
+          .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
+}
+
+class _TypeDropdown extends StatelessWidget {
+  const _TypeDropdown({required this.value, required this.onChanged});
+  final MaterialFileType value;
+  final ValueChanged<MaterialFileType> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<MaterialFileType>(
+      initialValue: value,
+      decoration: const InputDecoration(
+        labelText: 'Tipe',
+        prefixIcon: Icon(Icons.category_outlined),
+      ),
+      items: MaterialFileType.values
+          .map((t) => DropdownMenuItem(value: t, child: Text(t.label)))
+          .toList(),
+      onChanged: (v) {
+        if (v != null) onChanged(v);
+      },
+    );
+  }
+}

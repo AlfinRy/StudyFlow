@@ -9,6 +9,9 @@ import '../../../shared_widgets/section_header.dart';
 import '../../auth/auth_providers.dart';
 import '../../schedule/presentation/widgets/schedule_card.dart';
 import '../../schedule/schedule_providers.dart';
+import '../../materials/material_providers.dart';
+import '../../materials/presentation/materials_screen.dart';
+import '../../materials/presentation/widgets/material_card.dart';
 import '../../tasks/presentation/widgets/task_card.dart';
 import '../../tasks/task_providers.dart';
 import '../../shell/shell_providers.dart';
@@ -24,6 +27,12 @@ class HomeScreen extends ConsumerWidget {
 
   void _goToTab(WidgetRef ref, int tab) =>
       ref.read(activeTabProvider.notifier).state = tab;
+
+  void _openMaterials(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const MaterialsScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,6 +52,9 @@ class HomeScreen extends ConsumerWidget {
     final percent = total == 0 ? 0.0 : done / total;
 
     final upcoming = incomplete.take(_previewCount).toList();
+
+    final materials = ref.watch(materialListProvider);
+    final recentMaterials = materials.take(_previewCount).toList();
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -106,6 +118,32 @@ class HomeScreen extends ConsumerWidget {
                     onToggle: () =>
                         ref.read(taskListProvider.notifier).toggleDone(t),
                     onEdit: () => _goToTab(ref, 2),
+                  ),
+                ),
+            ],
+          ),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Materi pembelajaran (akses via shortcut — UI_DESIGN.md §9.1)
+        SectionHeader(
+          title: 'Materi Pembelajaran',
+          onSeeAll:
+              materials.isNotEmpty ? () => _openMaterials(context) : null,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        if (recentMaterials.isEmpty)
+          const _SectionHint(
+              icon: Icons.folder_open_rounded,
+              text: 'Belum ada materi tersimpan.')
+        else
+          Column(
+            children: [
+              for (final m in recentMaterials)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: GestureDetector(
+                    onTap: () => _openMaterials(context),
+                    child: MaterialCard(material: m),
                   ),
                 ),
             ],

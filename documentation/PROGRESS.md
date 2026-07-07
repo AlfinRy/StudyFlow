@@ -14,7 +14,8 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 7. Beranda | Agregasi jadwal hari ini + tugas mendatang (data real) | ✅ Selesai |
 | 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ✅ Selesai |
 | 9. Forum Diskusi | Firestore real-time (topik + reply) | ⬜ |
-| 10. Profil + Materi | Edit profil (Firestore) + materi pembelajaran | ⬜ |
+| 10a. Materi Pembelajaran | UI list (cari + filter kategori), form tambah/edit, hapus, buka tautan. Diakses via shortcut Beranda (bukan tab ke-6). *Upload file fisik belum; saat ini URL/path/catatan.* | ✅ Selesai |
+| 10b. Profil | Edit profil (nama/foto ke Firestore). Saat ini hanya logout yang berfungsi. | ⬜ |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
 
 ## Catatan konfigurasi
@@ -24,6 +25,24 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
   1. Buat project di [Firebase Console](https://console.firebase.google.com).
   2. Jalankan `dart pub global activate flutterfire_cli` lalu `flutterfire configure`.
   3. Tambahkan plugin `google-services` di `android/build.gradle` (otomatis via flutterfire CLI).
+
+## Catatan Fase 10a (Materi Pembelajaran)
+
+- **Diakses via shortcut** dari Beranda (section "Materi Pembelajaran" +
+  tombol "Lihat semua"/tap kartu), bukan menambah tab ke-6 di bottom nav —
+  sesuai rekomendasi UI_DESIGN.md §9.1 agar bottom nav tetap 5 item.
+- **Backend sudah siap sebelumnya** (`MaterialRepository` + Riverpod
+  `materialListProvider`, box Hive `materials`); fase ini hanya melengkapi
+  lapisan presentation.
+- **CRUD lengkap & reaktif**: tambah/edit/hapus langsung tercermin di list.
+- **Buka**: tipe `link`/`pdf`/`image` membuka URI via `url_launcher`
+  (dependency baru); tipe `note` ditampilkan sebagai dialog isi catatan.
+- **Upload file fisik belum**: tidak ada file picker. Saat ini PDF/gambar
+  memakai URL/path referensi, tautan divalidasi (skema http/https + host),
+  catatan berupa teks. Upload asli menyusul saat ditambahkan picker +
+  penyimpanan file.
+- **Cloud sync `materials` (Firestore)** belum (seluruh fitur inti tetap
+  offline-first via Hive).
 
 ## Catatan Fase 8 (Progres Belajar)
 

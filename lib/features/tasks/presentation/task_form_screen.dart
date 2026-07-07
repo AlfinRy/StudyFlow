@@ -362,6 +362,7 @@ class _CategoryDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       initialValue: value,
+      isExpanded: true,
       decoration: const InputDecoration(
         labelText: 'Kategori',
         prefixIcon: Icon(Icons.label_outlined),
@@ -386,6 +387,7 @@ class _PriorityDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<TaskPriority>(
       initialValue: value,
+      isExpanded: true,
       decoration: const InputDecoration(
         labelText: 'Prioritas',
         prefixIcon: Icon(Icons.flag_outlined),

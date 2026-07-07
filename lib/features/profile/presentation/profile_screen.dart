@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_dialogs.dart';
 import '../../auth/auth_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -82,11 +83,24 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        _MenuGroup(children: const [
-          _MenuTile(icon: Icons.person_outline, label: 'Edit Profil'),
-          _MenuTile(icon: Icons.notifications_none, label: 'Notifikasi'),
+        _MenuGroup(children: [
           _MenuTile(
-              icon: Icons.language, label: 'Bahasa', trailing: 'Indonesia'),
+            icon: Icons.person_outline,
+            label: 'Edit Profil',
+            onTap: () async => showComingSoon(context, 'Edit profil'),
+          ),
+          _MenuTile(
+            icon: Icons.notifications_none,
+            label: 'Notifikasi',
+            onTap: () async =>
+                showComingSoon(context, 'Pengaturan notifikasi'),
+          ),
+          _MenuTile(
+            icon: Icons.language,
+            label: 'Bahasa',
+            trailing: 'Indonesia',
+            onTap: () async => showLanguageInfo(context),
+          ),
         ]),
         const SizedBox(height: AppSpacing.xl),
         const Text(
@@ -98,9 +112,17 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        const _MenuGroup(children: [
-          _MenuTile(icon: Icons.help_outline, label: 'Bantuan'),
-          _MenuTile(icon: Icons.info_outline, label: 'Tentang Aplikasi'),
+        _MenuGroup(children: [
+          _MenuTile(
+            icon: Icons.help_outline,
+            label: 'Bantuan',
+            onTap: () async => showComingSoon(context, 'Halaman bantuan'),
+          ),
+          _MenuTile(
+            icon: Icons.info_outline,
+            label: 'Tentang Aplikasi',
+            onTap: () async => showStudyFlowAbout(context),
+          ),
         ]),
         const SizedBox(height: AppSpacing.xl),
         _MenuGroup(children: [

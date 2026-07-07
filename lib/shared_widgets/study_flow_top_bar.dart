@@ -11,11 +11,15 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.title,
     this.actions,
+    this.onNotificationsPressed,
   });
 
   final Widget? leading;
   final String? title;
   final List<Widget>? actions;
+
+  /// Aksi saat ikon lonceng ditekan (mis. membuka panel pengingat).
+  final VoidCallback? onNotificationsPressed;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -26,7 +30,9 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
       leading: leading ??
           IconButton(
             icon: const Icon(Icons.menu),
-            onPressed: () {},
+            // Top bar berada di dalam subtree Scaffold, jadi
+            // Scaffold.maybeOf(context) menemukan Scaffold yang menaunginya.
+            onPressed: () => Scaffold.maybeOf(context)?.openDrawer(),
             tooltip: 'Menu',
           ),
       title: title != null
@@ -49,7 +55,7 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
           [
             IconButton(
               icon: const Icon(Icons.notifications_none_rounded),
-              onPressed: () {},
+              onPressed: onNotificationsPressed,
               tooltip: 'Notifikasi',
             ),
           ],

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_logo.dart';
 import '../auth_providers.dart';
 import '../domain/user_role.dart';
 import 'widgets/auth_text_field.dart';
@@ -225,14 +226,7 @@ class _Intro extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: const BoxDecoration(
-            color: AppColors.accent,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.menu_book, color: Colors.white),
-        ),
+        AppLogo(size: 110),
         const SizedBox(height: AppSpacing.md),
         const Text(
           'Mulai perjalanan akademik cerdasmu hari ini.',

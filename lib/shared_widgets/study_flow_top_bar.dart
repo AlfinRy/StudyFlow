@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_colors.dart';
+import 'app_logo.dart';
 
 /// Standard top app bar (UI_DESIGN.md 1.3): hamburger / logo "StudyFlow" /
 /// notification bell. Override [leading], [title] or [actions] per screen.
@@ -33,7 +34,7 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
           : Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Icon(Icons.menu_book, color: AppColors.accent, size: 22),
+                AppLogo(),
                 SizedBox(width: 8),
                 Text(
                   'StudyFlow',

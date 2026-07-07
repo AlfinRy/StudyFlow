@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_logo.dart';
 import '../auth_providers.dart';
 import 'register_screen.dart';
 import 'widgets/auth_text_field.dart';
@@ -176,7 +177,7 @@ class _Header extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.menu_book, color: Colors.white),
+              AppLogo(),
               SizedBox(width: AppSpacing.sm),
               Text(
                 'StudyFlow',

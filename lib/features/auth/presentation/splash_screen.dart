@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_logo.dart';
 
 /// Layar splash singkat (UI_DESIGN.md §2) — ditampilkan saat state auth masih
 /// dimuat untuk menghindari kedipan halaman login.
@@ -15,7 +16,7 @@ class SplashScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: const [
-          Icon(Icons.menu_book, color: Colors.white, size: 72),
+          AppLogo(size: 140),
           SizedBox(height: AppSpacing.md),
           Text(
             'StudyFlow',

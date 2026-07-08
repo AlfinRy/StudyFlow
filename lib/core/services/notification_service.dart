@@ -5,6 +5,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'hive_service.dart';
 import '../utils/task_reminder_schedule.dart';
 import '../../features/tasks/domain/task.dart';
 
@@ -29,6 +30,19 @@ class NotificationService {
 
   bool _initialized = false;
   bool _permissionRequested = false;
+
+  /// Apakah notifikasi diaktifkan secara global (pengaturan master di Profil
+  /// → Notifikasi). Default true. Dibaca langsung dari Hive agar penjadwalan
+  /// tetap hormat pengaturan walau dipanggil dari mana pun.
+  bool get notificationsEnabled {
+    try {
+      return (HiveService.instance.settings
+              .get(HiveService.notificationsEnabledKey) as bool?) ??
+          true;
+    } catch (_) {
+      return true;
+    }
+  }
 
   /// Inisialisasi plugin + timezone. Aman dipanggil berulang.
   Future<void> initialize() async {
@@ -85,6 +99,9 @@ class NotificationService {
     await cancelForTask(task.id);
     if (!task.reminderEnabled || task.isDone) return;
 
+    // Hormati pengaturan master notifikasi (Profil → Notifikasi).
+    if (!notificationsEnabled) return;
+
     await _ensurePermission();
     final times = computeReminderTimes(
         dueDate: task.dueDate, reminderHour: _reminderHour);
@@ -117,6 +134,15 @@ class NotificationService {
     try {
       await _plugin.cancel(_hMinusOneId(taskId));
       await _plugin.cancel(_onDayId(taskId));
+    } catch (_) {
+      // Gagal graceful.
+    }
+  }
+
+  /// Batalkan SEMUA notifikasi terjadwalkan (saat pengingat dimatikan global).
+  Future<void> cancelAll() async {
+    try {
+      await _plugin.cancelAll();
     } catch (_) {
       // Gagal graceful.
     }

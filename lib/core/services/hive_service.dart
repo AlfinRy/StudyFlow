@@ -13,6 +13,9 @@ class HiveService {
   static const materialsBox = 'materials';
   static const settingsBox = 'settings';
 
+  /// Key pengaturan master notifikasi (on/off) di box [settings].
+  static const notificationsEnabledKey = 'notifications_enabled';
+
   late Box<dynamic> schedules;
   late Box<dynamic> tasks;
   late Box<dynamic> materials;

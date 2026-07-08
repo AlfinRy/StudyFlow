@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../shared_widgets/app_dialogs.dart';
+import 'notification_settings_screen.dart';
 import '../../auth/auth_providers.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -92,8 +93,11 @@ class ProfileScreen extends ConsumerWidget {
           _MenuTile(
             icon: Icons.notifications_none,
             label: 'Notifikasi',
-            onTap: () async =>
-                showComingSoon(context, 'Pengaturan notifikasi'),
+            onTap: () async => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const NotificationSettingsScreen(),
+              ),
+            ),
           ),
           _MenuTile(
             icon: Icons.language,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/settings/settings_providers.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/app_dialogs.dart';
 import '../../../shared_widgets/app_logo.dart';
@@ -125,6 +126,7 @@ class MainShell extends ConsumerWidget {
   /// pengingatnya & belum selesai, terurut mendekati deadline (data real dari
   /// Hive, terhubung ke fitur notifikasi Fase 6).
   void _showNotifications(BuildContext context, WidgetRef ref) {
+    final enabled = ref.read(notificationsEnabledProvider);
     final upcoming = ref
         .read(taskListProvider)
         .where((t) => t.reminderEnabled && !t.isDone)
@@ -155,6 +157,37 @@ class MainShell extends ConsumerWidget {
                 ],
               ),
             ),
+            if (!enabled)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+                child: Container(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withValues(alpha: 0.12),
+                    borderRadius:
+                        BorderRadius.circular(AppSpacing.cardRadius),
+                    border: Border.all(
+                        color: AppColors.warning.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.pause_circle_outline,
+                          color: AppColors.warning, size: 18),
+                      SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          'Pengingat sedang nonaktif. Aktifkan di Profil → Notifikasi.',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textPrimary,
+                              height: 1.3),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             if (items.isEmpty)
               const Padding(
                 padding: EdgeInsets.all(AppSpacing.xl),

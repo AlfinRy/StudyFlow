@@ -11,7 +11,9 @@ String? validateMaterialForm({
     return 'Judul materi tidak boleh kosong.';
   }
   if (source.trim().isEmpty) {
-    return 'Isi materi tidak boleh kosong.';
+    return (type == MaterialFileType.pdf || type == MaterialFileType.image)
+        ? 'Pilih file terlebih dahulu.'
+        : 'Isi materi tidak boleh kosong.';
   }
   // Untuk tipe tautan, pastikan bentuk URL valid (skema http/https).
   if (type == MaterialFileType.link) {

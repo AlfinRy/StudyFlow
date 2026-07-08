@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -62,18 +65,92 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
   }
 
   Future<void> _open(StudyMaterial material) async {
-    // Catatan dibuka sebagai dialog (isinya teks, bukan URI).
-    if (material.fileType == MaterialFileType.note) {
-      _showNoteDialog(material);
-      return;
+    final source = material.filePathOrUrl.trim();
+    switch (material.fileType) {
+      case MaterialFileType.note:
+        _showNoteDialog(material);
+        return;
+      case MaterialFileType.link:
+        final uri = Uri.tryParse(source);
+        if (uri == null ||
+            uri.host.isEmpty ||
+            !(uri.scheme == 'http' || uri.scheme == 'https')) {
+          _showOpenError();
+          return;
+        }
+        final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (!ok && mounted) _showOpenError();
+        return;
+      case MaterialFileType.pdf:
+      case MaterialFileType.image:
+        // Backward-compat: data lama mungkin masih berupa URL.
+        if (source.startsWith('http://') || source.startsWith('https://')) {
+          final uri = Uri.tryParse(source);
+          if (uri != null) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+            return;
+          }
+        }
+        if (source.isEmpty) {
+          _showOpenError(message: 'File tidak ditemukan.');
+          return;
+        }
+        final file = File(source);
+        if (!await file.exists()) {
+          _showOpenError(message: 'File tidak ditemukan di perangkat.');
+          return;
+        }
+        if (material.fileType == MaterialFileType.image) {
+          _showImagePreview(material, file);
+        } else {
+          final result = await OpenFilex.open(source);
+          if (result.type != ResultType.done && mounted) {
+            _showOpenError(message: 'Tidak ada aplikasi untuk membuka PDF.');
+          }
+        }
+        return;
     }
-    final uri = Uri.tryParse(material.filePathOrUrl.trim());
-    if (uri == null || !uri.hasAbsolutePath) {
-      _showOpenError();
-      return;
-    }
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && mounted) _showOpenError();
+  }
+
+  /// Preview gambar yang diunggah (in-app, tanpa aplikasi eksternal).
+  void _showImagePreview(StudyMaterial material, File file) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: AppColors.surface,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.sm),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                child: Text(
+                  material.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Image.file(file, fit: BoxFit.contain),
+              ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Tutup'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _showNoteDialog(StudyMaterial material) {
@@ -98,10 +175,10 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
     );
   }
 
-  void _showOpenError() {
+  void _showOpenError({String message = 'Tidak dapat membuka tautan ini.'}) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Tidak dapat membuka tautan ini.'),
+      SnackBar(
+        content: Text(message),
         behavior: SnackBarBehavior.floating,
       ),
     );

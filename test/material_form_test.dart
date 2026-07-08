@@ -17,11 +17,19 @@ void main() {
       );
     });
 
-    test('source kosong → error', () {
+    test('source kosong (file) → "Pilih file terlebih dahulu."', () {
       expect(
         validateMaterialForm(
             title: 'Modul', source: '', type: MaterialFileType.pdf),
-        isNotNull,
+        'Pilih file terlebih dahulu.',
+      );
+    });
+
+    test('source kosong (note) → "Isi materi tidak boleh kosong."', () {
+      expect(
+        validateMaterialForm(
+            title: 'Catatan', source: '', type: MaterialFileType.note),
+        'Isi materi tidak boleh kosong.',
       );
     });
 

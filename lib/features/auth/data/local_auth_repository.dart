@@ -106,4 +106,9 @@ class LocalAuthRepository implements AuthRepository {
     await _box.delete(_kSession);
     _emit();
   }
+
+  @override
+  Future<AppUser?> signInWithGoogle() async {
+    throw Exception('Login Google tidak tersedia di mode demo.');
+  }
 }

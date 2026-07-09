@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 
 import '../../../core/services/hive_service.dart';
@@ -89,6 +90,44 @@ class FirebaseAuthRepository implements AuthRepository {
       return u;
     } on FirebaseAuthException catch (e) {
       throw Exception(authErrorMessage(e));
+    }
+  }
+
+  /// Login via Google. Memerlukan provider Google di-enable di Firebase
+  /// Console + SHA-1 fingerprint terdaftar. `name` & `role` di-cache di Hive
+  /// (role default `mahasiswa` untuk user baru via Google).
+  @override
+  Future<AppUser?> signInWithGoogle() async {
+    try {
+      final googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) return null; // user batal / tidak ada akun
+      final googleAuth = await googleUser.authentication;
+      final userCred = await _auth.signInWithCredential(
+        GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        ),
+      );
+      final user = userCred.user;
+      if (user == null) throw Exception('Login Google gagal. Coba lagi.');
+      // User baru via Google belum punya role → default mahasiswa + nama Google.
+      if (_profile(user.uid)['role'] == null) {
+        await _saveProfile(
+          user.uid,
+          name: user.displayName ??
+              user.email?.split('@').first ??
+              'Pengguna Google',
+          role: UserRole.mahasiswa,
+        );
+      }
+      return _map(user) ??
+          (throw Exception('Login Google gagal. Coba lagi.'));
+    } on FirebaseAuthException catch (e) {
+      throw Exception(authErrorMessage(e));
+    } on Exception {
+      rethrow;
+    } catch (_) {
+      throw Exception('Login Google gagal. Coba lagi.');
     }
   }
 

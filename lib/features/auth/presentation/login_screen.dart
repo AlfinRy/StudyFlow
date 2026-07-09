@@ -22,6 +22,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _email = TextEditingController();
   final _password = TextEditingController();
   bool _loading = false;
+  bool _googleLoading = false;
 
   @override
   void dispose() {
@@ -50,6 +51,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final clean = msg.replaceFirst('Exception: ', '');
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(clean)));
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _googleLoading = true);
+    try {
+      // Null = user batal pilih akun → tidak perlu pesan error.
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      // authStateProvider memancarkan user → root berganti ke MainShell.
+    } catch (e) {
+      _showError(e.toString());
+    } finally {
+      if (mounted) setState(() => _googleLoading = false);
+    }
   }
 
   @override
@@ -115,13 +129,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const _OrDivider(),
                 const SizedBox(height: AppSpacing.lg),
                 OutlinedButton.icon(
-                  onPressed: () => _showError(
-                      'Login Google belum tersedia di tahap ini.'),
+                  onPressed: (_loading || _googleLoading || widget.isDemoMode)
+                      ? null
+                      : _signInWithGoogle,
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                   ),
-                  icon: const Icon(Icons.g_mobiledata),
-                  label: const Text('Lanjutkan dengan Google'),
+                  icon: _googleLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2),
+                        )
+                      : const Icon(Icons.g_mobiledata),
+                  label: Text(
+                    _googleLoading
+                        ? 'Memproses...'
+                        : (widget.isDemoMode
+                            ? 'Google (butuh Firebase)'
+                            : 'Lanjutkan dengan Google'),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xl),
                 Row(

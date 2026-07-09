@@ -6,7 +6,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 |------|-----|--------|
 | 1. Foundation | Struktur folder, dependencies, design tokens, Hive init, app shell + bottom nav, top bar, shared widgets, 5 placeholder screens | ✅ Selesai |
 | 2. Local Data Layer | Model + repository Hive (schedules, tasks, materials) + Riverpod providers + unit test | ✅ Selesai |
-| 3. Auth | Firebase Auth (login/register/onboarding) + fallback demo lokal. Firebase terkonfigurasi (`studyflow-umht`); tinggal enable provider Email/Password di console + reinstall APK. | ✅ (menunggu enable provider) |
+| 3. Auth | Firebase Auth (email/password + Google) + fallback demo lokal. Terkonfigurasi (`studyflow-umht`); SHA fingerprint terdaftar, OAuth client aktif. | ✅ Selesai |
 | 4. Jadwal (CRUD) | Tambah/edit/hapus jadwal, horizontal date selector | ✅ Selesai |
 | 5. Tugas (CRUD + filter + sort) | To-do list, filter tab, sort by deadline | ✅ Selesai |
 | 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ✅ Selesai |
@@ -28,10 +28,13 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
     - Pasang plugin `com.google.gms.google-services` v4.3.15 di `settings.gradle.kts` + `app/build.gradle.kts`.
   - `FirebaseService.initialize()` kini pakai `DefaultFirebaseOptions.currentPlatform`.
     Fallback demo lokal tetap aktif untuk platform yang belum dikonfigurasi (iOS/Web/Windows).
-- **Satu langkah tersisa (user, console):**
-  - Console → project `studyflow-umht` → **Authentication → Sign-in method →
-    Email/Password → Enable → Save** (WAJIB; tanpa ini register ditolak
-    `auth/operation-not-allowed`). Lalu reinstall APK.
+- **Provider Auth yang di-enable (user, console):** Email/Password ✅ & Google ✅
+  di project `studyflow-umht`. Termasuk SHA-1/SHA-256 fingerprint debug keystore
+  terdaftar via CLI (`firebase apps:android:sha:create`) + OAuth client
+  (client_type 1 & 3) di `google-services.json`.
+- **Google Sign-In ✅ (sesi ini):** pakai `google_sign_in` 6.3.0 (API `.signIn()`+
+  `.authentication`). Tombol di Login aktif hanya di mode Firebase. Role default
+  user Google baru = **Mahasiswa** (Google tak punya field role).
 - **Catatan:** akun demo lama (Hive) tidak ikut pindah ke Firebase — daftar akun
   baru setelah aktivasi. (Opsional: ada project `studyflow-f9625` tak terpakai di
   akun — bisa di-delete via console.)
@@ -80,16 +83,16 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 
 ## 📌 Selanjutnya
 
-Firebase Auth hampir aktif — tinggal enable provider Email/Password (console) + reinstall APK, lalu test register/login pakai akun baru.
+Firebase Auth lengkap & aktif: Email/Password + Google Sign-In (SHA-1/SHA-256
+terdaftar, OAuth client terisi). Tinggal reinstall APK terbaru + test di HP.
 
-1. **Enable Email/Password** di console project `studyflow-umht` (Authentication →
-   Sign-in method) → reinstall APK → test Register & Login. Konfirmasi ke agent.
+1. **Reinstall APK terbaru** (55.8MB) → test Register email, Login email, & tombol
+   "Lanjutkan dengan Google". Konfirmasi ke agent.
 2. **Fase 10b** — Edit Profil (nama/foto ke Firestore `users/{uid}`).
 3. **Fase 9** — Forum Diskusi (Firestore real-time: topik + reply).
 4. **Opsional** — hapus file fisik saat materi di-delete (anti-orphan).
-5. **Opsional** — Login Google (butuh `google_sign_in` + SHA-1 di Firebase).
-6. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
+5. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
    keystore release sebelum upload Play Store.
 
 State kode: `flutter analyze` 0 issue, 88/88 test lulus, APK release ter-built
-(`build/app/outputs/flutter-apk/app-release.apk`, 55.7MB).
+(`build/app/outputs/flutter-apk/app-release.apk`, 55.8MB).

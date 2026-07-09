@@ -23,5 +23,9 @@ abstract class AuthRepository {
     required String password,
   });
 
+  /// Login via Google (hanya mode Firebase). Mengembalikan `null` bila user
+  /// membatalkan pemilihan akun.
+  Future<AppUser?> signInWithGoogle();
+
   Future<void> signOut();
 }

@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 
+import '../../firebase_options.dart';
+
 /// Inisialisasi Firebase dengan aman (offline-first).
 ///
-/// Memanggil `Firebase.initializeApp()` hanya berhasil kalau sudah dikonfigurasi
-/// (`flutterfire configure` + google-services.json). Jika belum, dilempar
-/// exception yang ditangkap di sini → app berjalan dalam **mode demo**
-/// (auth lokal Hive). Lihat documentation/PROGRESS.md.
+/// Memanggil `Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)`.
+/// Opsi ini di-generate oleh `flutterfire configure`. Pada platform yang belum
+/// dikonfigurasi (cth. iOS/Web/Windows) dilempar exception → ditangkap di sini
+/// → app berjalan dalam **mode demo** (auth lokal Hive). Lihat documentation/PROGRESS.md.
 class FirebaseService {
   FirebaseService._();
 
@@ -14,7 +16,9 @@ class FirebaseService {
   static Future<void> initialize() async {
     if (initialized) return;
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       initialized = true;
     } catch (_) {
       // Belum dikonfigurasi — mode demo aktif.

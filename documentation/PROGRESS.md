@@ -14,7 +14,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ✅ Selesai |
 | 9. Forum Diskusi | Firestore real-time (topik + reply) | ⬜ |
 | 10a. Materi Pembelajaran | UI list (cari + filter kategori), form tambah/edit, hapus, buka file. Diakses via shortcut Beranda (bukan tab ke-6). *Upload file fisik (PDF/Gambar) via file picker ✅; Tautan/Catatan tetap input teks.* | ✅ Selesai |
-| 10b. Profil | Edit profil (nama/foto ke Firestore). Saat ini hanya logout yang berfungsi. | ⬜ |
+| 10b. Profil | Edit profil (nama/role/foto) → Firestore `users/{uid}` + cache Hive. Rules terdeploy, cloud sync aktif. | ✅ Selesai |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
 
 ## Catatan konfigurasi
@@ -65,6 +65,23 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 - **Cloud sync `materials` (Firestore)** belum (seluruh fitur inti tetap
   offline-first via Hive).
 
+## Catatan Fase 10b (Edit Profil)
+
+- **Form edit profil ✅:** nama, peran (role), dan URL foto. Tersimpan via
+  `AuthRepository.updateProfile` → cache Hive (`profile_{uid}`) reaktif, jadi
+  langsung tercermin di seluruh UI (top bar, profil, dll) tanpa login ulang.
+  Email read-only (dari Firebase Auth).
+- **Cloud sync Firestore ✅:** `updateProfile` + register/login/Google menulis/
+  membaca `users/{uid}` (best-effort, try/catch). DB Firestore di-enable &
+  `firestore.rules` sudah di-deploy → cloud sync & lintas-perangkat aktif.
+- **`firestore.rules` ✅ terdeploy:** user hanya boleh baca/tulis dokumen
+  profilnya sendiri (`users/{uid}`).
+- **Foto:** saat ini via URL teks. Upload dari galeri/kamera butuh
+  `firebase_storage` (opsional, menyusul).
+- **`FirebaseAuthRepository.authStateChanges()`** kini via `StreamController`
+  (mirip `LocalAuthRepository`) agar edit profil bisa memancarkan update.
+- **Dependency baru:** `cloud_firestore` 5.6.12.
+
 ## Catatan Fase 8 (Progres Belajar)
 
 - **Perubahan model:** field `completedAt` (nullable) ditambahkan ke `Task`
@@ -83,16 +100,15 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 
 ## 📌 Selanjutnya
 
-Firebase Auth lengkap & aktif: Email/Password + Google Sign-In (SHA-1/SHA-256
-terdaftar, OAuth client terisi). Tinggal reinstall APK terbaru + test di HP.
+Auth (email + Google), Edit Profil (lokal + cloud), & Firestore aktif. Lanjutan:
 
-1. **Reinstall APK terbaru** (55.8MB) → test Register email, Login email, & tombol
-   "Lanjutkan dengan Google". Konfirmasi ke agent.
-2. **Fase 10b** — Edit Profil (nama/foto ke Firestore `users/{uid}`).
-3. **Fase 9** — Forum Diskusi (Firestore real-time: topik + reply).
-4. **Opsional** — hapus file fisik saat materi di-delete (anti-orphan).
-5. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
+1. **Fase 9** — Forum Diskusi (Firestore real-time: topik + reply). Firestore
+   sudah siap (DB + rules terdeploy).
+2. **Opsional** — upload foto dari galeri/kamera (butuh `firebase_storage`);
+   saat ini foto via URL.
+3. **Opsional** — hapus file fisik saat materi di-delete (anti-orphan).
+4. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
    keystore release sebelum upload Play Store.
 
 State kode: `flutter analyze` 0 issue, 88/88 test lulus, APK release ter-built
-(`build/app/outputs/flutter-apk/app-release.apk`, 55.8MB).
+(`build/app/outputs/flutter-apk/app-release.apk`, 56.7MB).

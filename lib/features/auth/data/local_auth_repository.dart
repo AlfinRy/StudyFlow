@@ -108,6 +108,21 @@ class LocalAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> updateProfile({String? name, UserRole? role, String? photoUrl}) async {
+    final email = _box.get(_kSession) as String?;
+    if (email == null) throw Exception('Belum login.');
+    final users = _users;
+    final data = users[email];
+    if (data == null) throw Exception('Data user tidak ditemukan.');
+    if (name != null && name.trim().isNotEmpty) data['name'] = name.trim();
+    if (role != null) data['role'] = role.name;
+    if (photoUrl != null) data['photoUrl'] = photoUrl.trim();
+    users[email] = data;
+    await _putUsers(users);
+    _emit();
+  }
+
+  @override
   Future<AppUser?> signInWithGoogle() async {
     throw Exception('Login Google tidak tersedia di mode demo.');
   }

@@ -42,6 +42,8 @@ class _FakeAuthRepo implements AuthRepository {
   @override
   Future<AppUser?> signInWithGoogle() async => throw UnimplementedError();
   @override
+  Future<void> updateProfile({String? name, UserRole? role, String? photoUrl}) async {}
+  @override
   Future<void> signOut() async {}
 }
 

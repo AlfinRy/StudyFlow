@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../shared_widgets/app_dialogs.dart';
+import 'edit_profile_screen.dart';
 import 'notification_settings_screen.dart';
 import '../../auth/auth_providers.dart';
 
@@ -17,6 +18,7 @@ class ProfileScreen extends ConsumerWidget {
 
     final name = (user?.name.isNotEmpty ?? false) ? user!.name : 'Pengguna';
     final roleLabel = user?.role?.label ?? 'Pengguna';
+    final photoUrl = user?.photoUrl;
 
     Future<void> logout() async {
       await ref.read(authRepositoryProvider).signOut();
@@ -28,10 +30,22 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         Row(
           children: [
-            const CircleAvatar(
+            CircleAvatar(
               radius: 34,
               backgroundColor: AppColors.accent,
-              child: Icon(Icons.person, color: Colors.white, size: 34),
+              backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
+                  ? NetworkImage(photoUrl)
+                  : null,
+              child: (photoUrl == null || photoUrl.isEmpty)
+                  ? Text(
+                      name.isNotEmpty ? name[0].toUpperCase() : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    )
+                  : null,
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -88,7 +102,9 @@ class ProfileScreen extends ConsumerWidget {
           _MenuTile(
             icon: Icons.person_outline,
             label: 'Edit Profil',
-            onTap: () async => showComingSoon(context, 'Edit profil'),
+            onTap: () async => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+            ),
           ),
           _MenuTile(
             icon: Icons.notifications_none,

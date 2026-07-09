@@ -27,5 +27,9 @@ abstract class AuthRepository {
   /// membatalkan pemilihan akun.
   Future<AppUser?> signInWithGoogle();
 
+  /// Perbarui profil (nama/role/foto). Mode Firebase menulis ke Firestore
+  /// `users/{uid}` + cache lokal; mode demo hanya cache lokal.
+  Future<void> updateProfile({String? name, UserRole? role, String? photoUrl});
+
   Future<void> signOut();
 }

@@ -1,13 +1,51 @@
 rules_version = '2';
 
 // Aturan keamanan Firestore StudyFlow.
-// Setiap user (sudah login) hanya boleh membaca/menulis DOKUMEN profilnya
-// sendiri di koleksi `users/{uid}`. Lihat documentation/PROGRESS.md.
+// - Profil: tiap user hanya akses dokumennya sendiri (users/{uid}).
+// - Forum: publik (baca) untuk user login; tulis dengan data valid.
+//   replyCount topik boleh di-increment user mana pun (kolaboratif), namun
+//   field identitas (authorId/title/content) tidak boleh berubah.
+// Lihat documentation/PROGRESS.md.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Profil pengguna
     match /users/{uid} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Forum diskusi (PRD §5.6)
+    match /forum_topics/{topicId} {
+      allow read: if request.auth != null;
+
+      // Buat topik: harus login & authorId = uid sendiri + field wajib.
+      allow create: if request.auth != null
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0;
+
+      // Update: hanya untuk menambah replyCount (transaksi client). Field
+      // identitas topik harus tetap sama.
+      allow update: if request.auth != null
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.title == resource.data.title
+        && request.resource.data.content == resource.data.content;
+
+      // Hapus topik: belum ada fitur hapus.
+      allow delete: if false;
+
+      // Balasan
+      match /replies/{replyId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.content is string
+          && request.resource.data.content.size() > 0;
+        allow update, delete: if false;
+      }
     }
   }
 }

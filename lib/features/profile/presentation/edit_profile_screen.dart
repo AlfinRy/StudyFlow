@@ -1,15 +1,22 @@
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_avatar.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../auth/auth_providers.dart';
 import '../../auth/domain/user_role.dart';
 
 /// Form edit profil (PRD §10b). Menyimpan nama/role/foto via
 /// [AuthRepository.updateProfile] → Firestore `users/{uid}` + cache Hive.
-/// Email bersifat read-only (dari Firebase Auth). Lihat documentation/PROGRESS.md.
+/// Email read-only (dari Firebase Auth). Foto dapat diunggah dari galeri
+/// (PNG/JPG) → dikompres & disimpan sebagai base64 di Firestore (gratis, tanpa
+/// Storage), atau via URL. Lihat documentation/PROGRESS.md.
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -22,6 +29,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   final _photoCtrl = TextEditingController();
   late UserRole _role;
   bool _saving = false;
+  bool _uploading = false;
 
   @override
   void initState() {
@@ -46,6 +54,41 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     );
   }
 
+  /// Pilih gambar (PNG/JPG) dari galeri, kompres ke ~512px JPEG, lalu simpan
+  /// sebagai data URI base64 pada field foto (disimpan ke Firestore saat Save).
+  /// Hanya tersedia di mode Firebase.
+  Future<void> _pickPhoto() async {
+    final result = await FilePicker.pickFiles(type: FileType.image);
+    if (result == null || result.files.isEmpty) return;
+    final pickedPath = result.files.single.path;
+    if (pickedPath == null) return;
+
+    setState(() => _uploading = true);
+    try {
+      final bytes = await FlutterImageCompress.compressWithFile(
+        pickedPath,
+        minWidth: 512,
+        minHeight: 512,
+        quality: 80,
+      );
+      if (bytes == null) throw Exception('Gagal memproses gambar.');
+      final dataUri = 'data:image/jpeg;base64,${base64Encode(bytes)}';
+      setState(() => _photoCtrl.text = dataUri);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto dipilih. Tekan Simpan untuk menyimpan.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      _showError(e.toString());
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
@@ -53,9 +96,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
       return;
     }
     final photo = _photoCtrl.text.trim();
-    if (photo.isNotEmpty) {
+    // Data URI base64 valid langsung; URL dicek skema http/https + host.
+    if (photo.isNotEmpty && !photo.startsWith('data:image/')) {
       final uri = Uri.tryParse(photo);
-      if (uri == null || uri.host.isEmpty ||
+      if (uri == null ||
+          uri.host.isEmpty ||
           !(uri.scheme == 'http' || uri.scheme == 'https')) {
         _showError('URL foto tidak valid (harus http/https).');
         return;
@@ -88,14 +133,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
+    final isDemo = ref.watch(isDemoModeProvider);
     final email = user?.email ?? '-';
-    final photoUrl = (_photoCtrl.text.trim().isNotEmpty)
-        ? _photoCtrl.text.trim()
-        : user?.photoUrl;
-    final initial =
-        (_nameCtrl.text.trim().isNotEmpty ? _nameCtrl.text.trim() : '?')
-            .substring(0, 1)
-            .toUpperCase();
+    final photo = _photoCtrl.text.trim();
+    final displayName = _nameCtrl.text.trim();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -115,8 +156,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             NavyHeroCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
+                children: const [
+                  Text(
                     'Edit Profil',
                     style: TextStyle(
                       color: Colors.white,
@@ -124,8 +165,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
+                  SizedBox(height: 4),
+                  Text(
                     'Perbarui nama, peran, dan foto profil Anda.',
                     style: TextStyle(color: Colors.white70, fontSize: 13),
                   ),
@@ -134,27 +175,46 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: AppSpacing.xl),
 
-            // Pratinjau avatar
+            // Pratinjau avatar + tombol unggah foto
             Center(
-              child: CircleAvatar(
-                radius: 48,
-                backgroundColor: AppColors.accent,
-                backgroundImage:
-                    (photoUrl != null && photoUrl.isNotEmpty)
-                        ? NetworkImage(photoUrl)
-                        : null,
-                child: (photoUrl == null || photoUrl.isEmpty)
-                    ? Text(
-                        initial,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    : null,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  AppAvatar(
+                    name: displayName,
+                    photoUrl: photo.isNotEmpty ? photo : user?.photoUrl,
+                    radius: 52,
+                  ),
+                  if (_uploading)
+                    const SizedBox(
+                      width: 116,
+                      height: 116,
+                      child: CircularProgressIndicator(strokeWidth: 3),
+                    ),
+                ],
               ),
             ),
+            const SizedBox(height: AppSpacing.md),
+            if (!isDemo)
+              Center(
+                child: FilledButton.tonalIcon(
+                  onPressed: (_uploading || _saving) ? null : _pickPhoto,
+                  icon: const Icon(Icons.photo_camera_back_outlined),
+                  label: Text(_uploading ? 'Memproses...' : 'Ganti Foto'),
+                ),
+              )
+            else
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                  child: Text(
+                    'Upload foto butuh Firebase (tidak tersedia di mode demo).',
+                    style:
+                        TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
             const SizedBox(height: AppSpacing.xl),
 
             // Nama
@@ -199,18 +259,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // URL Foto (opsional)
-            TextFormField(
-              controller: _photoCtrl,
-              keyboardType: TextInputType.url,
-              textInputAction: TextInputAction.done,
-              onChanged: (_) => setState(() {}), // refresh pratinjau avatar
-              decoration: const InputDecoration(
-                labelText: 'URL Foto (opsional)',
-                hintText: 'cth. https://.../foto.jpg',
-                prefixIcon: Icon(Icons.link_outlined),
+            // Foto: bila sudah ada → indikator + hapus; bila belum → input URL.
+            if (photo.isNotEmpty)
+              _PhotoSetRow(onClear: () => setState(() => _photoCtrl.clear()))
+            else
+              TextFormField(
+                controller: _photoCtrl,
+                keyboardType: TextInputType.url,
+                textInputAction: TextInputAction.done,
+                onChanged: (_) => setState(() {}),
+                decoration: const InputDecoration(
+                  labelText: 'URL Foto (opsional)',
+                  hintText: 'cth. https://.../foto.jpg',
+                  prefixIcon: Icon(Icons.link_outlined),
+                ),
               ),
-            ),
             const SizedBox(height: AppSpacing.xl),
 
             FilledButton.icon(
@@ -232,6 +295,47 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Baris indikator "foto terpasang" + tombol hapus, dipakai saat field foto
+/// sudah berisi (data URI base64 maupun URL).
+class _PhotoSetRow extends StatelessWidget {
+  const _PhotoSetRow({required this.onClear});
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        border: Border.all(color: AppColors.surfaceBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_rounded,
+              color: AppColors.success, size: 20),
+          const SizedBox(width: AppSpacing.sm),
+          const Expanded(
+            child: Text(
+              'Foto profil terpasang',
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onClear,
+            child: const Text('Hapus'),
+          ),
+        ],
       ),
     );
   }

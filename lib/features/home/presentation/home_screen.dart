@@ -12,6 +12,7 @@ import '../../schedule/schedule_providers.dart';
 import '../../materials/material_providers.dart';
 import '../../materials/presentation/materials_screen.dart';
 import '../../materials/presentation/widgets/material_card.dart';
+import '../../discussion/presentation/forum_screen.dart';
 import '../../tasks/presentation/widgets/task_card.dart';
 import '../../tasks/task_providers.dart';
 import '../../shell/shell_providers.dart';
@@ -31,6 +32,12 @@ class HomeScreen extends ConsumerWidget {
   void _openMaterials(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const MaterialsScreen()),
+    );
+  }
+
+  void _openForum(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ForumScreen()),
     );
   }
 
@@ -148,6 +155,20 @@ class HomeScreen extends ConsumerWidget {
                 ),
             ],
           ),
+        const SizedBox(height: AppSpacing.xl),
+
+        // Forum diskusi (akses via shortcut — UI_DESIGN.md §9.2)
+        SectionHeader(
+          title: 'Forum Diskusi',
+          onSeeAll: () => _openForum(context),
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        _ShortcutCard(
+          icon: Icons.forum_outlined,
+          title: 'Diskusi & tanya jawab',
+          subtitle: 'Bergabung dalam percakapan dengan pengguna lain.',
+          onTap: () => _openForum(context),
+        ),
       ],
     );
   }
@@ -304,6 +325,76 @@ class _SectionHint extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Kartu shortcut sederhana yang dapat ditekan (dipakai untuk pintas Forum di
+/// Beranda). Mirip [_SectionHint] namun dengan leading icon, judul, & chevron.
+class _ShortcutCard extends StatelessWidget {
+  const _ShortcutCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        child: Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+            border: Border.all(color: AppColors.surfaceBorder),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: const BoxDecoration(
+                  color: AppColors.accent,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: Colors.white, size: 20),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary, fontSize: 12.5),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -12,9 +12,9 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 6. Notifikasi | flutter_local_notifications untuk deadline (H-1 & hari-H) | ✅ Selesai |
 | 7. Beranda | Agregasi jadwal hari ini + tugas mendatang (data real) | ✅ Selesai |
 | 8. Progres | Donut chart + statistik (menghitung dari data tugas) | ✅ Selesai |
-| 9. Forum Diskusi | Firestore real-time (topik + reply) | ⬜ |
+| 9. Forum Diskusi | Firestore real-time (topik + reply). Cloud-only; akses via shortcut Beranda. Rules forum terdeploy. | ✅ Selesai |
 | 10a. Materi Pembelajaran | UI list (cari + filter kategori), form tambah/edit, hapus, buka file. Diakses via shortcut Beranda (bukan tab ke-6). *Upload file fisik (PDF/Gambar) via file picker ✅; Tautan/Catatan tetap input teks.* | ✅ Selesai |
-| 10b. Profil | Edit profil (nama/role/foto) → Firestore `users/{uid}` + cache Hive. Rules terdeploy, cloud sync aktif. | ✅ Selesai |
+| 10b. Profil | Edit profil (nama/role/foto). Foto upload PNG/JPG (base64 di Firestore) + URL. Cloud sync aktif. | ✅ Selesai |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
 
 ## Catatan konfigurasi
@@ -76,11 +76,43 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
   `firestore.rules` sudah di-deploy → cloud sync & lintas-perangkat aktif.
 - **`firestore.rules` ✅ terdeploy:** user hanya boleh baca/tulis dokumen
   profilnya sendiri (`users/{uid}`).
-- **Foto:** saat ini via URL teks. Upload dari galeri/kamera butuh
-  `firebase_storage` (opsional, menyusul).
+- **Foto upload ✅ (base64):** PNG/JPG dari galeri → dikompres
+  (`flutter_image_compress`, ~512px JPEG q80) → disimpan sebagai data URI
+  base64 di dokumen Firestore `users/{uid}` (gratis, tanpa Storage/Blaze).
+  Widget `AppAvatar` merender base64 / URL / inisial. URL foto manual tetap
+  tersedia. (Storage tak dipakai: butuh plan Blaze/billing.)
 - **`FirebaseAuthRepository.authStateChanges()`** kini via `StreamController`
   (mirip `LocalAuthRepository`) agar edit profil bisa memancarkan update.
-- **Dependency baru:** `cloud_firestore` 5.6.12.
+- **Perbaikan tampilan foto (user Google):** `_map` kini **cache-first** untuk
+  `photoUrl` (`cache['photoUrl'] ?? u.photoURL`) — sebelumnya `u.photoURL` (foto
+  Google) selalu menimpa hasil edit; sekarang pilihan user (foto upload)
+  diutamakan, foto Google hanya fallback awal.
+- **Dependency baru:** `cloud_firestore` 5.6.12, `flutter_image_compress` 2.4.0
+  (resize gambar). `firebase_storage` sempat dipasang lalu dilepas (butuh Blaze).
+
+## Catatan Fase 9 (Forum Diskusi)
+
+- **Fitur cloud-only (PRD §5.6):** real-time via Firestore, butuh internet.
+  Tidak di-cache Hive (offline-first hanya untuk fitur inti).
+- **Struktur:** `lib/features/discussion/` — domain (`ForumTopic`, `ForumReply`),
+  data (`ForumRepository` Firestore), providers (`StreamProvider.autoDispose`
+  topik & reply), presentation (`ForumScreen` daftar, `TopicDetailScreen` +
+  reply input sticky, `NewTopicScreen` form). Widget `TopicCard` & `ReplyBubble`.
+- **Akses via shortcut** Beranda (bukan tab ke-6) — `SectionHeader "Forum
+  Diskusi"` + `_ShortcutCard` → `ForumScreen`. Sama seperti Materi
+  (UI_DESIGN.md §9.2).
+- **Real-time:** `StreamProvider` (autoDispose) topik (`createdAt` desc) & reply
+  (`createdAt` asc). Topik baru/balasan langsung muncul tanpa refresh.
+- **`replyCount` didenormalisasi** di dokumen topik; di-increment atomik via
+  batch saat tambah reply (rules: field identitas topik tidak boleh berubah).
+- **`firestore.rules` ✅ terdeploy:** forum publik (read) untuk user login;
+  create topik/reply wajib `authorId == uid` + field valid; update topik hanya
+  `replyCount`; hapus dinonaktifkan (belum ada fitur hapus).
+- **`timeAgo()` baru** di `date_labels.dart`: waktu relatif ID ("baru saja",
+  "5 menit lalu", "kemarin", dst) — pure, teruji unit test.
+- **Mode demo:** forum nonaktif (EmptyState "butuh akun").
+- **Unit test ✅:** validasi topik (judul/isi), snippet, & `timeAgo`
+  (`test/forum_test.dart`, +16 test → total 104).
 
 ## Catatan Fase 8 (Progres Belajar)
 
@@ -98,17 +130,28 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 - **Widget test** memakai provider override in-memory (bukan tulis Hive) untuk
   menghindari interaksi Hive + flutter_test FakeAsync.
 
-## 📌 Selanjutnya
+## 🔧 Perbaikan kecil (dari temuan pengujian — selesai)
 
-Auth (email + Google), Edit Profil (lokal + cloud), & Firestore aktif. Lanjutan:
+1. **Logout → login Google tak muncul account picker ✅:** `signOut()` kini juga
+   memanggil `GoogleSignIn().signOut()` agar akun cache terhapus → picker
+   muncul lagi saat login.
+2. **Konfirmasi logout ✅:** dialog "Keluar dari akun?" (helper generik baru
+   `showConfirmDialog` di `app_dialogs.dart`, `isDestructive`) sebelum
+   `signOut()` di tile Keluar.
 
-1. **Fase 9** — Forum Diskusi (Firestore real-time: topik + reply). Firestore
-   sudah siap (DB + rules terdeploy).
-2. **Opsional** — upload foto dari galeri/kamera (butuh `firebase_storage`);
-   saat ini foto via URL.
-3. **Opsional** — hapus file fisik saat materi di-delete (anti-orphan).
+## 📌 Lanjut besok
+
+Hari ini selesai: **Forum Diskusi (Fase 9)** real-time + 2 perbaikan kecil
+(Google account picker & konfirmasi logout). **Semua fase inti PRD (1–10) kini
+selesai.**
+
+Sisa (opsional / pra-rilis):
+1. **Polish (Fase 11)** — sesuaikan UI final dengan Figma, testing per
+   acceptance criteria.
+2. **Hapus file fisik** saat materi di-delete (anti-orphan).
+3. **Forum:** edit/hapus topik & reply (opsional — belum di-PRD).
 4. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
    keystore release sebelum upload Play Store.
 
-State kode: `flutter analyze` 0 issue, 88/88 test lulus, APK release ter-built
-(`build/app/outputs/flutter-apk/app-release.apk`, 56.7MB).
+State kode: `flutter analyze` 0 issue, 104/104 test lulus, APK release ter-built
+(`build/app/outputs/flutter-apk/app-release.apk`, 57.1MB).

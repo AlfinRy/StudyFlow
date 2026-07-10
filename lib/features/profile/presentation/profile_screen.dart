@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../shared_widgets/app_avatar.dart';
 import '../../../shared_widgets/app_dialogs.dart';
 import 'edit_profile_screen.dart';
 import 'notification_settings_screen.dart';
@@ -21,6 +22,14 @@ class ProfileScreen extends ConsumerWidget {
     final photoUrl = user?.photoUrl;
 
     Future<void> logout() async {
+      final ok = await showConfirmDialog(
+        context,
+        title: 'Keluar dari akun?',
+        message: 'Anda perlu masuk lagi untuk mengakses akun Anda.',
+        confirmLabel: 'Keluar',
+        isDestructive: true,
+      );
+      if (!ok || !context.mounted) return;
       await ref.read(authRepositoryProvider).signOut();
     }
 
@@ -30,23 +39,7 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         Row(
           children: [
-            CircleAvatar(
-              radius: 34,
-              backgroundColor: AppColors.accent,
-              backgroundImage: (photoUrl != null && photoUrl.isNotEmpty)
-                  ? NetworkImage(photoUrl)
-                  : null,
-              child: (photoUrl == null || photoUrl.isEmpty)
-                  ? Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    )
-                  : null,
-            ),
+            AppAvatar(name: name, photoUrl: photoUrl, radius: 34),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(

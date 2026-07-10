@@ -42,7 +42,9 @@ class FirebaseAuthRepository implements AuthRepository {
           : (u.displayName ?? ''),
       email: u.email ?? '',
       role: UserRole.fromString(cache['role'] as String?),
-      photoUrl: u.photoURL ?? (cache['photoUrl'] as String?),
+      // Cache-first: pilihan user (termasuk hasil edit foto base64) selalu
+      // diutamakan; baru fallback ke photoURL Firebase (cth. foto Google).
+      photoUrl: (cache['photoUrl'] as String?) ?? u.photoURL,
     );
   }
 
@@ -245,7 +247,9 @@ class FirebaseAuthRepository implements AuthRepository {
         await user.updateDisplayName(cleanName);
       } catch (_) {}
     }
-    if (cleanPhoto != null && cleanPhoto.isNotEmpty) {
+    if (cleanPhoto != null &&
+        cleanPhoto.isNotEmpty &&
+        !cleanPhoto.startsWith('data:')) {
       try {
         await user.updatePhotoURL(cleanPhoto);
       } catch (_) {}
@@ -254,7 +258,16 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> signOut() => _auth.signOut();
+  Future<void> signOut() async {
+    await _auth.signOut();
+    // Bersihkan akun Google yang di-cache agar picker muncul lagi saat login
+    // berikutnya. Tanpa ini, google_sign_in diam-diam memakai akun terakhir.
+    try {
+      await GoogleSignIn().signOut();
+    } catch (_) {
+      // Diabaikan: tidak ada akun Google yang sedang aktif.
+    }
+  }
 }
 
 /// Memetakan kode error Firebase Auth ke pesan dalam Bahasa Indonesia.

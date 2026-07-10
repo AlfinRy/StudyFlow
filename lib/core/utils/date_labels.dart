@@ -78,6 +78,22 @@ TimeOfDay? parseTimeOfDay(String value) {
   return TimeOfDay(hour: minutes ~/ 60, minute: minutes % 60);
 }
 
+/// Waktu relatif dalam Bahasa Indonesia, mis. "baru saja", "5 menit lalu",
+/// "3 jam lalu", "kemarin", "2 hari lalu", atau "15 Okt 2026" (>7 hari).
+/// `now` opsional agar mudah diuji (pure function).
+String timeAgo(DateTime time, {DateTime? now}) {
+  final ref = now ?? DateTime.now();
+  final diff = ref.difference(time);
+  if (diff.isNegative || diff.inSeconds < 45) return 'baru saja';
+  if (diff.inMinutes < 1) return '${diff.inSeconds} detik lalu';
+  if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
+  if (diff.inHours < 24) return '${diff.inHours} jam lalu';
+  final days = diff.inDays;
+  if (days == 1) return 'kemarin';
+  if (days < 7) return '$days hari lalu';
+  return idnFormatDateCompact(time);
+}
+
 /// Konversi "HH:mm" → menit sejak tengah malam. Null jika format invalid.
 /// Dipindahkan ke sini agar bisa dipakai bersama oleh form & test.
 int? scheduleTimeToMinutes(String hhmm) {

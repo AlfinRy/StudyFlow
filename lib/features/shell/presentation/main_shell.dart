@@ -10,6 +10,7 @@ import '../../../shared_widgets/app_logo.dart';
 import '../../../shared_widgets/study_flow_top_bar.dart';
 import '../../home/presentation/home_screen.dart';
 import '../../materials/presentation/materials_screen.dart';
+import '../../discussion/presentation/forum_screen.dart';
 import '../../tasks/task_providers.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../progress/presentation/progress_screen.dart';
@@ -64,7 +65,7 @@ class MainShell extends ConsumerWidget {
   }
 
   /// Drawer menu (UI_DESIGN.md §1.3 "hamburger menu"). Berisi tujuan
-  /// sekunder: Materi, Forum (segera), dan Tentang. Bottom nav tetap untuk
+  /// sekunder: Materi, Forum, dan Tentang. Bottom nav tetap untuk
   /// 5 tab utama.
   Drawer _buildDrawer(BuildContext context, WidgetRef ref) {
     void closeAnd(VoidCallback action) {
@@ -107,9 +108,11 @@ class MainShell extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.forum_outlined),
             title: const Text('Forum Diskusi'),
-            subtitle: const Text('Segera hadir'),
-            onTap: () =>
-                closeAnd(() => showComingSoon(context, 'Forum Diskusi')),
+            onTap: () => closeAnd(
+              () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const ForumScreen()),
+              ),
+            ),
           ),
           const Divider(),
           ListTile(

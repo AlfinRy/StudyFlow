@@ -45,6 +45,8 @@ class FirebaseAuthRepository implements AuthRepository {
       // Cache-first: pilihan user (termasuk hasil edit foto base64) selalu
       // diutamakan; baru fallback ke photoURL Firebase (cth. foto Google).
       photoUrl: (cache['photoUrl'] as String?) ?? u.photoURL,
+      // Status verifikasi email langsung dari Firebase.
+      isEmailVerified: u.emailVerified,
     );
   }
 
@@ -141,6 +143,10 @@ class FirebaseAuthRepository implements AuthRepository {
       await user.updateDisplayName(name.trim());
       await _saveProfile(user.uid, name: name.trim(), role: role);
       await _writeFirestoreProfile(user, name: name.trim(), role: role);
+      // ⚠️ KEAMANAN: kirim email verifikasi segera setelah daftar. Tanpa ini,
+      // siapa pun bisa mendaftar memakai email milik orang lain. User belum
+      // verifikasi tidak bisa mengakses app (gate di app.dart).
+      await _sendVerificationEmail(user);
       final u = _map(user);
       if (u == null) throw Exception('Pendaftaran gagal. Coba lagi.');
       _emit(user);
@@ -268,6 +274,44 @@ class FirebaseAuthRepository implements AuthRepository {
       // Diabaikan: tidak ada akun Google yang sedang aktif.
     }
   }
+
+  /// Helper kirim email verifikasi. No-op bila sudah diverifikasi.
+  Future<void> _sendVerificationEmail(User user) async {
+    if (user.emailVerified) return;
+    try {
+      await user.sendEmailVerification();
+    } catch (_) {
+      // Offline / rate-limit bawaan Firebase — tetap lanjutkan, user bisa
+      // meminta ulang dari layar verifikasi.
+    }
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('Belum login.');
+    await user.sendEmailVerification();
+  }
+
+  @override
+  Future<AppUser?> reloadCurrentUser() async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+    await user.reload();
+    // Ambil instance terbaru — status emailVerified baru terlihat di sini.
+    final fresh = _auth.currentUser;
+    _emit(fresh);
+    return _map(fresh);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      throw Exception(authErrorMessage(e));
+    }
+  }
 }
 
 /// Memetakan kode error Firebase Auth ke pesan dalam Bahasa Indonesia.
@@ -281,6 +325,8 @@ String authErrorMessage(FirebaseAuthException e) {
     case 'wrong-password':
     case 'invalid-credential':
       return 'Email atau kata sandi salah.';
+    case 'invalid-action-code':
+      return 'Tautan tidak valid atau sudah kedaluwarsa.';
     case 'email-already-in-use':
       return 'Email sudah terdaftar.';
     case 'weak-password':

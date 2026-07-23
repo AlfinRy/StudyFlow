@@ -16,6 +16,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 10a. Materi Pembelajaran | UI list (cari + filter kategori), form tambah/edit, hapus, buka file. Diakses via shortcut Beranda (bukan tab ke-6). *Upload file fisik (PDF/Gambar) via file picker ✅; Tautan/Catatan tetap input teks.* | ✅ Selesai |
 | 10b. Profil | Edit profil (nama/role/foto). Foto upload PNG/JPG (base64 di Firestore) + URL. Cloud sync aktif. | ✅ Selesai |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
+| 12. Hardening Keamanan Auth | Verifikasi email + rate-limit + password policy + forgot password + firestore rules dikeraskan | ✅ Selesai |
 
 ## Catatan konfigurasi
 
@@ -139,19 +140,96 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
    `showConfirmDialog` di `app_dialogs.dart`, `isDestructive`) sebelum
    `signOut()` di tile Keluar.
 
+## 🚀 Pra-rilis Play Store (sesi ini)
+
+`applicationId` lama `com.example.study_flow` ditolak Play Console (reserved)
+→ diganti permanen menjadi **`com.studyflow.umth`**.
+
+- **Rename**: `applicationId` & `namespace` → `com.studyflow.umth` (build.gradle.kts);
+  `MainActivity.kt` dipindah ke package baru.
+- **Firebase**: app Android baru terdaftar (`com.studyflow.umth`, App ID
+  `1:270862585863:android:c93e86eb54e00fe3269aa2`) di project `studyflow-umht`.
+  SHA release + debug (SHA-1 & SHA-256) terdaftar via CLI. `google-services.json`
+  & `firebase_options.dart` diperbarui. **User & data lama tetap** (proyek sama).
+- **Keystore release** dibuat (`android/app/upload-keystore.jks`, alias `upload`);
+  password tersimpan di `android/key.properties` (di-gitignore).
+  ⚠️ **WAJIB backup `.jks` + `key.properties` selamanya** — tanpa itu app tak bisa
+  di-update di Play Store.
+- **Signing config** aktif → build release (apk & aab) ditandatangani keystore
+  release (bukan debug lagi).
+- **AAB ter-built** `build/app/outputs/bundle/release/app-release.aab` (46.7MB)
+  — format wajib Play Store.
+
+⚠️ **Pasca-upload (penting utk Google Sign-In):** Play App Signing membuat Play
+menandatangani APK terdistribusi pakai **kunci Google** (bukan upload key).
+SHA-1 kunci tersebut WAJIB ditambahkan ke Firebase (app `com.studyflow.umth`)
++ unduh ulang `google-services.json` + rebuild, agar login Google jalan di
+instalan Play Store. Email/password tidak terpengaruh.
+
+## 🔒 Hardening Keamanan Auth (Fase 12)
+
+**Masalah lama:** Firebase Auth Email/Password tidak memverifikasi kepemilikan
+email secara default → siapa pun bisa mendaftar memakai email milik orang
+lain lalu langsung login (celah impersonasi & celah abuse/DDoS akun).
+
+**Perbaikan yang diterapkan:**
+
+1. **Verifikasi email wajib ✅** — `AppUser.isEmailVerified` baru;
+   `FirebaseAuthRepository` mengirim `sendEmailVerification()` otomatis setelah
+   register. **Gate akses** baru di `app.dart` (provider `canAccessAppProvider`):
+   user login tapi belum verifikasi → dialihkan ke `VerifyEmailScreen` (tidak
+   bisa masuk MainShell). Layar itu auto-reload tiap 10s + saat app ke
+   foreground, ada tombol "kirim ulang" (rate-limited) & "keluar". Mode demo
+   tetap lolos (tidak punya sistem email).
+2. **Rate-limit app-level ✅** (`lib/core/security/rate_limiter.dart`) — pure
+   logic + wrapper Hive, tahan restart. Membatasi brute-force: login 5/menit,
+   register 5/menit, kirim ulang verifikasi & reset password 3/jam. Menggabung
+   dengan proteksi bawaan Firebase (`too-many-requests`).
+3. **Password policy ✅** (`lib/core/security/auth_validators.dart`) — min 8
+   karakter + wajib huruf & angka, skor kekuatan 0–4, indikator visual
+   real-time (`PasswordStrengthIndicator`) di form daftar.
+4. **Lupa kata sandi ✅** — tombol "Lupa password?" (sebelumnya mati) kini
+   membuka `ForgotPasswordScreen` → `sendPasswordResetEmail` Firebase.
+5. **Firestore rules dikeraskan ✅ (terdeploy)** — field `uid`/`email` profil
+   immutable (anti role/email spoofing), `role` divalidasi enum, judul/isi
+   forum dibatasi panjang (anti spam: topik ≤120/10000, reply ≤5000).
+6. **Validator berbagi pakai ✅** — regex email & password dipusatkan, hapus
+   duplikasi antar login/register.
+
+**Test:** +21 unit test baru (`rate_limiter_test.dart`, `auth_validators_test.dart`)
++ 1 widget test gate verifikasi → **total 125/125 lulus**, `flutter analyze` 0 issue.
+
+⚠️ **Yang perlu dicek di Firebase Console (manual):**
+- *Authentication → Settings → Email enumeration protection* = **ON** (anti
+  probing email terdaftar).
+- (Opsional) *Email/Password → Email link* untuk verifikasi tanpa password.
+- App-level gate sudah menutup celah walau setingan konsol default; tapi
+  mengaktifkan *Require email verification* di konsol memberi lapisan ekstra.
+
+## QA cepat fitur lain (Fase 12)
+
+- **Forum (cloud):** konten dirender sebagai teks (bukan HTML) → aman dari XSS.
+  `authorName`/`authorPhoto` dikirim client (denormalisasi) — *spoofing nama
+  tampilan* secara teknis mungkin, tapi low-severity (display-only) untuk
+  lingkup akademik. Bisa dikeraskan nanti dengan Cloud Function validasi.
+- **Materi (lokal):** masih ada *orphan file* (file fisik di
+  `<app docs>/materials/` tak terhapus saat materi di-delete) — leak storage,
+  bukan celah keamanan. Didaftar di "Sisa".
+
 ## 📌 Lanjut besok
 
 Hari ini selesai: **Forum Diskusi (Fase 9)** real-time + 2 perbaikan kecil
 (Google account picker & konfirmasi logout). **Semua fase inti PRD (1–10) kini
 selesai.**
 
-Sisa (opsional / pra-rilis):
-1. **Polish (Fase 11)** — sesuaikan UI final dengan Figma, testing per
-   acceptance criteria.
-2. **Hapus file fisik** saat materi di-delete (anti-orphan).
-3. **Forum:** edit/hapus topik & reply (opsional — belum di-PRD).
-4. **Pra-rilis** — ganti `applicationId` (`com.example.study_flow`) & buat
-   keystore release sebelum upload Play Store.
+Sisa (opsional / lanjutan):
+1. **Upload Play Store** — `app-release.aab` sudah siap; tinggal upload + isi
+   store listing + submit review (1–3 hari). Lihat §Pasca-upload utk SHA Google.
+2. **Polish (Fase 11)** — sesuaikan UI final dengan Figma, testing per
+   acceptance criteria (lalu naikkan versi & upload update di Play Store).
+3. **Hapus file fisik** saat materi di-delete (anti-orphan).
+4. **Forum:** edit/hapus topik & reply (opsional — belum di-PRD).
 
-State kode: `flutter analyze` 0 issue, 104/104 test lulus, APK release ter-built
-(`build/app/outputs/flutter-apk/app-release.apk`, 57.1MB).
+State kode: `flutter analyze` 0 issue, 104/104 test lulus, AAB release ter-built
+(`build/app/outputs/bundle/release/app-release.aab`, 46.7MB; applicationId
+`com.studyflow.umht`, signed release keystore).

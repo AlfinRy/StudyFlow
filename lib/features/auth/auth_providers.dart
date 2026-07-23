@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
+import '../../../core/security/rate_limiter.dart';
 import '../../../core/services/firebase_service.dart';
 import '../../../core/services/hive_service.dart';
 import 'data/auth_repository.dart';
@@ -26,6 +27,21 @@ final currentUserProvider =
 
 final isDemoModeProvider =
     Provider<bool>((ref) => ref.watch(authRepositoryProvider).isDemoMode);
+
+/// Rate-limiter app-level (Hive). Membatasi brute-force login, pendaftaran
+/// massal, dan spam email verifikasi/reset sebelum memanggil Firebase.
+final rateLimiterProvider =
+    Provider<RateLimiter>((ref) => RateLimiter(HiveService.instance.settings));
+
+/// Provider gate akses: apakah user boleh masuk MainShell.
+/// `true` bila belum login, mode demo, atau email sudah terverifikasi.
+/// `false` bila user login tapi email belum terverifikasi (→ VerifyEmailScreen).
+final canAccessAppProvider = Provider<bool>((ref) {
+  final user = ref.watch(currentUserProvider);
+  if (user == null) return true;
+  if (ref.watch(isDemoModeProvider)) return true;
+  return user.isEmailVerified;
+});
 
 /// Apakah onboarding sudah selesai (first-run gate).
 final onboardingCompleteProvider =

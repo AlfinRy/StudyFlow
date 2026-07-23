@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/security/auth_validators.dart';
+import '../../../core/security/rate_limiter.dart';
 import '../../../shared_widgets/app_logo.dart';
 import '../auth_providers.dart';
 import '../domain/user_role.dart';
 import 'widgets/auth_text_field.dart';
+import 'widgets/password_strength_indicator.dart';
 import 'widgets/role_selector.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -25,6 +28,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   UserRole? _role;
   bool _agree = false;
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild agar indikator kekuatan password update saat user mengetik.
+    _password.addListener(() => setState(() {}));
+  }
 
   @override
   void dispose() {
@@ -46,6 +56,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
+    // ⚠️ Anti spam akun: batasi pendaftaran di level app.
+    final limiter = ref.read(rateLimiterProvider);
+    final result = limiter.tryConsume(RateLimitedAction.register);
+    if (!result.allowed) {
+      final secs = result.retryAfter.inSeconds;
+      _showError(secs > 60
+          ? 'Terlalu banyak percobaan. Coba lagi dalam ${secs ~/ 60} menit.'
+          : 'Terlalu banyak percobaan. Coba lagi dalam $secs detik.');
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       await ref.read(authRepositoryProvider).register(
@@ -54,7 +75,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             password: _password.text,
             role: _role!,
           );
-      // authStateProvider memancarkan user → root berganti ke MainShell.
+      limiter.reset(RateLimitedAction.register);
+      // authStateProvider memancarkan user. Mode Firebase → status belum
+      // verifikasi → app.dart mengarahkan ke VerifyEmailScreen.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                'Akun dibuat! Cek email Anda untuk verifikasi sebelum masuk.'),
+          ),
+        );
+      }
     } catch (e) {
       _showError(e.toString());
     } finally {
@@ -99,7 +130,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: _validateEmail,
+                  validator: validateEmail,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 const Align(
@@ -124,11 +155,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   obscure: true,
                   textInputAction: TextInputAction.next,
                   validator: (v) {
-                    if (v == null || v.isEmpty) return 'Kata sandi wajib diisi.';
-                    if (v.length < 6) return 'Min. 6 karakter.';
-                    return null;
+                    final s = PasswordStrength.evaluate(v ?? '');
+                    return s.valid ? null : s.error;
                   },
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                if (_password.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: PasswordStrengthIndicator(
+                        strength: PasswordStrength.evaluate(_password.text)),
+                  ),
                 const SizedBox(height: AppSpacing.md),
                 AuthTextField(
                   controller: _confirm,
@@ -136,9 +173,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   icon: Icons.lock_outline,
                   obscure: true,
                   textInputAction: TextInputAction.done,
-                  validator: (v) => v != _password.text
-                      ? 'Konfirmasi sandi tidak cocok.'
-                      : null,
+                  validator: (v) {
+                    final s = PasswordStrength.evaluateConfirm(v,
+                        match: _password.text);
+                    return s.valid ? null : s.error;
+                  },
                 ),
                 const SizedBox(height: AppSpacing.md),
                 CheckboxListTile(
@@ -208,14 +247,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
       ),
     );
-  }
-
-  String? _validateEmail(String? v) {
-    final s = v?.trim() ?? '';
-    if (s.isEmpty) return 'Email wajib diisi.';
-    final re = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
-    if (!re.hasMatch(s)) return 'Format email tidak valid.';
-    return null;
   }
 }
 

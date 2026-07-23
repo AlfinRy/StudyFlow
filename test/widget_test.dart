@@ -44,6 +44,12 @@ class _FakeAuthRepo implements AuthRepository {
   @override
   Future<void> updateProfile({String? name, UserRole? role, String? photoUrl}) async {}
   @override
+  Future<void> sendEmailVerification() async {}
+  @override
+  Future<AppUser?> reloadCurrentUser() async => _user;
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {}
+  @override
   Future<void> signOut() async {}
 }
 
@@ -58,8 +64,21 @@ class _OnboardingFalse extends OnboardingNotifier {
   bool build() => false;
 }
 
-const _fakeUser =
-    AppUser(uid: 'u1', name: 'Andi', email: 'a@b.com', role: UserRole.mahasiswa);
+const _fakeUser = AppUser(
+  uid: 'u1',
+  name: 'Andi',
+  email: 'a@b.com',
+  role: UserRole.mahasiswa,
+  isEmailVerified: true,
+);
+
+const _fakeUserUnverified = AppUser(
+  uid: 'u2',
+  name: 'Budi',
+  email: 'b@c.com',
+  role: UserRole.mahasiswa,
+  // isEmailVerified default false.
+);
 
 Future<void> _pump(WidgetTester tester, List<Override> overrides) async {
   await tester.pumpWidget(
@@ -106,5 +125,16 @@ void main() {
     ]);
     expect(find.text('Beranda'), findsWidgets);
     expect(find.textContaining('Halo'), findsOneWidget);
+  });
+
+  testWidgets('verify email tampil saat login tapi belum verifikasi',
+      (tester) async {
+    // Gate keamanan: user belum verifikasi tidak boleh masuk MainShell.
+    await _pump(tester, [
+      authRepositoryProvider.overrideWithValue(_FakeAuthRepo(_fakeUserUnverified)),
+      onboardingCompleteProvider.overrideWith(() => _OnboardingTrue()),
+    ]);
+    expect(find.text('Verifikasi Email'), findsOneWidget);
+    expect(find.text('Beranda'), findsNothing);
   });
 }

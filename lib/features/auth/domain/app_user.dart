@@ -8,6 +8,7 @@ class AppUser {
     required this.email,
     this.role,
     this.photoUrl,
+    this.isEmailVerified = false,
   });
 
   final String uid;
@@ -16,10 +17,16 @@ class AppUser {
   final UserRole? role;
   final String? photoUrl;
 
+  /// Apakah email sudah diverifikasi (Firebase `emailVerified`). Mode demo
+  /// selalu `true` (tidak ada sistem email). Dipakai sebagai gate akses app
+  /// — user belum verifikasi tidak boleh masuk MainShell.
+  final bool isEmailVerified;
+
   AppUser copyWith({
     String? name,
     UserRole? role,
     String? photoUrl,
+    bool? isEmailVerified,
   }) {
     return AppUser(
       uid: uid,
@@ -27,6 +34,7 @@ class AppUser {
       email: email,
       role: role ?? this.role,
       photoUrl: photoUrl ?? this.photoUrl,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
   }
 }

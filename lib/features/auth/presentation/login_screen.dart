@@ -3,8 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/security/auth_validators.dart';
+import '../../../core/security/rate_limiter.dart';
 import '../../../shared_widgets/app_logo.dart';
 import '../auth_providers.dart';
+import 'forgot_password_screen.dart';
 import 'register_screen.dart';
 import 'widgets/auth_text_field.dart';
 
@@ -33,13 +36,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    // ⚠️ Anti brute-force: batasi percobaan login di level app sebelum
+    // memanggil Firebase. Firebase juga punya proteksi `too-many-requests`
+    // bawaan, tapi ini memberi feedback cepat ke user.
+    final limiter = ref.read(rateLimiterProvider);
+    final result = limiter.tryConsume(RateLimitedAction.login);
+    if (!result.allowed) {
+      final secs = result.retryAfter.inSeconds;
+      _showError(secs > 60
+          ? 'Terlalu banyak percobaan. Coba lagi dalam ${secs ~/ 60} menit.'
+          : 'Terlalu banyak percobaan. Coba lagi dalam $secs detik.');
+      return;
+    }
+
     setState(() => _loading = true);
     try {
       await ref.read(authRepositoryProvider).login(
             email: _email.text,
             password: _password.text,
           );
-      // authStateProvider memancarkan user → root berganti ke MainShell.
+      // Login berhasil → reset slot rate-limit.
+      limiter.reset(RateLimitedAction.login);
+      // authStateProvider memancarkan user → root berganti ke MainShell
+      // (atau VerifyEmailScreen bila belum verifikasi).
     } catch (e) {
       _showError(e.toString());
     } finally {
@@ -91,7 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: _validateEmail,
+                  validator: validateEmail,
                 ),
                 const SizedBox(height: AppSpacing.md),
                 AuthTextField(
@@ -109,7 +129,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: _loading
+                        ? null
+                        : () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (_) =>
+                                      const ForgotPasswordScreen()),
+                            ),
                     child: const Text('Lupa password?'),
                   ),
                 ),
@@ -178,14 +204,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
-  }
-
-  String? _validateEmail(String? v) {
-    final s = v?.trim() ?? '';
-    if (s.isEmpty) return 'Email wajib diisi.';
-    final re = RegExp(r'^[\w.+-]+@[\w-]+\.[\w.-]+$');
-    if (!re.hasMatch(s)) return 'Format email tidak valid.';
-    return null;
   }
 }
 

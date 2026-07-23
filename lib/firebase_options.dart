@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAn6Fh-WJIn2mjM1vbFnqPwv_CnnLWl4IY',
-    appId: '1:270862585863:android:9f81b270cb227459269aa2',
+    appId: '1:270862585863:android:c93e86eb54e00fe3269aa2',
     messagingSenderId: '270862585863',
     projectId: 'studyflow-umht',
     storageBucket: 'studyflow-umht.firebasestorage.app',

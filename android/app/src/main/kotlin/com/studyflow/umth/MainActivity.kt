@@ -1,4 +1,4 @@
-package com.example.study_flow
+package com.studyflow.umth
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -31,5 +31,16 @@ abstract class AuthRepository {
   /// `users/{uid}` + cache lokal; mode demo hanya cache lokal.
   Future<void> updateProfile({String? name, UserRole? role, String? photoUrl});
 
+  /// Kirim email verifikasi ke pengguna saat ini (mode Firebase). Mode demo
+  /// no-op. Melempar Exception bila belum login.
+  Future<void> sendEmailVerification();
+
+  /// Muat ulang data user Firebase (agar status verifikasi email terbaru
+  /// tercermin) lalu pancarkan update. Melempar Exception bila belum login.
+  Future<AppUser?> reloadCurrentUser();
+
+  /// Kirim email reset password ke [email] (mode Firebase). Mode demo no-op.
+  Future<void> sendPasswordResetEmail(String email);
+
   Future<void> signOut();
 }

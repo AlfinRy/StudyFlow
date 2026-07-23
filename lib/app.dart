@@ -6,6 +6,7 @@ import 'features/auth/auth_providers.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/onboarding_screen.dart';
 import 'features/auth/presentation/splash_screen.dart';
+import 'features/auth/presentation/verify_email_screen.dart';
 import 'features/shell/presentation/main_shell.dart';
 
 class StudyFlowApp extends ConsumerWidget {
@@ -16,14 +17,20 @@ class StudyFlowApp extends ConsumerWidget {
     final onboardingDone = ref.watch(onboardingCompleteProvider);
     final authAsync = ref.watch(authStateProvider);
     final isDemo = ref.watch(isDemoModeProvider);
+    final user = authAsync.valueOrNull;
+    final canAccess = ref.watch(canAccessAppProvider);
 
     Widget home;
     if (!onboardingDone) {
       home = const OnboardingScreen();
     } else if (authAsync.isLoading) {
       home = const SplashScreen();
-    } else if (authAsync.valueOrNull == null) {
+    } else if (user == null) {
       home = LoginScreen(isDemoMode: isDemo);
+    } else if (!canAccess) {
+      // Gate keamanan: user login tapi email belum terverifikasi → blokir
+      // akses MainStream sampai memverifikasi email (anti penyalahgunaan email).
+      home = const VerifyEmailScreen();
     } else {
       home = const MainShell();
     }

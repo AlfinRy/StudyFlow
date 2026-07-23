@@ -41,6 +41,8 @@ class LocalAuthRepository implements AuthRepository {
       email: email,
       role: UserRole.fromString(data['role'] as String?),
       photoUrl: data['photoUrl'] as String?,
+      // Mode demo tidak punya sistem email → selalu dianggap terverifikasi.
+      isEmailVerified: true,
     );
   }
 
@@ -105,6 +107,26 @@ class LocalAuthRepository implements AuthRepository {
   Future<void> signOut() async {
     await _box.delete(_kSession);
     _emit();
+  }
+
+  // --- Metode verifikasi email & reset password: no-op di mode demo ---
+  // Mode demo tidak punya server email, jadi semuanya dianggap aman/terverifikasi.
+
+  @override
+  Future<void> sendEmailVerification() async {
+    // Tidak ada yang dilakukan — semua user demo otomatis terverifikasi.
+  }
+
+  @override
+  Future<AppUser?> reloadCurrentUser() async {
+    _emit();
+    return _fromSession();
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    // Mode demo: reset tidak didukung (data lokal). User bisa hapus & daftar ulang.
+    throw Exception('Reset kata sandi tidak tersedia di mode demo.');
   }
 
   @override

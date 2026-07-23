@@ -75,6 +75,8 @@ class TaskCard extends StatelessWidget {
                       ),
                       if ((task.category ?? '').isNotEmpty)
                         _CategoryChip(category: task.category!),
+                      if (task.recurrence.isActive)
+                        _RecurrenceChip(label: task.recurrence.label),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -226,6 +228,39 @@ class _CategoryChip extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
         ),
+      ),
+    );
+  }
+}
+
+class _RecurrenceChip extends StatelessWidget {
+  const _RecurrenceChip({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color(0x143B82F6), // accent 8% tint
+        borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.repeat_rounded, size: 11, color: AppColors.accent),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              color: AppColors.accent,
+            ),
+          ),
+        ],
       ),
     );
   }

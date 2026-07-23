@@ -1,3 +1,4 @@
+import 'recurrence.dart';
 import 'task_priority.dart';
 
 /// Satu entri tugas (PRD §4.2 box `tasks`).
@@ -21,6 +22,7 @@ class Task {
     this.isDone = false,
     this.reminderEnabled = false,
     this.priority = TaskPriority.medium,
+    this.recurrence = Recurrence.none,
     this.isSynced = false,
   });
 
@@ -33,6 +35,7 @@ class Task {
   final bool isDone;
   final bool reminderEnabled;
   final TaskPriority priority;
+  final Recurrence recurrence; // pola pengulangan (ekstensi Tier 2)
   final bool isSynced;
 
   Map<String, dynamic> toMap() => {
@@ -45,6 +48,7 @@ class Task {
         'isDone': isDone,
         'reminderEnabled': reminderEnabled,
         'priority': priority.name,
+        'recurrence': recurrence.name,
         'isSynced': isSynced,
       };
 
@@ -60,6 +64,7 @@ class Task {
         isDone: (map['isDone'] as bool?) ?? false,
         reminderEnabled: (map['reminderEnabled'] as bool?) ?? false,
         priority: TaskPriority.fromString(map['priority'] as String?),
+        recurrence: Recurrence.fromName(map['recurrence'] as String?),
         isSynced: (map['isSynced'] as bool?) ?? false,
       );
 
@@ -73,6 +78,7 @@ class Task {
     bool? isDone,
     bool? reminderEnabled,
     TaskPriority? priority,
+    Recurrence? recurrence,
     bool? isSynced,
   }) {
     return Task(
@@ -91,6 +97,7 @@ class Task {
       isDone: isDone ?? this.isDone,
       reminderEnabled: reminderEnabled ?? this.reminderEnabled,
       priority: priority ?? this.priority,
+      recurrence: recurrence ?? this.recurrence,
       isSynced: isSynced ?? this.isSynced,
     );
   }
@@ -109,12 +116,13 @@ class Task {
           isDone == other.isDone &&
           reminderEnabled == other.reminderEnabled &&
           priority == other.priority &&
+          recurrence == other.recurrence &&
           isSynced == other.isSynced;
 
   @override
   int get hashCode => Object.hash(
         id, title, description, category, dueDate, completedAt, isDone,
-        reminderEnabled, priority, isSynced);
+        reminderEnabled, priority, recurrence, isSynced);
 }
 
 const Object _sentinel = Object();

@@ -55,6 +55,13 @@ class TaskListNotifier extends Notifier<List<Task>> {
       await _notifications.cancelForTask(updated.id);
       // Rayakan penyelesaian tugas (confetti + haptic).
       celebrate(ref, CelebrationKind.taskDone);
+      // Tugas berulang → buat instance berikutnya & jadwalkan pengingatnya.
+      // add() mempersist + menjadwalkan notifikasi + me-refresh state.
+      final next = _repo.generateNextOccurrence(updated);
+      if (next != null) {
+        await add(next);
+        return;
+      }
     } else {
       await _notifications.scheduleForTask(updated);
     }

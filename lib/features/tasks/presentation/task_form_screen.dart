@@ -5,6 +5,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
+import '../domain/recurrence.dart';
 import '../domain/task.dart';
 import '../domain/task_priority.dart';
 import '../task_providers.dart';
@@ -33,6 +34,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   late TimeOfDay _dueTime;
   late TaskPriority _priority;
   late String? _category;
+  late Recurrence _recurrence;
   late bool _reminder;
   bool _saving = false;
 
@@ -50,6 +52,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         : const TimeOfDay(hour: 23, minute: 59);
     _priority = t?.priority ?? TaskPriority.medium;
     _category = t?.category;
+    _recurrence = t?.recurrence ?? Recurrence.none;
     _reminder = t?.reminderEnabled ?? false;
   }
 
@@ -111,6 +114,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         dueDate: _combinedDue,
         priority: _priority,
         category: _category,
+        recurrence: _recurrence,
         reminderEnabled: _reminder,
       ));
     } else {
@@ -121,6 +125,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         dueDate: _combinedDue,
         priority: _priority,
         category: _category,
+        recurrence: _recurrence,
         reminderEnabled: _reminder,
       ));
     }
@@ -244,6 +249,13 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Pengulangan (recurring task)
+            _RecurrenceDropdown(
+              value: _recurrence,
+              onChanged: (v) => setState(() => _recurrence = v),
             ),
             const SizedBox(height: AppSpacing.lg),
 
@@ -394,6 +406,31 @@ class _PriorityDropdown extends StatelessWidget {
       ),
       items: TaskPriority.values
           .map((p) => DropdownMenuItem(value: p, child: Text(p.label)))
+          .toList(),
+      onChanged: (v) {
+        if (v != null) onChanged(v);
+      },
+    );
+  }
+}
+
+class _RecurrenceDropdown extends StatelessWidget {
+  const _RecurrenceDropdown({required this.value, required this.onChanged});
+  final Recurrence value;
+  final ValueChanged<Recurrence> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<Recurrence>(
+      initialValue: value,
+      isExpanded: true,
+      decoration: const InputDecoration(
+        labelText: 'Pengulangan',
+        prefixIcon: Icon(Icons.repeat_rounded),
+        helperText: 'Tugas berulang otomatis dibuat ulang saat diselesaikan.',
+      ),
+      items: Recurrence.values
+          .map((r) => DropdownMenuItem(value: r, child: Text(r.label)))
           .toList(),
       onChanged: (v) {
         if (v != null) onChanged(v);

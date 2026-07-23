@@ -18,6 +18,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
 | 12. Hardening Keamanan Auth | Verifikasi email + rate-limit + password policy + forgot password + firestore rules dikeraskan | ✅ Selesai |
 | 13. Fitur Engagement | Pomodoro/Focus Timer, Confetti+haptic, Leaderboard mingguan, Dark Mode | ✅ Selesai |
+| 14. Tugas Berulang | Recurring tasks (none/daily/weekly/biweekly/monthly); auto-generate instance berikutnya saat selesai | ✅ Selesai |
 
 ## Catatan konfigurasi
 
@@ -263,18 +264,44 @@ Dependency baru: `confetti`.
 
 ## 📌 Lanjut besok
 
-Hari ini selesai: **Forum Diskusi (Fase 9)** real-time + 2 perbaikan kecil
-(Google account picker & konfirmasi logout). **Semua fase inti PRD (1–10) kini
-selesai.**
+### Sudah selesai (ringkasan mutakhir)
+- **Semua fase inti PRD (1–10)** selesai.
+- **Fase 12 — Hardening keamanan:** verifikasi email wajib (gate app),
+  rate limiting, password policy, lupa password, Firestore rules dikeraskan
+  & dideploy.
+- **Fase 13 — Fitur engagement:** ⭐ Pomodoro/Focus Timer, 🎉 Confetti+haptic,
+  🏆 Leaderboard mingguan (cloud, opt-in), 🌙 Dark Mode.
+- **Fase 14 — Tugas berulang:** enum `Recurrence` (none/daily/weekly/biweekly/
+  monthly). Saat tugas berulang diselesaikan, instance berikutnya dibuat
+  otomatis (deadline maju + pengingat dijadwalkan ulang). Dropdown di form +
+  badge di kartu tugas.
+- **Perbaikan:** UX Google sign-in (feedback + logging saat gagal) + audit
+  secret (`key.properties` & `upload-keystore.jks` kini di-gitignore, tak
+  pernah masuk history git).
 
-Sisa (opsional / lanjutan):
-1. **Upload Play Store** — `app-release.aab` sudah siap; tinggal upload + isi
-   store listing + submit review (1–3 hari). Lihat §Pasca-upload utk SHA Google.
-2. **Polish (Fase 11)** — sesuaikan UI final dengan Figma, testing per
-   acceptance criteria (lalu naikkan versi & upload update di Play Store).
+State kode: `flutter analyze` **0 issue**, **152/152 test lulus**.
+
+### Roadmap fitur lanjutan (dikerjakan BERTAHAP, 1 fitur per commit)
+Sumber: `documentation/FEATURE_ROADMAP.md`. Selesai 5/12. Sisa kandidat:
+
+| # | Fitur | Tier | Effort |
+|---|-------|------|--------|
+| 4 | Widget layar utama Android (AppWidget) | 2 | Tinggi (native Kotlin) |
+| 5 | Impor Kalender (.ics) | 2 | Sedang |
+| 8 | Onboarding personalisasi | 3 | Sedang |
+| 9 | Streak freeze & reward harian | 3 | Sedang |
+| 10 | Pencarian global + tag materi | 3 | Sedang |
+| 11 | Grup belajar / Jadwal bersama | 4 | Tinggi |
+| 12 | Bagikan pencapaian (share milestone) | 4 | Rendah–sedang |
+
+Saran urutan berikutnya (effort rendah × dampak tinggi): **#9 Streak freeze
+& reward** (fondasi streak sudah ada) → **#12 Bagikan pencapaian** (viral loop,
+`share_plus`).
+
+### Sisa pekerjaan non-fitur
+1. **Polish (Fase 11)** — sesuaikan UI final dengan `UI_DESIGN.md`/Figma,
+   testing per acceptance criteria.
+2. **Upload Play Store** — AAB release ter-built; tinggal upload + store listing.
 3. **Hapus file fisik** saat materi di-delete (anti-orphan).
-4. **Forum:** edit/hapus topik & reply (opsional — belum di-PRD).
-
-State kode: `flutter analyze` 0 issue, 104/104 test lulus, AAB release ter-built
-(`build/app/outputs/bundle/release/app-release.aab`, 46.7MB; applicationId
-`com.studyflow.umht`, signed release keystore).
+4. **Forum:** edit/hapus topik & reply (opsional, belum di-PRD).
+5. **Ganti password keystore** sebelum produksi (saat ini pakai contoh).

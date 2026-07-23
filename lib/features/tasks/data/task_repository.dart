@@ -46,4 +46,22 @@ class TaskRepository {
     await _box.put(updated.id, updated.toMap());
     return updated;
   }
+
+  /// Buat instance berikutnya untuk tugas berulang yang baru diselesaikan
+  /// ([completed]). Id baru, belum selesai, `completedAt` null, deadline maju
+  /// sesuai `completed.recurrence`. **Tidak dipersist** — pemanggil (notifier)
+  /// yang menyimpannya via [add] agar notifikasi ikut dijadwalkan.
+  ///
+  /// Prekondisi: `completed.recurrence.isActive`. Mengembalikan null bila pola
+  /// pengulangan tidak aktif.
+  Task? generateNextOccurrence(Task completed) {
+    if (!completed.recurrence.isActive) return null;
+    return completed.copyWith(
+      id: _uuid.v4(),
+      isDone: false,
+      completedAt: null,
+      dueDate: completed.recurrence.nextDueDate(completed.dueDate),
+      isSynced: false,
+    );
+  }
 }

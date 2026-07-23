@@ -42,9 +42,14 @@ write untuk reset mingguan — alternatif: kalkulasi client-side dari `progress`
 
 ## 🥈 Tier 2 — Produktivitas dalam (mengurangi gesekan, naikkan stickiness)
 
-### 3. Tugas berulang (Recurring Tasks)
+### 3. Tugas berulang (Recurring Tasks) ✅
 "Ulang setiap Senin", "tiap 2 minggu". Mengurangi input manual rutin.
 **Effort:** rendah–sedang (field `recurrence` di model Task Hive).
+**Status:** ✅ Selesai (Fase 14). Enum `Recurrence` (none/daily/weekly/
+biweekly/monthly) + logika `nextDueDate`. Saat tugas berulang diselesaikan,
+instance berikutnya otomatis dibuat (deadline maju, pengingat dijadwalkan
+ulang) seperti Todoist; instance selesai dipertahankan agar XP/streak akurat.
+Dropdown pengulangan di form + badge di kartu tugas.
 
 ### 4. Widget layar utama (Android AppWidget)
 Tampilkan tugas hari ini + countdown di home screen → *passive engagement*.
@@ -101,9 +106,10 @@ Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
 | 2 | **Confetti + haptic** | ✅ Selesai (Fase 13) |
 | 3 | **Leaderboard** | ✅ Selesai (Fase 13) |
 | 4 | **Dark mode** | ✅ Selesai (Fase 13) |
+| 5 | **Tugas berulang** (Tier 2) | ✅ Selesai (Fase 14) |
 
-Empat fitur prioritas tertinggi sudah terimplementasi. Kandidat lanjutan
-(Tier 2–4 di dokumen ini) masih relevan: tugas berulang, widget layar utama
+Lima fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+(satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
 Android, impor kalender .ics, streak freeze & daily reward, grup belajar,
 bagikan pencapaian.
 

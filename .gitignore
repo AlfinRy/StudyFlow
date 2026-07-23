@@ -53,6 +53,14 @@ app.*.map.json
 *.env
 .env*
 
+# Android signing keys & passwords — WAJIB dirahasiakan (jangan commit!).
+# Tanpa upload-keystore.jks app tak bisa di-update di Play Store.
+**/key.properties
+**/*.jks
+**/*.keystore
+**/debug.keystore
+**/release.keystore
+
 # OS / editor extras
 Thumbs.db
 ehthumbs.db

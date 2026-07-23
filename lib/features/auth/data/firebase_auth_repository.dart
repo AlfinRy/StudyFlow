@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive/hive.dart';
 
@@ -180,8 +181,19 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser?> signInWithGoogle() async {
     try {
+      // ⚠️ Diagnosa: log tiap langkah agar penyebab kegagalan terlihat di
+      // `flutter logs` / logcat (bantu debug di emulator).
+      debugPrint('[GoogleSignIn] memulai signIn()...');
       final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return null; // user batal / tidak ada akun
+      if (googleUser == null) {
+        // Bisa karena: user batal pilih akun, tidak ada akun di perangkat,
+        // atau Google Play Services tidak tersedia (umum di emulator AOSP
+        // tanpa image "Google APIs/Play").
+        debugPrint('[GoogleSignIn] signIn() mengembalikan null '
+            '(batal / Play Services tidak ada).');
+        return null;
+      }
+      debugPrint('[GoogleSignIn] akun dipilih: ${googleUser.email}');
       final googleAuth = await googleUser.authentication;
       final userCred = await _auth.signInWithCredential(
         GoogleAuthProvider.credential(
@@ -216,10 +228,12 @@ class FirebaseAuthRepository implements AuthRepository {
       _emit(user);
       return u;
     } on FirebaseAuthException catch (e) {
+      debugPrint('[GoogleSignIn] FirebaseAuthException: ${e.code} — ${e.message}');
       throw Exception(authErrorMessage(e));
     } on Exception {
       rethrow;
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('[GoogleSignIn] error tak terduga: $e\n$st');
       throw Exception('Login Google gagal. Coba lagi.');
     }
   }

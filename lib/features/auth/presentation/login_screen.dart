@@ -76,8 +76,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _signInWithGoogle() async {
     setState(() => _googleLoading = true);
     try {
-      // Null = user batal pilih akun → tidak perlu pesan error.
-      await ref.read(authRepositoryProvider).signInWithGoogle();
+      // Null = user batal pilih akun ATAU Google Play Services tidak ada
+      // (umum di emulator). Beri pesan singkat agar tidak terkesan "diam".
+      final result =
+          await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (result == null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Login Google dibatalkan atau gagal. Jika di emulator, '
+              'pastikan memakai system image "Google Play"/"Google APIs".',
+            ),
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
       // authStateProvider memancarkan user → root berganti ke MainShell.
     } catch (e) {
       _showError(e.toString());

@@ -133,7 +133,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   validator: validateEmail,
                 ),
                 const SizedBox(height: AppSpacing.md),
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text('Daftar Sebagai',
                       style: TextStyle(
@@ -259,7 +259,7 @@ class _Intro extends StatelessWidget {
       children: [
         AppLogo(size: 110),
         const SizedBox(height: AppSpacing.md),
-        const Text(
+        Text(
           'Mulai perjalanan akademik cerdasmu hari ini.',
           textAlign: TextAlign.center,
           style: TextStyle(

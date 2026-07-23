@@ -48,7 +48,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Pengingat Tugas',
                           style: TextStyle(
@@ -78,7 +78,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.md),
-            const Text(
+            Text(
               'Saat dinonaktifkan, semua pengingat yang sudah dijadwalkan dibatalkan '
               'dan tidak ada reminder baru yang dikirim. Tugas tetap tersimpan — '
               'hanya notifikasinya yang mati. Menyalakan kembali akan menjadwalkan '

@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/services/celebration_service.dart';
 import '../../../core/settings/settings_providers.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/app_dialogs.dart';
 import '../../../shared_widgets/app_logo.dart';
+import '../../../shared_widgets/confetti_celebration.dart';
 import '../../../shared_widgets/study_flow_top_bar.dart';
 import '../../home/presentation/home_screen.dart';
+import '../../leaderboard/leaderboard_providers.dart';
+import '../../leaderboard/presentation/leaderboard_screen.dart';
 import '../../materials/presentation/materials_screen.dart';
 import '../../discussion/presentation/forum_screen.dart';
+import '../../focus/presentation/focus_screen.dart';
+import '../../progress/progress_providers.dart';
 import '../../tasks/task_providers.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../progress/presentation/progress_screen.dart';
@@ -114,6 +120,24 @@ class MainShell extends ConsumerWidget {
               ),
             ),
           ),
+          ListTile(
+            leading: const Icon(Icons.timer_outlined),
+            title: const Text('Fokus (Pomodoro)'),
+            onTap: () => closeAnd(
+              () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const FocusScreen()),
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.leaderboard_outlined),
+            title: const Text('Papan Peringkat'),
+            onTap: () => closeAnd(
+              () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
+              ),
+            ),
+          ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.info_outline),
@@ -174,7 +198,7 @@ class MainShell extends ConsumerWidget {
                         color: AppColors.warning.withValues(alpha: 0.5)),
                   ),
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(Icons.pause_circle_outline,
                           color: AppColors.warning, size: 18),
                       SizedBox(width: AppSpacing.sm),
@@ -192,7 +216,7 @@ class MainShell extends ConsumerWidget {
                 ),
               ),
             if (items.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(AppSpacing.xl),
                 child: Text(
                   'Belum ada pengingat aktif. Aktifkan "Pengingat" pada tugas '
@@ -223,8 +247,26 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(activeTabProvider);
+    // Keep-alive sinkronisasi leaderboard (menulis XP mingguan ke Firestore
+    // saat opt-in). No-op di mode demo / belum login.
+    ref.watch(leaderboardSyncProvider);
     // FAB appears on Beranda, Jadwal, and Tugas (UI_DESIGN.md 1.3).
     final showFab = index == 0 || index == 1 || index == 2;
+
+    // Deteksi kenaikan level → picu confetti & snackbar motivasi.
+    ref.listen(currentLevelProvider, (prev, next) {
+      if (prev != null && next.index > prev.index) {
+        ref.read(celebrationControllerProvider.notifier)
+            .burst(CelebrationKind.levelUp);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('🏆 Naik ke level ${next.index}: ${next.title}!'),
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    });
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -232,7 +274,17 @@ class MainShell extends ConsumerWidget {
         onNotificationsPressed: () => _showNotifications(context, ref),
       ),
       drawer: _buildDrawer(context, ref),
-      body: IndexedStack(index: index, children: _screens),
+      body: Stack(
+        children: [
+          IndexedStack(index: index, children: _screens),
+          // Confetti untuk penyelesaian tugas & kenaikan level.
+          const IgnorePointer(
+            child: ConfettiCelebration(
+              kinds: [CelebrationKind.taskDone, CelebrationKind.levelUp],
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: showFab
           ? FloatingActionButton(
               onPressed: () => _onFabPressed(context, ref),

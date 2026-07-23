@@ -32,7 +32,7 @@ class ReplyBubble extends StatelessWidget {
                       reply.authorName,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -41,7 +41,7 @@ class ReplyBubble extends StatelessWidget {
                   ),
                   Text(
                     timeAgo(reply.createdAt),
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 11),
                   ),
                 ],
@@ -57,7 +57,7 @@ class ReplyBubble extends StatelessWidget {
                 ),
                 child: Text(
                   reply.content,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppColors.textPrimary, fontSize: 14, height: 1.4),
                 ),
               ),

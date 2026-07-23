@@ -204,7 +204,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ),
               )
             else
-              const Center(
+              Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
                   child: Text(
@@ -321,7 +321,7 @@ class _PhotoSetRow extends StatelessWidget {
           const Icon(Icons.check_circle_rounded,
               color: AppColors.success, size: 20),
           const SizedBox(width: AppSpacing.sm),
-          const Expanded(
+          Expanded(
             child: Text(
               'Foto profil terpasang',
               style: TextStyle(

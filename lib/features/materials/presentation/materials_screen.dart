@@ -130,7 +130,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
                   material.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                   ),
@@ -161,7 +161,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
         content: SingleChildScrollView(
           child: Text(
             material.filePathOrUrl,
-            style: const TextStyle(
+            style: TextStyle(
                 color: AppColors.textPrimary, fontSize: 14, height: 1.5),
           ),
         ),

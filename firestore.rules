@@ -33,6 +33,26 @@ service cloud.firestore {
               ['siswa', 'mahasiswa', 'guru', 'umum']);
     }
 
+    // ===== Papan peringkat (leaderboard) =====
+    // Tiap user hanya menulis doc miliknya (uid). Field uid/weekId immutable
+    // (anti curi slot peringkat orang lain). Baca publik untuk user login.
+    match /progress/{uid} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == uid
+        && isNonEmptyStr(request.resource.data.weekId)
+        && request.resource.data.weeklyXp is int
+        && request.resource.data.weeklyXp >= 0;
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.weekId is string
+        && request.resource.data.weeklyXp is int
+        && request.resource.data.weeklyXp >= 0;
+      allow delete: if false;
+    }
+
     // ===== Forum diskusi (PRD §5.6) =====
     match /forum_topics/{topicId} {
       allow read: if request.auth != null;

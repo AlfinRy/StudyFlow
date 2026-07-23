@@ -145,7 +145,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                                     topic.authorName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppColors.textPrimary,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
@@ -153,7 +153,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                                   ),
                                   Text(
                                     timeAgo(topic.createdAt),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                         color: AppColors.textSecondary,
                                         fontSize: 11),
                                   ),
@@ -165,7 +165,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                         const SizedBox(height: AppSpacing.md),
                         Text(
                           topic.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
@@ -175,7 +175,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                         const SizedBox(height: AppSpacing.sm),
                         Text(
                           topic.content,
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 14.5,
                               height: 1.5),
@@ -197,7 +197,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                         border: Border.all(color: AppColors.surfaceBorder),
                       ),
                       child: Row(
-                        children: const [
+                        children: [
                           Icon(Icons.chat_bubble_outline_rounded,
                               size: 20, color: AppColors.textSecondary),
                           SizedBox(width: AppSpacing.sm),
@@ -230,7 +230,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
             ),
             // Input balasan sticky di bawah
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.surface,
                 border:
                     Border(top: BorderSide(color: AppColors.surfaceBorder)),

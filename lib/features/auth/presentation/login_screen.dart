@@ -270,7 +270,7 @@ class _DemoBanner extends StatelessWidget {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Icon(Icons.info_outline, color: AppColors.warning, size: 18),
           SizedBox(width: AppSpacing.sm),
           Expanded(
@@ -292,7 +292,7 @@ class _OrDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      children: const [
+      children: [
         Expanded(child: Divider()),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),

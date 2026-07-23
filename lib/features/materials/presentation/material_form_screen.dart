@@ -374,7 +374,7 @@ class _FilePickerField extends StatelessWidget {
           prefixIcon: Icon(icon),
           suffixIcon: hasValue
               ? const Icon(Icons.check_circle_rounded, color: AppColors.success)
-              : const Icon(Icons.upload_file_rounded,
+              : Icon(Icons.upload_file_rounded,
                   color: AppColors.textSecondary),
         ),
         child: Text(

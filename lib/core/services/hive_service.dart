@@ -12,6 +12,7 @@ class HiveService {
   static const tasksBox = 'tasks';
   static const materialsBox = 'materials';
   static const settingsBox = 'settings';
+  static const focusSessionsBox = 'focus_sessions';
 
   /// Key pengaturan master notifikasi (on/off) di box [settings].
   static const notificationsEnabledKey = 'notifications_enabled';
@@ -20,11 +21,13 @@ class HiveService {
   late Box<dynamic> tasks;
   late Box<dynamic> materials;
   late Box<dynamic> settings;
+  late Box<dynamic> focusSessions;
 
   Future<void> initialize() async {
     schedules = await Hive.openBox<dynamic>(schedulesBox);
     tasks = await Hive.openBox<dynamic>(tasksBox);
     materials = await Hive.openBox<dynamic>(materialsBox);
     settings = await Hive.openBox<dynamic>(settingsBox);
+    focusSessions = await Hive.openBox<dynamic>(focusSessionsBox);
   }
 }

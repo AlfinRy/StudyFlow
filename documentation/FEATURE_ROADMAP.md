@@ -95,12 +95,17 @@ Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
 
 ## Rekomendasi eksekusi berikutnya
 
-| Urut | Fitur | Alasan |
+| Urut | Fitur | Status |
 |------|-------|--------|
-| 1 | **Pomodoro** | Transformasi posisi produk; pakai fondasi XP yang sudah ada |
-| 2 | **Confetti + haptic** | Quick win, payoff gamifikasi instan |
-| 3 | **Leaderboard** | Retensi sosial, pakai pola Firestore Forum |
-| 4 | **Dark mode** | Rendah effort, ekspektasi pengguna modern |
+| 1 | **Pomodoro** | ✅ Selesai (Fase 13) |
+| 2 | **Confetti + haptic** | ✅ Selesai (Fase 13) |
+| 3 | **Leaderboard** | ✅ Selesai (Fase 13) |
+| 4 | **Dark mode** | ✅ Selesai (Fase 13) |
+
+Empat fitur prioritas tertinggi sudah terimplementasi. Kandidat lanjutan
+(Tier 2–4 di dokumen ini) masih relevan: tugas berulang, widget layar utama
+Android, impor kalender .ics, streak freeze & daily reward, grup belajar,
+bagikan pencapaian.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

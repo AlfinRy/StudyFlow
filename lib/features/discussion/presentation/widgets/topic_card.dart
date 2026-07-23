@@ -45,7 +45,7 @@ class TopicCard extends StatelessWidget {
                             topic.authorName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -54,7 +54,7 @@ class TopicCard extends StatelessWidget {
                         ),
                         Text(
                           timeAgo(topic.createdAt),
-                          style: const TextStyle(
+                          style: TextStyle(
                               color: AppColors.textSecondary, fontSize: 11),
                         ),
                       ],
@@ -64,7 +64,7 @@ class TopicCard extends StatelessWidget {
                       topic.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
@@ -75,7 +75,7 @@ class TopicCard extends StatelessWidget {
                       topic.snippet,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 13,
                           height: 1.4),

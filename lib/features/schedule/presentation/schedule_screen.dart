@@ -116,7 +116,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
 
         Text(
           sectionTitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -197,7 +197,7 @@ class _WeeklyProgressCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Progres Belajar',
                   style: TextStyle(
                     fontSize: 13,
@@ -208,7 +208,7 @@ class _WeeklyProgressCard extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   '${(percent * 100).round()}% Selesai',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,

@@ -55,7 +55,7 @@ class ScheduleCard extends StatelessWidget {
                       schedule.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -64,13 +64,13 @@ class ScheduleCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.access_time_rounded,
+                        Icon(Icons.access_time_rounded,
                             size: 14, color: AppColors.textSecondary),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
                             '${schedule.startTime} – ${schedule.endTime}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12.5,
                               color: AppColors.textSecondary,
                             ),
@@ -85,7 +85,7 @@ class ScheduleCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
+              Icon(Icons.chevron_right_rounded,
                   color: AppColors.textSecondary),
             ],
           ),

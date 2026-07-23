@@ -13,7 +13,7 @@ void showStudyFlowAbout(BuildContext context) {
     applicationVersion: '1.0.0',
     applicationIcon: const AppLogo(size: 48),
     applicationLegalese: '© 2026 StudyFlow',
-    children: const [
+    children: [
       SizedBox(height: AppSpacing.md),
       Text(
         'Aplikasi manajemen belajar: jadwal, tugas, materi, dan progres — '
@@ -33,7 +33,7 @@ void showLanguageInfo(BuildContext context) {
     builder: (ctx) => AlertDialog(
       icon: const Icon(Icons.language, color: AppColors.accent),
       title: const Text('Bahasa'),
-      content: const Text(
+      content: Text(
         'Saat ini StudyFlow baru mendukung Bahasa Indonesia. '
         'Dukungan bahasa lain akan hadir di pembaruan mendatang.',
         style: TextStyle(

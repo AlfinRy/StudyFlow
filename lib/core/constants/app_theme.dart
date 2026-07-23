@@ -7,50 +7,82 @@ import 'app_spacing.dart';
 class AppTheme {
   AppTheme._();
 
-  static ThemeData light() {
-    final base = ThemeData.light(useMaterial3: true);
+  /// Tema terang (default).
+  static ThemeData light() => _build(
+        isDark: false,
+        surface: AppColors.lightSurface,
+        background: AppColors.lightBackground,
+        border: AppColors.lightSurfaceBorder,
+        textPrimary: AppColors.lightTextPrimary,
+        textSecondary: AppColors.lightTextSecondary,
+      );
+
+  /// Tema gelap (cool navy-gray, nyaman saat belajar malam).
+  static ThemeData dark() => _build(
+        isDark: true,
+        surface: AppColors.darkSurface,
+        background: AppColors.darkBackground,
+        border: AppColors.darkSurfaceBorder,
+        textPrimary: AppColors.darkTextPrimary,
+        textSecondary: AppColors.darkTextSecondary,
+      );
+
+  static ThemeData _build({
+    required bool isDark,
+    required Color surface,
+    required Color background,
+    required Color border,
+    required Color textPrimary,
+    required Color textSecondary,
+  }) {
+    final base = ThemeData(
+      useMaterial3: true,
+      brightness: isDark ? Brightness.dark : Brightness.light,
+    );
     final textTheme = GoogleFonts.interTextTheme(base.textTheme);
 
     final colorScheme = base.colorScheme.copyWith(
       primary: AppColors.accent,
       onPrimary: Colors.white,
       secondary: AppColors.accentDark,
-      surface: AppColors.surface,
-      onSurface: AppColors.textPrimary,
+      surface: surface,
+      onSurface: textPrimary,
       error: AppColors.danger,
     );
 
     return base.copyWith(
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: background,
       textTheme: textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
+        backgroundColor: surface,
+        foregroundColor: textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          color: textPrimary,
         ),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-          side: const BorderSide(color: AppColors.surfaceBorder),
+          side: BorderSide(color: border),
         ),
         margin: EdgeInsets.zero,
+      ),
+      dividerTheme: DividerThemeData(
+        color: border,
+        thickness: 1,
+        space: 1,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.navyDark,
           foregroundColor: Colors.white,
-          // Tinggi min. 52 tanpa memaksa lebar (lebar penuh dicapai via
-          // CrossAxisAlignment.stretch). Memaksa lebar tak-hingga membuat
-          // button crash jika diletakkan di dalam Row.
           minimumSize: const Size(0, 52),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
@@ -62,14 +94,14 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: background,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg,
           vertical: AppSpacing.md,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-          borderSide: const BorderSide(color: AppColors.surfaceBorder),
+          borderSide: BorderSide(color: border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
@@ -77,7 +109,7 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.surface,
+        backgroundColor: surface,
         elevation: 0,
         height: 64,
         indicatorColor: AppColors.accent.withValues(alpha: 0.12),
@@ -86,13 +118,13 @@ class AppTheme {
           return TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: selected ? AppColors.accent : AppColors.textSecondary,
+            color: selected ? AppColors.accent : textSecondary,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            color: selected ? AppColors.accent : AppColors.textSecondary,
+            color: selected ? AppColors.accent : textSecondary,
           );
         }),
       ),

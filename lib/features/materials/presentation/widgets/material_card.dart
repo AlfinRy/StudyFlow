@@ -69,7 +69,7 @@ class MaterialCard extends StatelessWidget {
                   material.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -78,7 +78,7 @@ class MaterialCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.schedule_rounded,
+                    Icon(Icons.schedule_rounded,
                         size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Flexible(
@@ -86,7 +86,7 @@ class MaterialCard extends StatelessWidget {
                         'Ditambahkan ${idnFormatDateCompact(material.createdAt)}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w500,
                           color: AppColors.textSecondary,
@@ -100,7 +100,7 @@ class MaterialCard extends StatelessWidget {
           ),
           if (onOpen != null || onEdit != null || onDelete != null)
             PopupMenuButton<_MaterialMenu>(
-              icon: const Icon(Icons.more_vert_rounded,
+              icon: Icon(Icons.more_vert_rounded,
                   color: AppColors.textSecondary),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.md)),
@@ -202,7 +202,7 @@ class _CategoryChip extends StatelessWidget {
         category,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,

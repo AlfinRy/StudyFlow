@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
@@ -41,5 +42,29 @@ class NotificationsEnabledNotifier extends Notifier<bool> {
         await notifications.scheduleForTask(t);
       }
     }
+  }
+}
+
+/// Mode tema aplikasi (mengikuti sistem / terang / gelap). Persisten di Hive.
+final themeModeProvider =
+    NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
+
+class ThemeModeNotifier extends Notifier<ThemeMode> {
+  late final Box<dynamic> _box;
+
+  @override
+  ThemeMode build() {
+    _box = HiveService.instance.settings;
+    final raw = _box.get('theme_mode') as String?;
+    return switch (raw) {
+      'light' => ThemeMode.light,
+      'dark' => ThemeMode.dark,
+      _ => ThemeMode.system,
+    };
+  }
+
+  Future<void> set(ThemeMode mode) async {
+    await _box.put('theme_mode', mode.name);
+    state = mode;
   }
 }

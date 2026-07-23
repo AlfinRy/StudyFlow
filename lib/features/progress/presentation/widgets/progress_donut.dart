@@ -15,7 +15,7 @@ class ProgressDonut extends StatelessWidget {
     this.size = 150,
     this.strokeWidth = 16,
     this.progressColor = AppColors.accent,
-    this.trackColor = AppColors.surfaceBorder,
+    this.trackColor,
   });
 
   /// Proporsi terisi (0.0–1.0). Akan di-clamp otomatis.
@@ -27,10 +27,11 @@ class ProgressDonut extends StatelessWidget {
   final double size;
   final double strokeWidth;
   final Color progressColor;
-  final Color trackColor;
+  final Color? trackColor;
 
   @override
   Widget build(BuildContext context) {
+    final resolvedTrack = trackColor ?? AppColors.surfaceBorder;
     return SizedBox(
       width: size,
       height: size,
@@ -42,7 +43,7 @@ class ProgressDonut extends StatelessWidget {
             painter: _DonutPainter(
               progress: progress,
               progressColor: progressColor,
-              trackColor: trackColor,
+              trackColor: resolvedTrack,
               strokeWidth: strokeWidth,
             ),
           ),

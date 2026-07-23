@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:study_flow/features/focus/domain/focus_session.dart';
+import 'package:study_flow/features/focus/focus_providers.dart';
 import 'package:study_flow/features/progress/presentation/progress_screen.dart';
 import 'package:study_flow/features/schedule/domain/schedule.dart';
 import 'package:study_flow/features/schedule/schedule_providers.dart';
@@ -29,6 +31,14 @@ class _FixedScheduleList extends ScheduleListNotifier {
   List<Schedule> build() => schedules;
 }
 
+/// Notifier sesi fokus yang selalu mengembalikan daftar tetap (tanpa Hive).
+class _FixedFocusList extends FocusSessionListNotifier {
+  _FixedFocusList(this.sessions);
+  final List<FocusSession> sessions;
+  @override
+  List<FocusSession> build() => sessions;
+}
+
 Future<void> _pump(
   WidgetTester tester,
   List<Task> tasks, {
@@ -39,6 +49,7 @@ Future<void> _pump(
       overrides: [
         taskListProvider.overrideWith(() => _FixedTaskList(tasks)),
         scheduleListProvider.overrideWith(() => _FixedScheduleList(schedules)),
+        focusSessionListProvider.overrideWith(() => _FixedFocusList(const [])),
       ],
       child: const MaterialApp(
         home: Scaffold(body: ProgressScreen()),

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/services/celebration_service.dart';
 import '../../core/services/hive_service.dart';
 import '../../core/services/notification_service.dart';
 import 'data/task_repository.dart';
@@ -52,6 +53,8 @@ class TaskListNotifier extends Notifier<List<Task>> {
     if (updated.isDone) {
       // Tugas selesai → tidak ada notifikasi "nyangkut" (AC §5.4).
       await _notifications.cancelForTask(updated.id);
+      // Rayakan penyelesaian tugas (confetti + haptic).
+      celebrate(ref, CelebrationKind.taskDone);
     } else {
       await _notifications.scheduleForTask(updated);
     }

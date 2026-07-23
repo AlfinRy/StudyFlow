@@ -137,14 +137,14 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen>
                     ? 'Periksa email Anda untuk menyelesaikan pendaftaran.'
                     : 'Kami telah mengirim tautan verifikasi ke:',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
               if (email.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   email,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
                     fontSize: 16,
@@ -296,7 +296,7 @@ class _StepItem extends StatelessWidget {
           const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Text(text,
-                style: const TextStyle(
+                style: TextStyle(
                     color: AppColors.textPrimary, fontSize: 13)),
           ),
         ],

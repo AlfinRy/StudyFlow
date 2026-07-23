@@ -264,7 +264,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Aktifkan Pengingat',
                           style: TextStyle(
@@ -342,7 +342,7 @@ class _PickerField extends StatelessWidget {
         ),
         child: Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -44,12 +45,17 @@ class TaskCard extends StatelessWidget {
           children: [
             Checkbox(
               value: done,
-              onChanged: onToggle == null ? null : (_) => onToggle!(),
+              onChanged: onToggle == null
+                  ? null
+                  : (_) {
+                      HapticFeedback.selectionClick();
+                      onToggle!();
+                    },
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5)),
               activeColor: AppColors.accent,
               checkColor: Colors.white,
-              side: const BorderSide(color: AppColors.textSecondary, width: 1.5),
+              side: BorderSide(color: AppColors.textSecondary, width: 1.5),
               visualDensity: VisualDensity.compact,
             ),
             const SizedBox(width: AppSpacing.xs),
@@ -113,7 +119,7 @@ class TaskCard extends StatelessWidget {
             ),
             if (onEdit != null || onDelete != null)
               PopupMenuButton<_TaskMenu>(
-                icon: const Icon(Icons.more_vert_rounded,
+                icon: Icon(Icons.more_vert_rounded,
                     color: AppColors.textSecondary),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.md)),
@@ -215,7 +221,7 @@ class _CategoryChip extends StatelessWidget {
         category,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,

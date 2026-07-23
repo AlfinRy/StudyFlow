@@ -79,7 +79,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 const SizedBox(height: AppSpacing.lg),
                 const AppLogo(size: 80),
                 const SizedBox(height: AppSpacing.md),
-                const Text(
+                Text(
                   'Masukkan email Anda',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -89,7 +89,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                const Text(
+                Text(
                   'Kami akan mengirim tautan untuk mengatur ulang kata sandi Anda.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: AppColors.textSecondary, fontSize: 13),

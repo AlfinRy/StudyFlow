@@ -17,6 +17,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 10b. Profil | Edit profil (nama/role/foto). Foto upload PNG/JPG (base64 di Firestore) + URL. Cloud sync aktif. | ✅ Selesai |
 | 11. Polish | Sesuaikan UI final dengan Figma, testing per acceptance criteria | ⬜ |
 | 12. Hardening Keamanan Auth | Verifikasi email + rate-limit + password policy + forgot password + firestore rules dikeraskan | ✅ Selesai |
+| 13. Fitur Engagement | Pomodoro/Focus Timer, Confetti+haptic, Leaderboard mingguan, Dark Mode | ✅ Selesai |
 
 ## Catatan konfigurasi
 
@@ -215,6 +216,50 @@ lain lalu langsung login (celah impersonasi & celah abuse/DDoS akun).
 - **Materi (lokal):** masih ada *orphan file* (file fisik di
   `<app docs>/materials/` tak terhapus saat materi di-delete) — leak storage,
   bukan celah keamanan. Didaftar di "Sisa".
+
+## 🚀 Fitur Engagement (Fase 13)
+
+Empat fitur prioritas dari `FEATURE_ROADMAP.md` terimplementasi penuh:
+
+### 1. Pomodoro / Focus Timer ⭐
+- **Arsitektur:** pure logic (`domain/`), Hive box `focus_sessions`, controller
+  `PomodoroTimerController` (StateNotifier) yang **tahan suspend background**
+  (sisa waktu dihitung dari wall-clock target, bukan decrement).
+- **Siklus:** fokus → jeda pendek → … → jeda panjang tiap N siklus (auto-reset
+  per minggu lewat `weekId`). Durasi & auto-start dikonfigurasi (sheet).
+- **Gamifikasi:** sesi selesai beri 30 XP + menit belajar aktual → terintegrasi
+  ke Progres (XP & "Waktu Belajar" kini dari sesi nyata, bukan terjadwal).
+- **UI:** ring progres besar (reuse `ProgressDonut`), warna fase semantik,
+  indikator siklus, pilih tugas opsional, statistik hari ini. Diakses via
+  drawer (Fokus).
+- **Akses:** drawer → "Fokus (Pomodoro)".
+
+### 2. Confetti + Haptic 🎉
+- `CelebrationController` (event bus Riverpod) + `ConfettiCelebration`
+  overlay (`confetti` package) dengan filter jenis rayaan.
+- Dipicu saat: tugas selesai, sesi fokus selesai, **kenaikan level** (deteksi
+  via `currentLevelProvider` di MainShell + snackbar motivasi).
+- Haptic feedback saat toggle tugas & selesai sesi fokus.
+
+### 3. Leaderboard Mingguan 🏆
+- **Cloud-only (Firestore `progress/{uid}`)**, real-time Top-50, reset otomatis
+  per minggu via field `weekId` (tanggal Senin) — **tanpa Cloud Function/Blaze**.
+- **Opt-in privasi** (`shareOnLeaderboardProvider`, default nonaktif). Sinkron
+  XP terjadi saat opt-in & XP/user berubah (`leaderboardSyncProvider`).
+- **Rules terdeploy** (`firestore.rules`): user hanya tulis doc sendiri,
+  field `uid`/`weekId` immutable, `weeklyXp ≥ 0`.
+- **Akses:** drawer → "Papan Peringkat".
+
+### 4. Dark Mode 🌙
+- Token permukaan (background/surface/surfaceBorder/textPrimary/textSecondary)
+  kini **theme-aware** lewat brightness-zone (getter + `MaterialApp.builder`).
+- `themeModeProvider` (Sistem/Terang/Gelap, persisten) + `AppTheme.dark()`.
+- Toggle di Profil → Tema. Palet gelap = cool navy-gray (nyaman belajar malam).
+- ~100 ekspresi `const` yang membungkus token permukaan di-de-const agar ikut
+  mode (tanpa de-const, warna terang ter-bake di widget const).
+
+**Test:** `flutter analyze` 0 issue, **138/138 lulus** (+13 tes Pomodoro baru).
+Dependency baru: `confetti`.
 
 ## 📌 Lanjut besok
 

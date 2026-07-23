@@ -39,7 +39,7 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
           ? Text(title!)
           : Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 AppLogo(),
                 SizedBox(width: 8),
                 Text(
@@ -62,7 +62,7 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppColors.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
-      shape: const Border(
+      shape: Border(
         bottom: BorderSide(color: AppColors.surfaceBorder, width: 1),
       ),
     );

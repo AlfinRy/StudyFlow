@@ -22,7 +22,7 @@ class TaskPriorityStyle {
         return const TaskPriorityStyle(
             color: AppColors.warning, badge: 'NORMAL');
       case TaskPriority.low:
-        return const TaskPriorityStyle(
+        return TaskPriorityStyle(
             color: AppColors.textSecondary, badge: 'RENDAH');
     }
   }

@@ -266,7 +266,7 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
         color: AppColors.textSecondary,
@@ -327,7 +327,7 @@ class _TimeField extends StatelessWidget {
         ),
         child: Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
             color: AppColors.textPrimary,

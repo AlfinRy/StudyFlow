@@ -6,6 +6,8 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../../shared_widgets/section_header.dart';
+import '../../focus/domain/focus_stats.dart' hide weekStart;
+import '../../focus/focus_providers.dart';
 import '../../schedule/schedule_providers.dart';
 import '../../tasks/task_providers.dart';
 import '../domain/gamification.dart';
@@ -34,6 +36,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     final now = DateTime.now();
     final tasks = ref.watch(taskListProvider);
     final schedules = ref.watch(scheduleListProvider);
+    final focusSessions = ref.watch(focusSessionListProvider);
 
     final start = _window == 0 ? weekStart(now) : monthStart(now);
     final end = _window == 0 ? weekEnd(now) : monthEnd(now);
@@ -42,9 +45,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     final weekly = weeklyCompletions(tasks, now);
     final streak = completionStreak(tasks, now);
     final scheduledMin = scheduledMinutesPerWeek(schedules);
+    final focusMinWeek = focusMinutesThisWeek(focusSessions, now);
 
     final doneCount = overall.done;
-    final xp = doneCount * xpPerTask;
+    // Total XP = tugas selesai + sesi fokus (keduanya nyata & reaktif).
+    final xp = doneCount * xpPerTask + focusXp(focusSessions);
     final level = levelForXp(xp);
     final next = nextLevel(level);
     final levelProg = levelProgress(xp);
@@ -63,7 +68,10 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
         const SizedBox(height: AppSpacing.xl),
 
         // Donut + 2 kartu statistik (windowed)
-        _DonutRow(summary: windowed, scheduledMinutes: scheduledMin),
+        _DonutRow(
+            summary: windowed,
+            scheduledMinutes: scheduledMin,
+            focusMinutes: focusMinWeek),
         const SizedBox(height: AppSpacing.xl),
 
         _CapaianCard(
@@ -198,13 +206,18 @@ class _WindowTabs extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _DonutRow extends StatelessWidget {
-  const _DonutRow({required this.summary, required this.scheduledMinutes});
+  const _DonutRow({
+    required this.summary,
+    required this.scheduledMinutes,
+    required this.focusMinutes,
+  });
   final ProgressSummary summary;
   final int scheduledMinutes;
+  final int focusMinutes;
 
-  String get _hoursLabel {
-    final h = scheduledMinutes ~/ 60;
-    final m = scheduledMinutes % 60;
+  String _hours(int minutes) {
+    final h = minutes ~/ 60;
+    final m = minutes % 60;
     if (h == 0) return '${m}m';
     if (m == 0) return '${h}j';
     return '${h}j ${m}m';
@@ -223,13 +236,13 @@ class _DonutRow extends StatelessWidget {
             children: [
               Text(
                 summary.total == 0 ? '—' : '$percent%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
                 ),
               ),
-              const Text(
+              Text(
                 'SELESAI',
                 style: TextStyle(
                   fontSize: 10,
@@ -256,10 +269,10 @@ class _DonutRow extends StatelessWidget {
                 icon: Icons.schedule_rounded,
                 iconColor: AppColors.warning,
                 label: 'Waktu Belajar',
-                value: summary.total == 0
+                value: summary.total == 0 && focusMinutes == 0
                     ? '—'
-                    : '$_hoursLabel/mgg',
-                hint: 'Terjadwal',
+                    : '${_hours(focusMinutes)}/mgg',
+                hint: 'Aktual (fokus)',
               ),
             ],
           ),
@@ -304,7 +317,7 @@ class _StatCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   hint == null ? label : '$label · $hint',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11.5,
                   ),
@@ -317,7 +330,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
@@ -385,7 +398,7 @@ class _CapaianCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   _insight,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     height: 1.4,
                     color: AppColors.textPrimary,
@@ -637,7 +650,7 @@ class _MilestoneList extends StatelessWidget {
               now: now,
             ),
             if (i < _milestones.length - 1)
-              const Divider(height: 1, color: AppColors.surfaceBorder, indent: 12),
+              Divider(height: 1, color: AppColors.surfaceBorder, indent: 12),
           ],
         ],
       ),
@@ -711,7 +724,7 @@ class _MilestoneTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   def.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),

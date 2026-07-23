@@ -320,7 +320,7 @@ class _SectionHint extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
+              style: TextStyle(
                   color: AppColors.textSecondary, fontSize: 13),
             ),
           ),
@@ -376,7 +376,7 @@ class _ShortcutCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -385,13 +385,13 @@ class _ShortcutCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: AppColors.textSecondary, fontSize: 12.5),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+              Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
             ],
           ),
         ),

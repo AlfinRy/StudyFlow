@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/settings/settings_providers.dart';
 import '../../../shared_widgets/app_avatar.dart';
 import '../../../shared_widgets/app_dialogs.dart';
 import 'edit_profile_screen.dart';
@@ -47,7 +48,7 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
@@ -56,7 +57,7 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 2),
                   Text(
                     roleLabel,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
@@ -82,7 +83,7 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: AppSpacing.xl),
-        const Text(
+        Text(
           'Pengaturan Akun',
           style: TextStyle(
             fontSize: 14,
@@ -98,6 +99,12 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () async => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const EditProfileScreen()),
             ),
+          ),
+          _MenuTile(
+            icon: Icons.dark_mode_outlined,
+            label: 'Tema',
+            trailing: _themeLabel(ref.watch(themeModeProvider)),
+            onTap: () => _showThemePicker(context, ref),
           ),
           _MenuTile(
             icon: Icons.notifications_none,
@@ -116,7 +123,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ]),
         const SizedBox(height: AppSpacing.xl),
-        const Text(
+        Text(
           'Dukungan',
           style: TextStyle(
             fontSize: 14,
@@ -163,7 +170,7 @@ class _DemoBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         border: Border.all(color: AppColors.warning.withValues(alpha: 0.5)),
       ),
-      child: const Text(
+      child: Text(
         'Mode demo — data tersimpan lokal di perangkat ini.',
         style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
       ),
@@ -188,7 +195,7 @@ class _MenuGroup extends StatelessWidget {
           for (var i = 0; i < children.length; i++) ...[
             children[i],
             if (i != children.length - 1)
-              const Divider(height: 1, color: AppColors.surfaceBorder),
+              Divider(height: 1, color: AppColors.surfaceBorder),
           ],
         ],
       ),
@@ -215,7 +222,7 @@ class _MiniStat extends StatelessWidget {
         children: [
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,
@@ -225,7 +232,7 @@ class _MiniStat extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppColors.textSecondary,
               fontSize: 11,
             ),
@@ -241,26 +248,26 @@ class _MenuTile extends StatelessWidget {
     required this.icon,
     required this.label,
     this.trailing,
-    this.iconColor = AppColors.textSecondary,
-    this.textColor = AppColors.textPrimary,
+    this.iconColor,
+    this.textColor,
     this.onTap,
   });
 
   final IconData icon;
   final String label;
   final String? trailing;
-  final Color iconColor;
-  final Color textColor;
+  final Color? iconColor;
+  final Color? textColor;
   final Future<void> Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: iconColor),
+      leading: Icon(icon, color: iconColor ?? AppColors.textSecondary),
       title: Text(
         label,
         style: TextStyle(
-          color: textColor,
+          color: textColor ?? AppColors.textPrimary,
           fontWeight: FontWeight.w500,
           fontSize: 14,
         ),
@@ -271,15 +278,54 @@ class _MenuTile extends StatelessWidget {
               children: [
                 Text(
                   trailing!,
-                  style: const TextStyle(
+                  style: TextStyle(
                       color: AppColors.textSecondary, fontSize: 13),
                 ),
-                const Icon(Icons.chevron_right,
+                Icon(Icons.chevron_right,
                     color: AppColors.surfaceBorder),
               ],
             )
-          : const Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+          : Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
       onTap: onTap,
     );
+  }
+}
+
+/// Label singkat mode tema untuk tile Profil.
+String _themeLabel(ThemeMode mode) => switch (mode) {
+      ThemeMode.system => 'Ikuti Sistem',
+      ThemeMode.light => 'Terang',
+      ThemeMode.dark => 'Gelap',
+    };
+
+/// Pemilih mode tema (Sistem / Terang / Gelap).
+Future<void> _showThemePicker(BuildContext context, WidgetRef ref) async {
+  final current = ref.read(themeModeProvider);
+  final picked = await showDialog<ThemeMode>(
+    context: context,
+    builder: (ctx) => SimpleDialog(
+      title: const Text('Pilih Tema'),
+      children: [
+        for (final mode in ThemeMode.values)
+          ListTile(
+            leading: Icon(
+              mode == ThemeMode.system
+                  ? Icons.brightness_auto_outlined
+                  : mode == ThemeMode.light
+                      ? Icons.light_mode_outlined
+                      : Icons.dark_mode_outlined,
+              color: AppColors.accent,
+            ),
+            title: Text(_themeLabel(mode)),
+            trailing: mode == current
+                ? const Icon(Icons.check_rounded, color: AppColors.accent)
+                : null,
+            onTap: () => Navigator.pop(ctx, mode),
+          ),
+      ],
+    ),
+  );
+  if (picked != null && picked != current) {
+    await ref.read(themeModeProvider.notifier).set(picked);
   }
 }

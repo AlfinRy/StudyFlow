@@ -78,9 +78,17 @@ Payoff gamifikasi yang sudah ada. Micro-interaction = kesan "hidup".
 Pilih tujuan belajar (UTBK, ujian, tugas kuliah) → dashboard & saran template
 jadwal disesuaikan. Meningkatkan aktivasi first-run.
 
-### 9. Streak freeze & reward harian
+### 9. Streak freeze & reward harian ✅
 Mirip Duolingo: streak (sudah dihitung!) + "freeze" untuk hari libur +
 daily check-in reward. Retensi harian ekstrem.
+**Status:** ✅ Selesai (Fase 15). Modul `lib/features/streak/`: profil
+persisten (Hive `settings`), logika murni (`streakFromActive`,
+`tryApplyFreeze`, `dailyRewardFor`, `canClaimDaily`, `earnsFreezeAt`).
+Freeze otomatis dipakai saat streak akan putus (rekonsiliasi saat Progres
+ dibuka) — hanya melindungi rantai nyata, tidak meng-inflate streak dari nol.
+Hadiah harian: +XP (skala dgn streak, 5–30) + bonus freeze tiap kelipatan 7
+hari. Bonus XP tergabung ke `totalXpProvider`. UI: kartu streak dengan jumlah
+freeze, rekor, & tombol klaim (confetti saat diklaim).
 
 ### 10. Pencarian global + tag materi
 Saat data materi/forum tumbuh, search menjadi kebutuhan.
@@ -107,11 +115,12 @@ Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
 | 3 | **Leaderboard** | ✅ Selesai (Fase 13) |
 | 4 | **Dark mode** | ✅ Selesai (Fase 13) |
 | 5 | **Tugas berulang** (Tier 2) | ✅ Selesai (Fase 14) |
+| 6 | **Streak freeze & reward harian** (Tier 3) | ✅ Selesai (Fase 15) |
 
-Lima fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+Enam fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
 (satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
-Android, impor kalender .ics, streak freeze & daily reward, grup belajar,
-bagikan pencapaian.
+Android, impor kalender .ics, onboarding personalisasi, pencarian global,
+grup belajar, bagikan pencapaian.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

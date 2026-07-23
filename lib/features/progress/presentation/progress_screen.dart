@@ -9,9 +9,11 @@ import '../../../shared_widgets/section_header.dart';
 import '../../focus/domain/focus_stats.dart' hide weekStart;
 import '../../focus/focus_providers.dart';
 import '../../schedule/schedule_providers.dart';
+import '../../streak/streak_providers.dart';
 import '../../tasks/task_providers.dart';
 import '../domain/gamification.dart';
 import '../domain/progress_stats.dart';
+import '../progress_providers.dart';
 import 'widgets/progress_donut.dart';
 
 /// Halaman Progres Belajar (PRD §5.5, UI_DESIGN.md §7). Semua angka diturunkan
@@ -32,6 +34,17 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
   int _window = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // Rekonsiliasi streak sekali per pembukaan layar: bila streak akan putus,
+    // otomatis konsumsi satu "Streak Freeze" (idempoten — aman berulang).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(streakProfileProvider.notifier).reconcile(DateTime.now());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final tasks = ref.watch(taskListProvider);
@@ -48,8 +61,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
     final focusMinWeek = focusMinutesThisWeek(focusSessions, now);
 
     final doneCount = overall.done;
-    // Total XP = tugas selesai + sesi fokus (keduanya nyata & reaktif).
-    final xp = doneCount * xpPerTask + focusXp(focusSessions);
+    // Total XP (reaktif) = tugas + fokus + bonus hadiah harian.
+    final xp = ref.watch(totalXpProvider);
     final level = levelForXp(xp);
     final next = nextLevel(level);
     final levelProg = levelProgress(xp);
@@ -86,8 +99,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
         _WeeklyHeatmap(days: weekly),
         const SizedBox(height: AppSpacing.xl),
 
-        // Streak
-        _StreakCard(streak: streak),
+        // Streak (freeze + hadiah harian)
+        const _StreakCard(),
         const SizedBox(height: AppSpacing.xl),
 
         // Pencapaian (milestone)
@@ -497,12 +510,14 @@ class _DayChip extends StatelessWidget {
 // Streak
 // ---------------------------------------------------------------------------
 
-class _StreakCard extends StatelessWidget {
-  const _StreakCard({required this.streak});
-  final int streak;
+class _StreakCard extends ConsumerWidget {
+  const _StreakCard();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final info = ref.watch(streakInfoProvider);
+    final canClaim = info.canClaim;
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -513,33 +528,120 @@ class _StreakCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.local_fire_department_rounded,
-              color: Colors.white, size: 30),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$streak hari',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                  ),
+          Row(
+            children: [
+              const Icon(Icons.local_fire_department_rounded,
+                  color: Colors.white, size: 30),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${info.currentStreak} hari',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      'Streak beruntun · Rekor ${info.longestStreak} hari',
+                      style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
                 ),
-                const Text(
-                  'Streak belajar beruntun',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-              ],
-            ),
+              ),
+              Text(
+                info.currentStreak >= 7 ? '🔥' : '⚡',
+                style: const TextStyle(fontSize: 22),
+              ),
+            ],
           ),
+          const SizedBox(height: AppSpacing.md),
+          // Baris status: freeze tersedia + indikator hadiah.
+          Row(
+            children: [
+              _StreakChip(
+                icon: Icons.ac_unit_rounded,
+                label: 'Freeze ${info.freezesAvailable}',
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              if (info.frozenCount > 0)
+                _StreakChip(
+                  icon: Icons.shield_rounded,
+                  label: 'Diselematkan ${info.frozenCount}×',
+                ),
+            ],
+          ),
+          if (info.currentStreak > 0) ...[
+            const SizedBox(height: AppSpacing.md),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFFEA580C),
+                  visualDensity: VisualDensity.compact,
+                ),
+                onPressed: canClaim
+                    ? () => _claim(context, ref, info.reward)
+                    : null,
+                icon: const Icon(Icons.card_giftcard_rounded, size: 18),
+                label: Text(canClaim
+                    ? 'Klaim Hadiah Harian (+${info.reward} XP)'
+                    : 'Hadiah hari ini sudah diklaim'),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _claim(BuildContext context, WidgetRef ref, int reward) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final gained = await ref.read(streakProfileProvider.notifier).claimDaily(
+          DateTime.now(),
+        );
+    if (gained <= 0) return;
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('🎉 Hadiah harian diklaim: +$gained XP!'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+}
+
+class _StreakChip extends StatelessWidget {
+  const _StreakChip({required this.icon, required this.label});
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: Colors.white),
+          const SizedBox(width: 4),
           Text(
-            streak >= 7 ? '🔥' : '⚡',
-            style: const TextStyle(fontSize: 22),
+            label,
+            style: const TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

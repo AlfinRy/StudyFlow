@@ -277,10 +277,14 @@ class MainShell extends ConsumerWidget {
       body: Stack(
         children: [
           IndexedStack(index: index, children: _screens),
-          // Confetti untuk penyelesaian tugas & kenaikan level.
+          // Confetti untuk penyelesaian tugas, kenaikan level & hadiah harian.
           const IgnorePointer(
             child: ConfettiCelebration(
-              kinds: [CelebrationKind.taskDone, CelebrationKind.levelUp],
+              kinds: [
+                CelebrationKind.taskDone,
+                CelebrationKind.levelUp,
+                CelebrationKind.dailyReward,
+              ],
             ),
           ),
         ],

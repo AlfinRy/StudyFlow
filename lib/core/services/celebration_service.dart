@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Jenis momen yang layak dirayakan (confetti + haptic).
-enum CelebrationKind { taskDone, focusComplete, levelUp }
+enum CelebrationKind { taskDone, focusComplete, levelUp, dailyReward }
 
 /// Sebuah peristiwa rayaan (immutable). [id] menjamin dua peristiwa sejenis
 /// berturut-turut tetap terdeteksi sebagai perubahan state.

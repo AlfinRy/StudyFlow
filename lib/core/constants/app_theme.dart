@@ -54,6 +54,38 @@ class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: background,
       textTheme: textTheme,
+      // Garis pemisah adaptif.
+      dividerColor: border,
+      // Komponen overlay (dialog/sheet/menu) — eksplisit agar ikut mode &
+      // hindari surface-tint elevation Material 3 yang memudar di mode gelap.
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.lg),
+        ),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppSpacing.lg),
+          ),
+        ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.md),
+        ),
+        textStyle: textTheme.bodyMedium?.copyWith(color: textPrimary),
+      ),
+      listTileTheme: ListTileThemeData(
+        iconColor: textSecondary,
+        textColor: textPrimary,
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: surface,
         foregroundColor: textPrimary,

@@ -54,7 +54,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _showError('Setujui Ketentuan Layanan & Kebijakan Privasi untuk lanjut.');
       return;
     }
-    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (!(_formKey.currentState?.validate() ?? false)) {
+      // Validasi gagal (cth. sandi kurang kuat/konfirmasi tak cocok) — error
+      // inline kadang tak terlihat pengguna. Beri snackbar agar jelas ada
+      // yang harus diperbaiki (bug "tidak terjadi apa-apa").
+      _showError('Periksa kembali isian Anda — ada field yang belum valid.');
+      return;
+    }
 
     // ⚠️ Anti spam akun: batasi pendaftaran di level app.
     final limiter = ref.read(rateLimiterProvider);
@@ -69,12 +75,19 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     setState(() => _loading = true);
     try {
+      // Anti-hang: bila Firebase lambat/tidak merespons (umum di emulator
+      // dengan jaringan tidak stabil), munculkan error setelah 25 detik agar
+      // tombol tidak macet di status loading (terlihat seperti "diam").
       await ref.read(authRepositoryProvider).register(
             name: _name.text,
             email: _email.text,
             password: _password.text,
             role: _role!,
-          );
+          ).timeout(
+        const Duration(seconds: 25),
+        onTimeout: () =>
+            throw Exception('Server lambat merespons. Periksa koneksi & coba lagi.'),
+      );
       limiter.reset(RateLimitedAction.register);
       // authStateProvider memancarkan user. Mode Firebase → status belum
       // verifikasi → app.dart mengarahkan ke VerifyEmailScreen.

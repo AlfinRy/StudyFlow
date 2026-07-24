@@ -1,6 +1,7 @@
 // Layanan berbagi pencapaian (share milestone) — ekstensi Tier 4 roadmap
 // (akuisisi organik). Kartu prestasi dirender ke gambar PNG lalu dibagikan via
-// share sheet sistem (`share_plus`).
+// share sheet sistem (`share_plus`). Bila capture/share gambar gagal, fallback
+// ke share teks saja agar fitur tetap berfungsi.
 
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -28,36 +29,68 @@ String buildShareText({
   return buffer.toString().trim();
 }
 
-/// Render widget di balik [boundaryKey] menjadi PNG, tulis ke direktori temp,
-/// lalu buka share sheet sistem. Mengembalikan `true` bila berhasil dibagikan,
-/// `false` bila widget tak ter-render (mis. belum di-layout).
+/// Hasil operasi berbagi.
+enum ShareOutcome {
+  /// Kartu gambar berhasil dibagikan.
+  imageShared,
+  /// Gambar gagal — fallback ke berbagi teks saja (fitur tetap berfungsi).
+  textOnlyShared,
+  /// Keduanya gagal.
+  failed,
+}
+
+/// Berbagi kartu prestasi. **Berlapis (robust):** coba render widget di balik
+/// [boundaryKey] → PNG → share file; bila gagal (capture/error), fallback ke
+/// share teks saja agar fitur tetap berfungsi. Seluruh langkah di-log via
+/// `debugPrint` agar penyebab kegagalan terlihat di `flutter logs`.
 ///
 /// `pixelRatio` tinggi (3.0) agar gambar tajam untuk story IG/WA.
-Future<bool> shareBoundaryAsImage(
+Future<ShareOutcome> shareAchievement(
   GlobalKey boundaryKey, {
   String? text,
   double pixelRatio = 3.0,
 }) async {
-  final boundary = boundaryKey.currentContext?.findRenderObject()
-      as RenderRepaintBoundary?;
-  if (boundary == null || boundary.debugNeedsPaint) return false;
+  // 1) Coba capture gambar + share file.
+  try {
+    final boundary = boundaryKey.currentContext?.findRenderObject()
+        as RenderRepaintBoundary?;
+    if (boundary != null && !boundary.debugNeedsPaint) {
+      final image = await boundary.toImage(pixelRatio: pixelRatio);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData != null) {
+        final dir = await getTemporaryDirectory();
+        final stamp = DateTime.now().millisecondsSinceEpoch;
+        final file = File('${dir.path}/studyflow_pencapaian_$stamp.png');
+        await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+        debugPrint('[Share] gambar OK → ${file.path} '
+            '(${file.lengthSync()} bytes), memanggil share sheet...');
+        await SharePlus.instance.share(
+          ShareParams(
+            files: [XFile(file.path)],
+            text: text,
+            subject: 'Pencapaian StudyFlow',
+          ),
+        );
+        return ShareOutcome.imageShared;
+      }
+      debugPrint('[Share] byteData PNG null.');
+    } else {
+      debugPrint('[Share] boundary belum di-paint (debugNeedsPaint) '
+          'atau null — fallback teks.');
+    }
+  } catch (e, st) {
+    debugPrint('[Share] capture/share gambar GAGAL: $e\n$st');
+  }
 
-  final image = await boundary.toImage(pixelRatio: pixelRatio);
-  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-  if (byteData == null) return false;
-
-  final bytes = byteData.buffer.asUint8List();
-  final dir = await getTemporaryDirectory();
-  final stamp = DateTime.now().millisecondsSinceEpoch;
-  final file = File('${dir.path}/studyflow_pencapaian_$stamp.png');
-  await file.writeAsBytes(bytes, flush: true);
-
-  await SharePlus.instance.share(
-    ShareParams(
-      files: [XFile(file.path)],
-      text: text,
-      subject: 'Pencapaian StudyFlow',
-    ),
-  );
-  return true;
+  // 2) Fallback: share teks saja.
+  try {
+    debugPrint('[Share] fallback ke share teks saja.');
+    await SharePlus.instance.share(
+      ShareParams(text: text ?? '', subject: 'Pencapaian StudyFlow'),
+    );
+    return ShareOutcome.textOnlyShared;
+  } catch (e, st) {
+    debugPrint('[Share] share teks JUGA gagal: $e\n$st');
+    return ShareOutcome.failed;
+  }
 }

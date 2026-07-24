@@ -135,15 +135,18 @@ class FirebaseAuthRepository implements AuthRepository {
     required String password,
     required UserRole role,
   }) async {
+    debugPrint('[Auth] register mulai: $email');
     try {
       final cred = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
+      debugPrint('[Auth] createUser OK: ${cred.user?.uid}');
       final user = cred.user!;
       await user.updateDisplayName(name.trim());
       await _saveProfile(user.uid, name: name.trim(), role: role);
       await _writeFirestoreProfile(user, name: name.trim(), role: role);
+      debugPrint('[Auth] profil tersimpan (Hive + Firestore).');
       // ⚠️ KEAMANAN: kirim email verifikasi segera setelah daftar. Tanpa ini,
       // siapa pun bisa mendaftar memakai email milik orang lain. User belum
       // verifikasi tidak bisa mengakses app (gate di app.dart).
@@ -151,8 +154,10 @@ class FirebaseAuthRepository implements AuthRepository {
       final u = _map(user);
       if (u == null) throw Exception('Pendaftaran gagal. Coba lagi.');
       _emit(user);
+      debugPrint('[Auth] register selesai → arahkan ke verifikasi email.');
       return u;
     } on FirebaseAuthException catch (e) {
+      debugPrint('[Auth] register FirebaseAuthException: ${e.code} — ${e.message}');
       throw Exception(authErrorMessage(e));
     }
   }

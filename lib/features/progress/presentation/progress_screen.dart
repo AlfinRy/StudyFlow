@@ -1020,21 +1020,29 @@ class _ShareAchievementDialogState extends State<_ShareAchievementDialog> {
     setState(() => _sharing = true);
     // Pastikan frame selesai dicat sebelum capture.
     await WidgetsBinding.instance.endOfFrame;
+    ShareOutcome outcome;
     try {
-      final ok = await shareBoundaryAsImage(_boundaryKey, text: text);
-      if (!mounted) return;
-      if (!ok) {
+      outcome = await shareAchievement(_boundaryKey, text: text);
+    } catch (e, st) {
+      debugPrint('[ShareDialog] tak terduga: $e\n$st');
+      outcome = ShareOutcome.failed;
+    }
+    if (!mounted) return;
+    setState(() => _sharing = false);
+    switch (outcome) {
+      case ShareOutcome.imageShared:
+        break; // share sheet sudah terbuka, tak perlu snackbar.
+      case ShareOutcome.textOnlyShared:
         messenger.showSnackBar(
-          const SnackBar(content: Text('Gagal menyiapkan kartu. Coba lagi.')),
+          const SnackBar(
+              content: Text(
+                  'Kartu gambar gagal — teks pencapaian dibagikan sebagai gantinya.')),
         );
-      }
-    } catch (_) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Gagal membagikan. Coba lagi.')),
-      );
-    } finally {
-      if (mounted) setState(() => _sharing = false);
+      case ShareOutcome.failed:
+        messenger.showSnackBar(
+          const SnackBar(
+              content: Text('Gagal membagikan. Cek izin atau coba lagi.')),
+        );
     }
   }
 

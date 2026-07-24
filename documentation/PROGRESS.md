@@ -20,6 +20,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 | 13. Fitur Engagement | Pomodoro/Focus Timer, Confetti+haptic, Leaderboard mingguan, Dark Mode | ✅ Selesai |
 | 14. Tugas Berulang | Recurring tasks (none/daily/weekly/biweekly/monthly); auto-generate instance berikutnya saat selesai | ✅ Selesai |
 | 15. Streak & Reward Harian | Streak freeze (melindungi hari bolos) + hadiah harian (+XP, +freeze tiap 7 hari) | ✅ Selesai |
+| 16. Bagikan Pencapaian | Kartu prestasi (level/XP/streak) → PNG → share sheet sistem (share_plus); akuisisi organik | ✅ Selesai |
 
 ## Catatan konfigurasi
 
@@ -282,14 +283,19 @@ Dependency baru: `confetti`.
   rantai nyata, tak meng-inflate streak dari nol. Hadiah harian: +XP
   (5–30, skala dgn streak) + bonus freeze tiap kelipatan 7. Bonus XP
   tergabung ke `totalXpProvider`. UI kartu streak dgn tombol klaim + confetti.
+- **Fase 16 — Bagikan pencapaian:** `share_plus` + render `RepaintBoundary`
+  ke PNG. `AchievementShareCard` (tema navy brand konstan) menampilkan badge
+  level, XP, streak, tugas selesai, nama, tagline. Tombol di Progres →
+  dialog preview → share sheet (teks + gambar). Query `SEND image/*` di
+  AndroidManifest untuk visibilitas app target (Android 11+).
 - **Perbaikan:** UX Google sign-in (feedback + logging saat gagal) + audit
   secret (`key.properties` & `upload-keystore.jks` kini di-gitignore, tak
   pernah masuk history git).
 
-State kode: `flutter analyze` **0 issue**, **172/172 test lulus**.
+State kode: `flutter analyze` **0 issue**, **175/175 test lulus**.
 
 ### Roadmap fitur lanjutan (dikerjakan BERTAHAP, 1 fitur per commit)
-Sumber: `documentation/FEATURE_ROADMAP.md`. Selesai **6/12**. Sisa kandidat:
+Sumber: `documentation/FEATURE_ROADMAP.md`. Selesai **7/12**. Sisa kandidat:
 
 | # | Fitur | Tier | Effort |
 |---|-------|------|--------|
@@ -298,11 +304,11 @@ Sumber: `documentation/FEATURE_ROADMAP.md`. Selesai **6/12**. Sisa kandidat:
 | 8 | Onboarding personalisasi | 3 | Sedang |
 | 10 | Pencarian global + tag materi | 3 | Sedang |
 | 11 | Grup belajar / Jadwal bersama | 4 | Tinggi |
-| 12 | Bagikan pencapaian (share milestone) | 4 | Rendah–sedang |
 
-Saran urutan berikutnya (effort rendah × dampak tinggi): **#12 Bagikan
-pencapaian** (viral loop, pakai `share_plus`) → **#8 Onboarding
-personalisasi** (aktivasi first-run).
+Saran urutan berikutnya: **#8 Onboarding personalisasi** (aktivasi first-run,
+manfaat besar untuk retensi pengguna baru) → **#5 Impor Kalender .ics**.
+Atau fokus ke **Fase 11 (Polish UI)** bila ingin semua layar rapi untuk
+presentasi.
 
 ### Sisa pekerjaan non-fitur
 1. **Polish (Fase 11)** — sesuaikan UI final dengan `UI_DESIGN.md`/Figma,

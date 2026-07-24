@@ -101,8 +101,14 @@ Saat data materi/forum tumbuh, search menjadi kebutuhan.
 Perluas Forum → "Study Room" dengan jadwal/tugas bersama. Viral loop:
 satu user mengajak teman.
 
-### 12. Bagikan pencapaian (Share milestone)
+### 12. Bagikan pencapaian (Share milestone) ✅
 Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
+**Status:** ✅ Selesai (Fase 16). `share_plus` + render widget ke PNG via
+`RepaintBoundary`. Kartu prestasi (`AchievementShareCard`) selalu tema navy
+brand (konsisten saat dibagikan): badge level, XP, streak, tugas selesai,
+nama user, tagline. Tombol "Bagikan Pencapaianmu" di Progres → dialog
+preview → share sheet sistem (teks caption + gambar). Query `SEND image/*`
+ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11+).
 
 ---
 
@@ -116,11 +122,12 @@ Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
 | 4 | **Dark mode** | ✅ Selesai (Fase 13) |
 | 5 | **Tugas berulang** (Tier 2) | ✅ Selesai (Fase 14) |
 | 6 | **Streak freeze & reward harian** (Tier 3) | ✅ Selesai (Fase 15) |
+| 7 | **Bagikan pencapaian** (Tier 4) | ✅ Selesai (Fase 16) |
 
-Enam fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+Tujuh fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
 (satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
 Android, impor kalender .ics, onboarding personalisasi, pencarian global,
-grup belajar, bagikan pencapaian.
+grup belajar.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

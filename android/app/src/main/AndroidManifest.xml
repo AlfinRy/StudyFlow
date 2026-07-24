@@ -58,5 +58,10 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Untuk berbagi gambar pencapaian (share_plus, Tier 4). -->
+        <intent>
+            <action android:name="android.intent.action.SEND"/>
+            <data android:mimeType="image/*"/>
+        </intent>
     </queries>
 </manifest>

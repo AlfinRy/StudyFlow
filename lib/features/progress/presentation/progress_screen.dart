@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/utils/date_labels.dart';
+import '../../../core/services/share_service.dart';
+import '../../auth/auth_providers.dart';
+import '../../../shared_widgets/achievement_share_card.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../../shared_widgets/section_header.dart';
 import '../../focus/domain/focus_stats.dart' hide weekStart;
@@ -42,6 +45,26 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
       if (!mounted) return;
       ref.read(streakProfileProvider.notifier).reconcile(DateTime.now());
     });
+  }
+
+  /// Buka dialog berbagi pencapaian (render kartu → PNG → share sheet).
+  Future<void> _showShareDialog(BuildContext context) {
+    final xp = ref.read(totalXpProvider);
+    final level = levelForXp(xp);
+    final info = ref.read(streakInfoProvider);
+    final tasksDone = ref.read(completedTasksProvider).length;
+    final user = ref.read(currentUserProvider);
+    return showDialog<void>(
+      context: context,
+      builder: (_) => _ShareAchievementDialog(
+        levelIndex: level.index,
+        levelTitle: level.title,
+        xp: xp,
+        streak: info.currentStreak,
+        tasksDone: tasksDone,
+        userName: user?.name,
+      ),
+    );
   }
 
   @override
@@ -101,6 +124,17 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen> {
 
         // Streak (freeze + hadiah harian)
         const _StreakCard(),
+        const SizedBox(height: AppSpacing.lg),
+
+        // Bagikan pencapaian (Tier 4 — akuisisi organik)
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _showShareDialog(context),
+            icon: const Icon(Icons.share_outlined, size: 18),
+            label: const Text('Bagikan Pencapaianmu'),
+          ),
+        ),
         const SizedBox(height: AppSpacing.xl),
 
         // Pencapaian (milestone)
@@ -939,6 +973,130 @@ class _LevelCard extends StatelessWidget {
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Dialog Bagikan Pencapaian
+// ---------------------------------------------------------------------------
+
+class _ShareAchievementDialog extends StatefulWidget {
+  const _ShareAchievementDialog({
+    required this.levelIndex,
+    required this.levelTitle,
+    required this.xp,
+    required this.streak,
+    required this.tasksDone,
+    this.userName,
+  });
+
+  final int levelIndex;
+  final String levelTitle;
+  final int xp;
+  final int streak;
+  final int tasksDone;
+  final String? userName;
+
+  @override
+  State<_ShareAchievementDialog> createState() =>
+      _ShareAchievementDialogState();
+}
+
+class _ShareAchievementDialogState extends State<_ShareAchievementDialog> {
+  final _boundaryKey = GlobalKey();
+  bool _sharing = false;
+
+  Future<void> _share() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final text = buildShareText(
+      levelIndex: widget.levelIndex,
+      levelTitle: widget.levelTitle,
+      xp: widget.xp,
+      streak: widget.streak,
+      tasksDone: widget.tasksDone,
+    );
+    setState(() => _sharing = true);
+    // Pastikan frame selesai dicat sebelum capture.
+    await WidgetsBinding.instance.endOfFrame;
+    try {
+      final ok = await shareBoundaryAsImage(_boundaryKey, text: text);
+      if (!mounted) return;
+      if (!ok) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Gagal menyiapkan kartu. Coba lagi.')),
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Gagal membagikan. Coba lagi.')),
+      );
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: AppColors.surface,
+      insetPadding: const EdgeInsets.all(AppSpacing.lg),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Bagikan Pencapaian',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close_rounded),
+                  onPressed:
+                      _sharing ? null : () => Navigator.of(context).pop(),
+                  tooltip: 'Tutup',
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            RepaintBoundary(
+              key: _boundaryKey,
+              child: AchievementShareCard(
+                levelIndex: widget.levelIndex,
+                levelTitle: widget.levelTitle,
+                xp: widget.xp,
+                streak: widget.streak,
+                tasksDone: widget.tasksDone,
+                userName: widget.userName,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _sharing ? null : _share,
+                icon: _sharing
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.share_rounded, size: 18),
+                label: Text(_sharing ? 'Menyiapkan...' : 'Bagikan'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

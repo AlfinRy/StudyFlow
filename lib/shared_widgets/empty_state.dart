@@ -24,9 +24,9 @@ class EmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         children: [
@@ -44,7 +44,7 @@ class EmptyState extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 15,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
           if (subtitle != null) ...[
@@ -53,7 +53,7 @@ class EmptyState extends StatelessWidget {
               subtitle!,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
                 fontSize: 13,
               ),
             ),

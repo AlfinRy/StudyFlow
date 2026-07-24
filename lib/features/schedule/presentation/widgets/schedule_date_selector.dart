@@ -84,10 +84,10 @@ class _DateChip extends StatelessWidget {
         width: 56,
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: selected ? accent : AppColors.surface,
+          color: selected ? accent : context.surface,
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           border: Border.all(
-            color: selected ? accent : AppColors.surfaceBorder,
+            color: selected ? accent : context.surfaceBorder,
           ),
         ),
         child: Column(
@@ -100,7 +100,7 @@ class _DateChip extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 color: selected
                     ? Colors.white70
-                    : AppColors.textSecondary,
+                    : context.textSecondary,
               ),
             ),
             const SizedBox(height: 2),
@@ -111,7 +111,7 @@ class _DateChip extends StatelessWidget {
                 fontWeight: FontWeight.w700,
                 color: selected
                     ? Colors.white
-                    : AppColors.textPrimary,
+                    : context.textPrimary,
               ),
             ),
             const SizedBox(height: 2),

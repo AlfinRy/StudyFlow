@@ -29,7 +29,7 @@ class ForumScreen extends ConsumerWidget {
     final topicsAsync = ref.watch(forumTopicsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),

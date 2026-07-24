@@ -207,7 +207,7 @@ class MainShell extends ConsumerWidget {
                           'Pengingat sedang nonaktif. Aktifkan di Profil → Notifikasi.',
                           style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
                               height: 1.3),
                         ),
                       ),
@@ -223,7 +223,7 @@ class MainShell extends ConsumerWidget {
                   'untuk mendapat reminder menjelang deadline.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontSize: 13,
                       height: 1.4),
                 ),
@@ -269,7 +269,7 @@ class MainShell extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: StudyFlowTopBar(
         onNotificationsPressed: () => _showNotifications(context, ref),
       ),

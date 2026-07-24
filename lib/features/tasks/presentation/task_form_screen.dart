@@ -144,7 +144,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -264,9 +264,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.surface,
                 borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                border: Border.all(color: AppColors.surfaceBorder),
+                border: Border.all(color: context.surfaceBorder),
               ),
               child: Row(
                 children: [
@@ -281,7 +281,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                           'Aktifkan Pengingat',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                         SizedBox(height: 2),
@@ -289,7 +289,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                           'Pengingat H-1 & hari-H, pukul 08.00',
                           style: TextStyle(
                             fontSize: 11.5,
-                            color: AppColors.textSecondary,
+                            color: context.textSecondary,
                           ),
                         ),
                       ],
@@ -357,7 +357,7 @@ class _PickerField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
       ),

@@ -131,7 +131,7 @@ class _ScheduleFormScreenState extends ConsumerState<ScheduleFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -269,7 +269,7 @@ class _FieldLabel extends StatelessWidget {
       style: TextStyle(
         fontSize: 13,
         fontWeight: FontWeight.w600,
-        color: AppColors.textSecondary,
+        color: context.textSecondary,
       ),
     );
   }
@@ -293,7 +293,7 @@ class _DayPicker extends StatelessWidget {
           selected: active,
           selectedColor: AppColors.accent,
           labelStyle: TextStyle(
-            color: active ? Colors.white : AppColors.textPrimary,
+            color: active ? Colors.white : context.textPrimary,
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),
@@ -330,7 +330,7 @@ class _TimeField extends StatelessWidget {
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
       ),
@@ -354,7 +354,7 @@ class _CategoryPicker extends StatelessWidget {
           selected: selected == null,
           selectedColor: AppColors.accent,
           labelStyle: TextStyle(
-            color: selected == null ? Colors.white : AppColors.textPrimary,
+            color: selected == null ? Colors.white : context.textPrimary,
             fontWeight: FontWeight.w600,
             fontSize: 13,
           ),
@@ -367,7 +367,7 @@ class _CategoryPicker extends StatelessWidget {
             selected: active,
             selectedColor: AppColors.accent,
             labelStyle: TextStyle(
-              color: active ? Colors.white : AppColors.textPrimary,
+              color: active ? Colors.white : context.textPrimary,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),

@@ -66,3 +66,21 @@ class AppColors {
   static const Color danger = Color(0xFFDC2626);
   static const Color info = Color(0xFF2563EB);
 }
+
+/// Akses REAKTIF ke token adaptif melalui [BuildContext]. Membaca dari
+/// [Theme] (InheritedWidget) sehingga widget — termasuk yang `const` — ikut
+/// di-build ulang saat mode gelap/terang berganti.
+///
+/// Gunakan `context.surface`, `context.textPrimary`, dst. alih-alih getter
+/// statis `context.surface` yang lama (non-reaktif terhadap widget `const`).
+///
+/// Pemetaan: surface→colorScheme.surface, textPrimary→onSurface,
+/// textSecondary→onSurfaceVariant, surfaceBorder→outline,
+/// background→scaffoldBackgroundColor (di-set per-mode di AppTheme).
+extension AdaptiveAppColors on BuildContext {
+  Color get surface => Theme.of(this).colorScheme.surface;
+  Color get background => Theme.of(this).scaffoldBackgroundColor;
+  Color get surfaceBorder => Theme.of(this).colorScheme.outline;
+  Color get textPrimary => Theme.of(this).colorScheme.onSurface;
+  Color get textSecondary => Theme.of(this).colorScheme.onSurfaceVariant;
+}

@@ -165,7 +165,7 @@ class _FilterTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.background,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Row(
@@ -186,7 +186,7 @@ class _FilterTabs extends StatelessWidget {
                 child: Text(
                   labels[i],
                   style: TextStyle(
-                    color: active ? Colors.white : AppColors.textSecondary,
+                    color: active ? Colors.white : context.textSecondary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -258,9 +258,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -275,7 +275,7 @@ class _StatCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                 ),
               ),
@@ -287,7 +287,7 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
           if (progress != null) ...[
@@ -297,7 +297,7 @@ class _StatCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 6,
-                backgroundColor: AppColors.background,
+                backgroundColor: context.background,
                 valueColor: AlwaysStoppedAnimation<Color>(iconColor),
               ),
             ),

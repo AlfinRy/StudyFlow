@@ -20,7 +20,7 @@ class LeaderboardScreen extends ConsumerWidget {
     final asyncTop = ref.watch(leaderboardTopProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(title: const Text('Papan Peringkat')),
       body: SafeArea(
         child: !available
@@ -108,9 +108,9 @@ class _ShareToggle extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.xs),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: SwitchListTile(
         contentPadding: EdgeInsets.zero,
@@ -121,7 +121,7 @@ class _ShareToggle extends ConsumerWidget {
           share
               ? 'Nama & XP mingguan Anda terlihat pengguna lain.'
               : 'Privasi aktif — progres Anda tidak ditampilkan.',
-          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 12, color: context.textSecondary),
         ),
         value: share,
         onChanged: (v) =>
@@ -151,11 +151,11 @@ class _RankTile extends StatelessWidget {
   final int rank;
   final LeaderboardEntry entry;
 
-  Color get _medalColor => switch (rank) {
+  Color _medalColor(BuildContext context) => switch (rank) {
         1 => const Color(0xFFFFD54F), // gold
         2 => const Color(0xFFB0BEC5), // silver
         3 => const Color(0xFFCD7F32), // bronze
-        _ => AppColors.textSecondary,
+        _ => context.textSecondary,
       };
 
   @override
@@ -167,10 +167,10 @@ class _RankTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: entry.isMe
             ? AppColors.accent.withValues(alpha: 0.08)
-            : AppColors.surface,
+            : context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         border: Border.all(
-          color: entry.isMe ? AppColors.accent : AppColors.surfaceBorder,
+          color: entry.isMe ? AppColors.accent : context.surfaceBorder,
           width: entry.isMe ? 1.5 : 1,
         ),
       ),
@@ -179,13 +179,13 @@ class _RankTile extends StatelessWidget {
           SizedBox(
             width: 28,
             child: rank <= 3
-                ? Icon(Icons.emoji_events_rounded, color: _medalColor, size: 24)
+                ? Icon(Icons.emoji_events_rounded, color: _medalColor(context), size: 24)
                 : Text(
                     '$rank',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                     ),
                   ),
           ),
@@ -207,13 +207,13 @@ class _RankTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: entry.isMe ? FontWeight.w700 : FontWeight.w600,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 Text(
                   '${entry.weeklyXp} XP minggu ini',
                   style: TextStyle(
-                      fontSize: 12, color: AppColors.textSecondary),
+                      fontSize: 12, color: context.textSecondary),
                 ),
               ],
             ),

@@ -122,7 +122,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen>
   Widget build(BuildContext context) {
     final email = ref.watch(currentUserProvider)?.email ?? '';
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -137,7 +137,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen>
                     ? 'Periksa email Anda untuk menyelesaikan pendaftaran.'
                     : 'Kami telah mengirim tautan verifikasi ke:',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: context.textSecondary),
               ),
               if (email.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.sm),
@@ -146,7 +146,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen>
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                     fontSize: 16,
                   ),
                 ),
@@ -242,9 +242,9 @@ class _StepsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -297,7 +297,7 @@ class _StepItem extends StatelessWidget {
           Expanded(
             child: Text(text,
                 style: TextStyle(
-                    color: AppColors.textPrimary, fontSize: 13)),
+                    color: context.textPrimary, fontSize: 13)),
           ),
         ],
       ),

@@ -31,7 +31,7 @@ class ProgressDonut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final resolvedTrack = trackColor ?? AppColors.surfaceBorder;
+    final resolvedTrack = trackColor ?? context.surfaceBorder;
     return SizedBox(
       width: size,
       height: size,

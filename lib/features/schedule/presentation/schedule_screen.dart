@@ -119,7 +119,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -187,9 +187,9 @@ class _WeeklyProgressCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Row(
         children: [
@@ -201,7 +201,7 @@ class _WeeklyProgressCard extends ConsumerWidget {
                   'Progres Belajar',
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -211,7 +211,7 @@ class _WeeklyProgressCard extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -220,7 +220,7 @@ class _WeeklyProgressCard extends ConsumerWidget {
                   child: LinearProgressIndicator(
                     value: percent,
                     minHeight: 8,
-                    backgroundColor: AppColors.background,
+                    backgroundColor: context.background,
                     valueColor:
                         const AlwaysStoppedAnimation<Color>(AppColors.accent),
                   ),

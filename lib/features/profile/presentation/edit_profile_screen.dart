@@ -139,7 +139,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     final displayName = _nameCtrl.text.trim();
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -210,7 +210,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   child: Text(
                     'Upload foto butuh Firebase (tidak tersedia di mode demo).',
                     style:
-                        TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                        TextStyle(color: context.textSecondary, fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -312,9 +312,9 @@ class _PhotoSetRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Row(
         children: [
@@ -325,7 +325,7 @@ class _PhotoSetRow extends StatelessWidget {
             child: Text(
               'Foto profil terpasang',
               style: TextStyle(
-                color: AppColors.textPrimary,
+                color: context.textPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),

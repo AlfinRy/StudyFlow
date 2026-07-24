@@ -33,9 +33,9 @@ class MaterialCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,14 +72,14 @@ class MaterialCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     Icon(Icons.schedule_rounded,
-                        size: 14, color: AppColors.textSecondary),
+                        size: 14, color: context.textSecondary),
                     const SizedBox(width: 4),
                     Flexible(
                       child: Text(
@@ -89,7 +89,7 @@ class MaterialCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w500,
-                          color: AppColors.textSecondary,
+                          color: context.textSecondary,
                         ),
                       ),
                     ),
@@ -101,7 +101,7 @@ class MaterialCard extends StatelessWidget {
           if (onOpen != null || onEdit != null || onDelete != null)
             PopupMenuButton<_MaterialMenu>(
               icon: Icon(Icons.more_vert_rounded,
-                  color: AppColors.textSecondary),
+                  color: context.textSecondary),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.md)),
               itemBuilder: (_) => [
@@ -194,9 +194,9 @@ class _CategoryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.background,
         borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Text(
         category,
@@ -205,7 +205,7 @@ class _CategoryChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
+          color: context.textSecondary,
         ),
       ),
     );

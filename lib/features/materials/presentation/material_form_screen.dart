@@ -218,7 +218,7 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
     final isNote = _type == MaterialFileType.note;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -375,7 +375,7 @@ class _FilePickerField extends StatelessWidget {
           suffixIcon: hasValue
               ? const Icon(Icons.check_circle_rounded, color: AppColors.success)
               : Icon(Icons.upload_file_rounded,
-                  color: AppColors.textSecondary),
+                  color: context.textSecondary),
         ),
         child: Text(
           valueText ?? hint,
@@ -384,7 +384,7 @@ class _FilePickerField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: hasValue ? AppColors.textPrimary : AppColors.textSecondary,
+            color: hasValue ? context.textPrimary : context.textSecondary,
           ),
         ),
       ),

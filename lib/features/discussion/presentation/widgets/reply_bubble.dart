@@ -33,7 +33,7 @@ class ReplyBubble extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -42,7 +42,7 @@ class ReplyBubble extends StatelessWidget {
                   Text(
                     timeAgo(reply.createdAt),
                     style: TextStyle(
-                        color: AppColors.textSecondary, fontSize: 11),
+                        color: context.textSecondary, fontSize: 11),
                   ),
                 ],
               ),
@@ -51,14 +51,14 @@ class ReplyBubble extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md, vertical: AppSpacing.sm + 2),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: context.background,
                   borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                  border: Border.all(color: AppColors.surfaceBorder),
+                  border: Border.all(color: context.surfaceBorder),
                 ),
                 child: Text(
                   reply.content,
                   style: TextStyle(
-                      color: AppColors.textPrimary, fontSize: 14, height: 1.4),
+                      color: context.textPrimary, fontSize: 14, height: 1.4),
                 ),
               ),
             ],

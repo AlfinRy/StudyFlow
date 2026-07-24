@@ -98,7 +98,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     final minutesToday = focusMinutesToday(sessions, now);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         title: const Text('Fokus (Pomodoro)'),
         actions: [
@@ -271,7 +271,7 @@ class _TimerRing extends StatelessWidget {
         size: 260,
         strokeWidth: 18,
         progressColor: phaseColor,
-        trackColor: AppColors.surfaceBorder,
+        trackColor: context.surfaceBorder,
         center: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -290,7 +290,7 @@ class _TimerRing extends StatelessWidget {
               style: TextStyle(
                 fontSize: 52,
                 fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
+                color: context.textPrimary,
                 height: 1,
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
@@ -303,7 +303,7 @@ class _TimerRing extends StatelessWidget {
                       ? 'Dijeda'
                       : 'Sedang berjalan…',
               style: TextStyle(
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
                 fontSize: 12,
               ),
             ),
@@ -392,9 +392,9 @@ class _CircleIcon extends StatelessWidget {
     return Tooltip(
       message: tooltip,
       child: Material(
-        color: AppColors.surface,
+        color: context.surface,
         shape: CircleBorder(
-          side: BorderSide(color: AppColors.surfaceBorder),
+          side: BorderSide(color: context.surfaceBorder),
         ),
         child: InkWell(
           customBorder: const CircleBorder(),
@@ -402,7 +402,7 @@ class _CircleIcon extends StatelessWidget {
           child: SizedBox(
             width: 56,
             height: 56,
-            child: Icon(icon, color: AppColors.textSecondary),
+            child: Icon(icon, color: context.textSecondary),
           ),
         ),
       ),
@@ -423,13 +423,13 @@ class _TaskPicker extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.flag_outlined, color: AppColors.textSecondary, size: 20),
+          Icon(Icons.flag_outlined, color: context.textSecondary, size: 20),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: DropdownButtonHideUnderline(
@@ -520,9 +520,9 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         children: [
@@ -535,7 +535,7 @@ class _StatCard extends StatelessWidget {
           Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontSize: 11, color: AppColors.textSecondary, height: 1.2)),
+                  fontSize: 11, color: context.textSecondary, height: 1.2)),
         ],
       ),
     );

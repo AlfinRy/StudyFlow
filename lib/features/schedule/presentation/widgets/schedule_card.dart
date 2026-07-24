@@ -23,7 +23,7 @@ class ScheduleCard extends StatelessWidget {
     final locationBadge = _LocationBadge(location: schedule.location);
 
     return Material(
-      color: AppColors.surface,
+      color: context.surface,
       borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
@@ -32,7 +32,7 @@ class ScheduleCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(color: AppColors.surfaceBorder),
+            border: Border.all(color: context.surfaceBorder),
           ),
           child: Row(
             children: [
@@ -58,21 +58,21 @@ class ScheduleCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         Icon(Icons.access_time_rounded,
-                            size: 14, color: AppColors.textSecondary),
+                            size: 14, color: context.textSecondary),
                         const SizedBox(width: 4),
                         Flexible(
                           child: Text(
                             '${schedule.startTime} – ${schedule.endTime}',
                             style: TextStyle(
                               fontSize: 12.5,
-                              color: AppColors.textSecondary,
+                              color: context.textSecondary,
                             ),
                           ),
                         ),
@@ -86,7 +86,7 @@ class ScheduleCard extends StatelessWidget {
                 ),
               ),
               Icon(Icons.chevron_right_rounded,
-                  color: AppColors.textSecondary),
+                  color: context.textSecondary),
             ],
           ),
         ),
@@ -116,10 +116,10 @@ class _LocationBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: online
             ? AppColors.info.withValues(alpha: 0.12)
-            : AppColors.background,
+            : context.background,
         borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
         border: Border.all(
-          color: online ? AppColors.info : AppColors.surfaceBorder,
+          color: online ? AppColors.info : context.surfaceBorder,
         ),
       ),
       child: Text(
@@ -130,7 +130,7 @@ class _LocationBadge extends StatelessWidget {
           fontSize: 10,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.4,
-          color: online ? AppColors.info : AppColors.textSecondary,
+          color: online ? AppColors.info : context.textSecondary,
         ),
       ),
     );

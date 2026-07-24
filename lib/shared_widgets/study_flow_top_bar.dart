@@ -46,7 +46,7 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
                   'StudyFlow',
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -59,11 +59,11 @@ class StudyFlowTopBar extends StatelessWidget implements PreferredSizeWidget {
               tooltip: 'Notifikasi',
             ),
           ],
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surface,
       elevation: 0,
       scrolledUnderElevation: 0,
       shape: Border(
-        bottom: BorderSide(color: AppColors.surfaceBorder, width: 1),
+        bottom: BorderSide(color: context.surfaceBorder, width: 1),
       ),
     );
   }

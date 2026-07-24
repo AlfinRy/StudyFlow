@@ -46,6 +46,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _submit() async {
+    debugPrint('[Register] tombol "Daftar" ditekan. '
+        'role=$_role agree=$_agree name="${_name.text}" email="${_email.text}" '
+        'pwLen=${_password.text.length}');
     if (_role == null) {
       _showError('Pilih kategori "Daftar Sebagai".');
       return;
@@ -58,6 +61,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Validasi gagal (cth. sandi kurang kuat/konfirmasi tak cocok) — error
       // inline kadang tak terlihat pengguna. Beri snackbar agar jelas ada
       // yang harus diperbaiki (bug "tidak terjadi apa-apa").
+      debugPrint('[Register] validasi form GAGAL (cek sandi/konfirmasi/email).');
       _showError('Periksa kembali isian Anda — ada field yang belum valid.');
       return;
     }
@@ -115,7 +119,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(title: const Text('Daftar Akun Baru')),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -152,7 +156,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                       )),
                 ),
                 const SizedBox(height: AppSpacing.sm),
@@ -276,7 +280,7 @@ class _Intro extends StatelessWidget {
           'Mulai perjalanan akademik cerdasmu hari ini.',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: AppColors.textSecondary,
+            color: context.textSecondary,
             fontSize: 14,
           ),
         ),

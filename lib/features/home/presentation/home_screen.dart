@@ -309,19 +309,19 @@ class _SectionHint extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: AppColors.textSecondary),
+          Icon(icon, size: 20, color: context.textSecondary),
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13),
+                  color: context.textSecondary, fontSize: 13),
             ),
           ),
         ],
@@ -348,7 +348,7 @@ class _ShortcutCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: context.surface,
       borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       child: InkWell(
         onTap: onTap,
@@ -357,7 +357,7 @@ class _ShortcutCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-            border: Border.all(color: AppColors.surfaceBorder),
+            border: Border.all(color: context.surfaceBorder),
           ),
           child: Row(
             children: [
@@ -377,7 +377,7 @@ class _ShortcutCard extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: context.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                       ),
@@ -386,12 +386,12 @@ class _ShortcutCard extends StatelessWidget {
                     Text(
                       subtitle,
                       style: TextStyle(
-                          color: AppColors.textSecondary, fontSize: 12.5),
+                          color: context.textSecondary, fontSize: 12.5),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+              Icon(Icons.chevron_right, color: context.surfaceBorder),
             ],
           ),
         ),

@@ -51,14 +51,14 @@ class ProfileScreen extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     roleLabel,
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: context.textSecondary,
                       fontSize: 13,
                     ),
                   ),
@@ -88,7 +88,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -128,7 +128,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+            color: context.textPrimary,
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
@@ -172,7 +172,7 @@ class _DemoBadge extends StatelessWidget {
       ),
       child: Text(
         'Mode demo — data tersimpan lokal di perangkat ini.',
-        style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
+        style: TextStyle(color: context.textPrimary, fontSize: 12),
       ),
     );
   }
@@ -186,16 +186,16 @@ class _MenuGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         children: [
           for (var i = 0; i < children.length; i++) ...[
             children[i],
             if (i != children.length - 1)
-              Divider(height: 1, color: AppColors.surfaceBorder),
+              Divider(height: 1, color: context.surfaceBorder),
           ],
         ],
       ),
@@ -214,9 +214,9 @@ class _MiniStat extends StatelessWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         children: [
@@ -225,7 +225,7 @@ class _MiniStat extends StatelessWidget {
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
           const SizedBox(height: 2),
@@ -233,7 +233,7 @@ class _MiniStat extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: context.textSecondary,
               fontSize: 11,
             ),
           ),
@@ -263,11 +263,11 @@ class _MenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? AppColors.textSecondary),
+      leading: Icon(icon, color: iconColor ?? context.textSecondary),
       title: Text(
         label,
         style: TextStyle(
-          color: textColor ?? AppColors.textPrimary,
+          color: textColor ?? context.textPrimary,
           fontWeight: FontWeight.w500,
           fontSize: 14,
         ),
@@ -279,13 +279,13 @@ class _MenuTile extends StatelessWidget {
                 Text(
                   trailing!,
                   style: TextStyle(
-                      color: AppColors.textSecondary, fontSize: 13),
+                      color: context.textSecondary, fontSize: 13),
                 ),
                 Icon(Icons.chevron_right,
-                    color: AppColors.surfaceBorder),
+                    color: context.surfaceBorder),
               ],
             )
-          : Icon(Icons.chevron_right, color: AppColors.surfaceBorder),
+          : Icon(Icons.chevron_right, color: context.surfaceBorder),
       onTap: onTap,
     );
   }

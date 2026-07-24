@@ -19,7 +19,7 @@ void showStudyFlowAbout(BuildContext context) {
         'Aplikasi manajemen belajar: jadwal, tugas, materi, dan progres — '
         'offline-first.',
         style: TextStyle(
-            color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+            color: context.textSecondary, fontSize: 13, height: 1.4),
       ),
     ],
   );
@@ -37,7 +37,7 @@ void showLanguageInfo(BuildContext context) {
         'Saat ini StudyFlow baru mendukung Bahasa Indonesia. '
         'Dukungan bahasa lain akan hadir di pembaruan mendatang.',
         style: TextStyle(
-            color: AppColors.textSecondary, fontSize: 13, height: 1.5),
+            color: context.textSecondary, fontSize: 13, height: 1.5),
       ),
       actions: [
         FilledButton(

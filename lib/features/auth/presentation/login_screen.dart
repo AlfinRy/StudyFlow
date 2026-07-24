@@ -102,7 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.xl),
@@ -290,7 +290,7 @@ class _DemoBanner extends StatelessWidget {
             child: Text(
               'Mode demo aktif — Firebase belum dikonfigurasi. Data tersimpan '
               'lokal di perangkat ini.',
-              style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
+              style: TextStyle(color: context.textPrimary, fontSize: 12),
             ),
           ),
         ],
@@ -310,7 +310,7 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
           child: Text('atau',
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              style: TextStyle(color: context.textSecondary, fontSize: 12)),
         ),
         Expanded(child: Divider()),
       ],

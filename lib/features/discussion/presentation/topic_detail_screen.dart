@@ -96,7 +96,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
 
     final topic = widget.topic;
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -122,9 +122,9 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: context.surface,
                       borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                      border: Border.all(color: AppColors.surfaceBorder),
+                      border: Border.all(color: context.surfaceBorder),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +146,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                      color: AppColors.textPrimary,
+                                      color: context.textPrimary,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -154,7 +154,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                                   Text(
                                     timeAgo(topic.createdAt),
                                     style: TextStyle(
-                                        color: AppColors.textSecondary,
+                                        color: context.textSecondary,
                                         fontSize: 11),
                                   ),
                                 ],
@@ -166,7 +166,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                         Text(
                           topic.title,
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             height: 1.3,
@@ -176,7 +176,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                         Text(
                           topic.content,
                           style: TextStyle(
-                              color: AppColors.textPrimary,
+                              color: context.textPrimary,
                               fontSize: 14.5,
                               height: 1.5),
                         ),
@@ -191,21 +191,21 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.lg, vertical: AppSpacing.md),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: context.surface,
                         borderRadius:
                             BorderRadius.circular(AppSpacing.cardRadius),
-                        border: Border.all(color: AppColors.surfaceBorder),
+                        border: Border.all(color: context.surfaceBorder),
                       ),
                       child: Row(
                         children: [
                           Icon(Icons.chat_bubble_outline_rounded,
-                              size: 20, color: AppColors.textSecondary),
+                              size: 20, color: context.textSecondary),
                           SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
                               'Jadilah yang pertama membalas topik ini.',
                               style: TextStyle(
-                                  color: AppColors.textSecondary,
+                                  color: context.textSecondary,
                                   fontSize: 13),
                             ),
                           ),
@@ -231,9 +231,9 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
             // Input balasan sticky di bawah
             Container(
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.surface,
                 border:
-                    Border(top: BorderSide(color: AppColors.surfaceBorder)),
+                    Border(top: BorderSide(color: context.surfaceBorder)),
               ),
               padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.lg, vertical: AppSpacing.sm),

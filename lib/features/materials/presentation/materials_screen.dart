@@ -117,7 +117,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
     showDialog<void>(
       context: context,
       builder: (ctx) => Dialog(
-        backgroundColor: AppColors.surface,
+        backgroundColor: context.surface,
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.sm),
           child: Column(
@@ -132,7 +132,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ),
@@ -162,7 +162,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
           child: Text(
             material.filePathOrUrl,
             style: TextStyle(
-                color: AppColors.textPrimary, fontSize: 14, height: 1.5),
+                color: context.textPrimary, fontSize: 14, height: 1.5),
           ),
         ),
         actions: [
@@ -208,7 +208,7 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
     final categories = _uniqueCategories(all);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -379,10 +379,10 @@ class _Chip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: active ? AppColors.accent : AppColors.surface,
+          color: active ? AppColors.accent : context.surface,
           borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
           border: Border.all(
-              color: active ? AppColors.accent : AppColors.surfaceBorder),
+              color: active ? AppColors.accent : context.surfaceBorder),
         ),
         child: Center(
           child: Text(
@@ -390,7 +390,7 @@ class _Chip extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: active ? Colors.white : AppColors.textSecondary,
+              color: active ? Colors.white : context.textSecondary,
             ),
           ),
         ),

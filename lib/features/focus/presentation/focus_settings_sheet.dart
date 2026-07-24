@@ -33,7 +33,7 @@ class FocusSettingsSheet extends ConsumerWidget {
           const SizedBox(height: AppSpacing.xs),
           Text(
             'Sesuaikan durasi sesuai ritme belajarmu.',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+            style: TextStyle(color: context.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: AppSpacing.lg),
           _StepperRow(
@@ -142,7 +142,7 @@ class _StepperRow extends StatelessWidget {
                         fontSize: 14, fontWeight: FontWeight.w600)),
                 Text('$value $unit',
                     style: TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12)),
+                        color: context.textSecondary, fontSize: 12)),
               ],
             ),
           ),
@@ -180,7 +180,7 @@ class _StepButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = onTap != null;
     return Material(
-      color: enabled ? AppColors.accent.withValues(alpha: 0.12) : AppColors.surfaceBorder,
+      color: enabled ? AppColors.accent.withValues(alpha: 0.12) : context.surfaceBorder,
       shape: const CircleBorder(),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -190,7 +190,7 @@ class _StepButton extends StatelessWidget {
           height: 36,
           child: Icon(icon,
               size: 20,
-              color: enabled ? AppColors.accent : AppColors.textSecondary),
+              color: enabled ? AppColors.accent : context.textSecondary),
         ),
       ),
     );

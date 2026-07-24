@@ -27,7 +27,7 @@ class TaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final done = task.isDone;
-    final priority = TaskPriorityStyle.of(task.priority);
+    final priority = TaskPriorityStyle.of(context, task.priority);
     final deadline = formatTaskDeadline(dueDate: task.dueDate, isDone: done);
 
     return Opacity(
@@ -36,9 +36,9 @@ class TaskCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md, vertical: AppSpacing.md),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: context.surface,
           borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-          border: Border.all(color: AppColors.surfaceBorder),
+          border: Border.all(color: context.surfaceBorder),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -55,7 +55,7 @@ class TaskCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5)),
               activeColor: AppColors.accent,
               checkColor: Colors.white,
-              side: BorderSide(color: AppColors.textSecondary, width: 1.5),
+              side: BorderSide(color: context.textSecondary, width: 1.5),
               visualDensity: VisualDensity.compact,
             ),
             const SizedBox(width: AppSpacing.xs),
@@ -85,10 +85,10 @@ class TaskCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
+                      color: context.textPrimary,
                       decoration:
                           done ? TextDecoration.lineThrough : TextDecoration.none,
-                      decorationColor: AppColors.textSecondary,
+                      decorationColor: context.textSecondary,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -97,7 +97,7 @@ class TaskCard extends StatelessWidget {
                       Icon(
                         done ? Icons.check_circle_outline : Icons.schedule_rounded,
                         size: 14,
-                        color: _deadlineColor(deadline.tone),
+                        color: _deadlineColor(context, deadline.tone),
                       ),
                       const SizedBox(width: 4),
                       Flexible(
@@ -110,7 +110,7 @@ class TaskCard extends StatelessWidget {
                             fontWeight: deadline.isOverdue
                                 ? FontWeight.w700
                                 : FontWeight.w500,
-                            color: _deadlineColor(deadline.tone),
+                            color: _deadlineColor(context, deadline.tone),
                           ),
                         ),
                       ),
@@ -122,7 +122,7 @@ class TaskCard extends StatelessWidget {
             if (onEdit != null || onDelete != null)
               PopupMenuButton<_TaskMenu>(
                 icon: Icon(Icons.more_vert_rounded,
-                    color: AppColors.textSecondary),
+                    color: context.textSecondary),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(AppSpacing.md)),
                 itemBuilder: (_) => [
@@ -163,7 +163,7 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Color _deadlineColor(DeadlineTone tone) {
+  Color _deadlineColor(BuildContext context, DeadlineTone tone) {
     switch (tone) {
       case DeadlineTone.overdue:
         return AppColors.danger;
@@ -172,7 +172,7 @@ class TaskCard extends StatelessWidget {
       case DeadlineTone.done:
         return AppColors.success;
       case DeadlineTone.normal:
-        return AppColors.textSecondary;
+        return context.textSecondary;
     }
   }
 }
@@ -215,9 +215,9 @@ class _CategoryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.background,
         borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Text(
         category,
@@ -226,7 +226,7 @@ class _CategoryChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
+          color: context.textSecondary,
         ),
       ),
     );

@@ -61,7 +61,7 @@ class _RoleCard extends StatelessWidget {
     return Material(
       color: active
           ? AppColors.accent.withValues(alpha: 0.10)
-          : AppColors.background,
+          : context.background,
       borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
@@ -72,7 +72,7 @@ class _RoleCard extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
             border: Border.all(
-              color: active ? AppColors.accent : AppColors.surfaceBorder,
+              color: active ? AppColors.accent : context.surfaceBorder,
               width: active ? 1.5 : 1,
             ),
           ),
@@ -82,7 +82,7 @@ class _RoleCard extends StatelessWidget {
                   size: 22,
                   color: active
                       ? AppColors.accent
-                      : AppColors.textSecondary),
+                      : context.textSecondary),
               const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
@@ -90,7 +90,7 @@ class _RoleCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
-                    color: active ? AppColors.accent : AppColors.textPrimary,
+                    color: active ? AppColors.accent : context.textPrimary,
                   ),
                 ),
               ),

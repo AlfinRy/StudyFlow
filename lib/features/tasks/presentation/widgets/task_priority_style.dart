@@ -14,7 +14,7 @@ class TaskPriorityStyle {
 
   Color get tint => color.withValues(alpha: 0.12);
 
-  static TaskPriorityStyle of(TaskPriority priority) {
+  static TaskPriorityStyle of(BuildContext context, TaskPriority priority) {
     switch (priority) {
       case TaskPriority.high:
         return const TaskPriorityStyle(color: AppColors.danger, badge: 'URGENT');
@@ -23,7 +23,7 @@ class TaskPriorityStyle {
             color: AppColors.warning, badge: 'NORMAL');
       case TaskPriority.low:
         return TaskPriorityStyle(
-            color: AppColors.textSecondary, badge: 'RENDAH');
+            color: context.textSecondary, badge: 'RENDAH');
     }
   }
 }

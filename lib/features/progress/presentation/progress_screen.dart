@@ -213,7 +213,7 @@ class _WindowTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: context.background,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
       ),
       child: Row(
@@ -234,7 +234,7 @@ class _WindowTabs extends StatelessWidget {
                 child: Text(
                   _labels[i],
                   style: TextStyle(
-                    color: active ? Colors.white : AppColors.textSecondary,
+                    color: active ? Colors.white : context.textSecondary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -286,7 +286,7 @@ class _DonutRow extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
+                  color: context.textPrimary,
                 ),
               ),
               Text(
@@ -295,7 +295,7 @@ class _DonutRow extends StatelessWidget {
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.2,
-                  color: AppColors.textSecondary,
+                  color: context.textSecondary,
                 ),
               ),
             ],
@@ -350,9 +350,9 @@ class _StatCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,7 +365,7 @@ class _StatCard extends StatelessWidget {
                 child: Text(
                   hint == null ? label : '$label · $hint',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                     fontSize: 11.5,
                   ),
                   maxLines: 1,
@@ -380,7 +380,7 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+              color: context.textPrimary,
             ),
           ),
         ],
@@ -448,7 +448,7 @@ class _CapaianCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     height: 1.4,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
               ],
@@ -492,8 +492,8 @@ class _DayChip extends StatelessWidget {
     final hasActivity = day.count > 0;
     final bg = hasActivity
         ? AppColors.accent.withValues(alpha: 0.18 + 0.55 * intensity)
-        : AppColors.background;
-    final fg = hasActivity ? AppColors.accentDark : AppColors.textSecondary;
+        : context.background;
+    final fg = hasActivity ? AppColors.accentDark : context.textSecondary;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       decoration: BoxDecoration(
@@ -502,7 +502,7 @@ class _DayChip extends StatelessWidget {
         border: Border.all(
           color: day.isToday
               ? AppColors.accent
-              : (hasActivity ? AppColors.accent.withValues(alpha: 0.3) : AppColors.surfaceBorder),
+              : (hasActivity ? AppColors.accent.withValues(alpha: 0.3) : context.surfaceBorder),
           width: day.isToday ? 1.5 : 1,
         ),
       ),
@@ -531,7 +531,7 @@ class _DayChip extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
-              color: hasActivity ? AppColors.accentDark : AppColors.surfaceBorder,
+              color: hasActivity ? AppColors.accentDark : context.surfaceBorder,
             ),
           ),
         ],
@@ -764,9 +764,9 @@ class _MilestoneList extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: context.surface,
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: context.surfaceBorder),
       ),
       child: Column(
         children: [
@@ -786,7 +786,7 @@ class _MilestoneList extends StatelessWidget {
               now: now,
             ),
             if (i < _milestones.length - 1)
-              Divider(height: 1, color: AppColors.surfaceBorder, indent: 12),
+              Divider(height: 1, color: context.surfaceBorder, indent: 12),
           ],
         ],
       ),
@@ -821,7 +821,7 @@ class _MilestoneTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = unlocked ? AppColors.warning : AppColors.textSecondary;
+    final color = unlocked ? AppColors.warning : context.textSecondary;
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: AppSpacing.md),
@@ -833,7 +833,7 @@ class _MilestoneTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: unlocked
                   ? AppColors.warning.withValues(alpha: 0.15)
-                  : AppColors.background,
+                  : context.background,
               borderRadius: BorderRadius.circular(AppSpacing.md),
             ),
             child: Icon(
@@ -853,8 +853,8 @@ class _MilestoneTile extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: unlocked
-                        ? AppColors.textPrimary
-                        : AppColors.textSecondary,
+                        ? context.textPrimary
+                        : context.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -862,7 +862,7 @@ class _MilestoneTile extends StatelessWidget {
                   def.description,
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: context.textSecondary,
                   ),
                 ),
               ],
@@ -875,7 +875,7 @@ class _MilestoneTile extends StatelessWidget {
             style: TextStyle(
               fontSize: 11.5,
               fontWeight: FontWeight.w600,
-              color: unlocked ? AppColors.success : AppColors.textSecondary,
+              color: unlocked ? AppColors.success : context.textSecondary,
             ),
           ),
         ],
@@ -1049,7 +1049,7 @@ class _ShareAchievementDialogState extends State<_ShareAchievementDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: context.surface,
       insetPadding: const EdgeInsets.all(AppSpacing.lg),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -1064,7 +1064,7 @@ class _ShareAchievementDialogState extends State<_ShareAchievementDialog> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.textPrimary,
+                    color: context.textPrimary,
                   ),
                 ),
                 IconButton(

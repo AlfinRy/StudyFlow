@@ -11,33 +11,39 @@
 `studyflow-umht` (`firebase deploy --only firestore:indexes`). Sekarang query
 real-time Top-50 berjalan tanpa error.
 
-## 2. Mode gelap & terang — ✅ FIXED (komponen tema dilengkapi)
+## 2. Mode gelap & terang — ✅ FIXED (akar masalah: warna non-reaktif)
 **Gejala:** Beberapa komponen tidak ikut berubah saat toggle mode.
-**Investigasi:** Audit menyeluruh — semua background/surface/teks sudah pakai
-token adaptif (`AppColors.surface` dst., getter yang membaca zone brightness);
-tidak ditemukan warna terang hardcoded sebagai surface. Akar masalahnya:
-beberapa **widget Material default** (Dialog, BottomSheet, PopupMenu,
-ListTile, SnackBar) tidak diberi tema eksplisit sehingga penyesuaian mode
-tidak konsisten (termasuk *surface tint elevation* Material 3 yang memudar).
-**Fix:** `app_theme.dart` kini mendefinisikan `dialogTheme`, `bottomSheetTheme`,
-`popupMenuTheme`, `listTileTheme`, `snackBarTheme`, `dividerColor` dengan palet
-per-mode + `surfaceTintColor: transparent`. Semua komponen overlay kini ikut
-mode gelap/terang secara konsisten.
+**Akar masalah (DITEMUKAN):** token warna adaptif (`surface`, `textPrimary`,
+etc.) dibaca dari variabel **`static` global** (`AppColors.brightness`),
+bukan dari `Theme`. Karena banyak layar dibuat `const` (mis. `const MainShell()`),
+Flutter **melewati rebuild** mereka saat tema berganti → warna statis tak pernah
+ dibaca ulang → layar tampak "bebeku" di mode lama. Inilah sebabnya "beberapa
+ komponen tidak ikut".
+**Fix definitif:** warna adaptif kini **reaktif** lewat `Theme.of(context)`
+(extension `AdaptiveAppColors on BuildContext` → `context.surface`,
+`context.textPrimary`, dst.). Karena `Theme` adalah InheritedWidget, **semua
+widget — termasuk yang `const` — otomatis di-build ulang** saat mode berganti.
+216 titik pemakaian dimigrasi. Slot `colorScheme` (`surface`, `onSurface`,
+`onSurfaceVariant`, `outline`) + `scaffoldBackgroundColor` di-set per-mode di
+`AppTheme`. Komponen overlay (dialog/sheet/menu) juga diberi tema eksplisit.
+**Hasil:** seluruh app kini konsisten ikut mode gelap/terang.
 
-## 3. Daftar melalui email — ✅ FIXED
+## 3. Daftar melalui email — ✅ FIXED (+ logging diagnostik)
 **Gejala:** Klik "Daftar Sekarang" tidak terjadi apa-apa.
 **Penyebab utama:** Validasi form gagal **diam-diam** — kebijakan sandi (min 8
 + huruf + angka) menolak sandi lemah, error hanya tampil inline (sering tak
 terlihat pengguna) → tombol terkesan "diam". Penyebab lain: panggilan Firebase
-bisa *hang* di emulator (jaringan tidak stabil) tanpa feedback.
+bisa *hang* di emulator/hp (jaringan tidak stabil) tanpa feedback.
 **Fix:**
 - Validasi gagal kini memunculkan **snackbar** "Periksa kembali isian...".
 - Panggilan `register()` dibungkus **timeout 25 detik** → bila server lambat,
-  muncul error (bukan macet di loading).
-- **Logging detail** di `register()` (`[Auth]` steps) → jalankan `flutter logs`
-  untuk lihat titik henti tepatnya bila masih bermasalah.
+ muncul error (bukan macet di loading).
+- **Logging detail** `[Register]` & `[Auth]` di setiap tahap → jalankan
+  `flutter logs` untuk lihat titik henti tepatnya.
 - Catatan: setelah daftar sukses, app **sengaja** mengarah ke layar Verifikasi
-  Email (fitur keamanan) — bukan bug.
+  Email (fitur keamanan) — bukan bug. Pesan "Akun dibuat! Cek email..." muncul.
+- **Penting:** bila masih "tidak terjadi apa-apa" → kemungkinan APK di hp MASIH
+  versi lama. Wajib **rebuild** (`flutter run` / install APK baru) agar fix aktif.
 
 ## 4. Bagikan Pencapaian — ✅ FIXED
 **Gejala:** Klik Bagikan → "Gagal membagikan. Coba lagi".

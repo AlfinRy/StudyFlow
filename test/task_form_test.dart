@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:study_flow/core/utils/date_labels.dart';
@@ -72,19 +73,12 @@ void main() {
   });
 
   group('TaskPriorityStyle', () {
-    test('high → danger + URGENT', () {
-      final s = TaskPriorityStyle.of(TaskPriority.high);
-      expect(s.badge, 'URGENT');
-    });
-
-    test('medium → warning + NORMAL', () {
-      final s = TaskPriorityStyle.of(TaskPriority.medium);
-      expect(s.badge, 'NORMAL');
-    });
-
-    test('low → RENDAH', () {
-      final s = TaskPriorityStyle.of(TaskPriority.low);
-      expect(s.badge, 'RENDAH');
+    testWidgets('badge tiap prioritas', (tester) async {
+      await tester.pumpWidget(const MaterialApp(home: SizedBox()));
+      final ctx = tester.element(find.byType(SizedBox));
+      expect(TaskPriorityStyle.of(ctx, TaskPriority.high).badge, 'URGENT');
+      expect(TaskPriorityStyle.of(ctx, TaskPriority.medium).badge, 'NORMAL');
+      expect(TaskPriorityStyle.of(ctx, TaskPriority.low).badge, 'RENDAH');
     });
   });
 

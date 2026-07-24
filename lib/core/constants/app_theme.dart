@@ -47,6 +47,10 @@ class AppTheme {
       secondary: AppColors.accentDark,
       surface: surface,
       onSurface: textPrimary,
+      // Slot tambahan agar token adaptif dapat dibaca reaktif lewat
+      // Theme.of(context) (lihat ekstensi AdaptiveAppColors di app_colors.dart).
+      onSurfaceVariant: textSecondary,
+      outline: border,
       error: AppColors.danger,
     );
 

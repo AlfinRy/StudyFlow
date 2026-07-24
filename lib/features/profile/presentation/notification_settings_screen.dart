@@ -19,7 +19,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
     final enabled = ref.watch(notificationsEnabledProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: context.background,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -35,9 +35,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: context.surface,
                 borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-                border: Border.all(color: AppColors.surfaceBorder),
+                border: Border.all(color: context.surfaceBorder),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -53,7 +53,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                           'Pengingat Tugas',
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+                            color: context.textPrimary,
                           ),
                         ),
                         SizedBox(height: 2),
@@ -61,7 +61,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
                           'Aktif untuk menerima reminder deadline (H-1 & hari-H, pukul 08.00).',
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.textSecondary,
+                            color: context.textSecondary,
                             height: 1.4,
                           ),
                         ),
@@ -85,7 +85,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
               'ulang tugas yang berpengingat.',
               style: TextStyle(
                 fontSize: 12.5,
-                color: AppColors.textSecondary,
+                color: context.textSecondary,
                 height: 1.5,
               ),
             ),

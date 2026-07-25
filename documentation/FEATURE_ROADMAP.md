@@ -51,10 +51,16 @@ instance berikutnya otomatis dibuat (deadline maju, pengingat dijadwalkan
 ulang) seperti Todoist; instance selesai dipertahankan agar XP/streak akurat.
 Dropdown pengulangan di form + badge di kartu tugas.
 
-### 4. Widget layar utama (Android AppWidget)
+### 4. Widget layar utama (Android AppWidget) ✅
 Tampilkan tugas hari ini + countdown di home screen → *passive engagement*.
 **Effort:** tinggi (native Kotlin di `android/`), tapi *high impact* untuk
 retensi mobile.
+**Status:** ✅ Selesai (Fase 20). Widget 2×2 native menampilkan maksimal 4
+tugas hari ini (belum selesai) + tanggal, latar navy (sesuai brand). Tap →
+buka app. Data: Flutter menulis ringkasan tugas hari ini ke `SharedPreferences`
+(via plugin `shared_preferences`) saat tugas berubah; widget membacanya; refresh
+langsung dipicu lewat MethodChannel + otomatis tiap 30 menit. Cara pakai:
+long-press home screen → Widget → "StudyFlow".
 
 ### 5. Impor Kalender (.ics) & Sinkronisasi ✅
 Tombol placeholder "Import Kalender" sudah ada di empty state Jadwal
@@ -146,10 +152,11 @@ ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11
 | 8 | **Onboarding personalisasi** (Tier 3) | ✅ Selesai (Fase 17) |
 | 9 | **Impor Kalender .ics** (Tier 2) | ✅ Selesai (Fase 18) |
 | 10 | **Pencarian global + tag** (Tier 3) | ✅ Selesai (Fase 19) |
+| 11 | **Widget home Android** (Tier 2) | ✅ Selesai (Fase 20) |
 
-Sepuluh fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
-(satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
-Android, grup belajar.
+Sebelas fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+(satu fitur per commit). Kandidat lanjutan (Tier 4): grup belajar / jadwal
+bersama.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

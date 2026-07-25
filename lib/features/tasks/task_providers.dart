@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/services/celebration_service.dart';
 import '../../core/services/hive_service.dart';
+import '../../core/services/home_widget_service.dart';
 import '../../core/services/notification_service.dart';
 import 'data/task_repository.dart';
 import 'domain/task.dart';
@@ -26,13 +27,21 @@ class TaskListNotifier extends Notifier<List<Task>> {
   List<Task> build() {
     _repo = ref.watch(taskRepositoryProvider);
     _notifications = ref.watch(notificationServiceProvider);
-    return _repo.getAll();
+    final tasks = _repo.getAll();
+    _syncWidget(tasks);
+    return tasks;
+  }
+
+  /// Sinkronkan ringkasan tugas hari ini ke widget layar utama (fire-and-forget).
+  void _syncWidget(List<Task> tasks) {
+    HomeWidgetService.saveTodayTasks(tasks);
   }
 
   Future<void> add(Task task) async {
     final saved = await _repo.add(task);
     await _notifications.scheduleForTask(saved);
     state = _repo.getAll();
+    _syncWidget(state);
   }
 
   Future<void> update(Task task) async {
@@ -40,12 +49,14 @@ class TaskListNotifier extends Notifier<List<Task>> {
     // Batalkan jadwal lama lalu jadwalkan ulang (judul/jam mungkin berubah).
     await _notifications.scheduleForTask(task);
     state = _repo.getAll();
+    _syncWidget(state);
   }
 
   Future<void> remove(String id) async {
     await _notifications.cancelForTask(id);
     await _repo.remove(id);
     state = _repo.getAll();
+    _syncWidget(state);
   }
 
   Future<void> toggleDone(Task task) async {
@@ -66,9 +77,13 @@ class TaskListNotifier extends Notifier<List<Task>> {
       await _notifications.scheduleForTask(updated);
     }
     state = _repo.getAll();
+    _syncWidget(state);
   }
 
-  void refresh() => state = _repo.getAll();
+  void refresh() {
+    state = _repo.getAll();
+    _syncWidget(state);
+  }
 }
 
 /// Tugas yang belum selesai (untuk dashboard "tugas mendatang").

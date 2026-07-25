@@ -74,9 +74,16 @@ Sesuai prinsip impeccable: *dark is never a default* — pilih berdasarkan scene
 Payoff gamifikasi yang sudah ada. Micro-interaction = kesan "hidup".
 **Effort:** rendah (`confetti` package + `HapticFeedback`).
 
-### 8. Onboarding personalisasi
+### 8. Onboarding personalisasi ✅
 Pilih tujuan belajar (UTBK, ujian, tugas kuliah) → dashboard & saran template
 jadwal disesuaikan. Meningkatkan aktivasi first-run.
+**Status:** ✅ Selesai (Fase 17). Model `StudyGoal` (UTBK/SNBT, Ujian Sekolah,
+Tugas Kuliah, Belajar Mandiri — masing-masing punya label, emoji, deskripsi,
+&saran belajar). Langkah pilih tujuan ditambahkan di akhir onboarding (intro
+pages dipertahankan) — tombol "Mulai" aktif setelah memilih. Tujuan disimpan
+persisten di Hive (`studyGoalProvider`). Beranda menampilkan chip tujuan +
+mengganti motivasi idle dengan saran personal sesuai tujuan. Dapat diubah
+di Profil (tile "Tujuan Belajar" + picker).
 
 ### 9. Streak freeze & reward harian ✅
 Mirip Duolingo: streak (sudah dihitung!) + "freeze" untuk hari libur +
@@ -123,11 +130,11 @@ ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11
 | 5 | **Tugas berulang** (Tier 2) | ✅ Selesai (Fase 14) |
 | 6 | **Streak freeze & reward harian** (Tier 3) | ✅ Selesai (Fase 15) |
 | 7 | **Bagikan pencapaian** (Tier 4) | ✅ Selesai (Fase 16) |
+| 8 | **Onboarding personalisasi** (Tier 3) | ✅ Selesai (Fase 17) |
 
-Tujuh fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+Delapan fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
 (satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
-Android, impor kalender .ics, onboarding personalisasi, pencarian global,
-grup belajar.
+Android, impor kalender .ics, pencarian global, grup belajar.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/settings/settings_providers.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/navy_hero_card.dart';
 import '../../../shared_widgets/section_header.dart';
 import '../../auth/auth_providers.dart';
+import '../../auth/domain/study_goal.dart';
 import '../../schedule/presentation/widgets/schedule_card.dart';
 import '../../schedule/schedule_providers.dart';
 import '../../materials/material_providers.dart';
@@ -45,6 +47,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final name = (user?.name.isNotEmpty ?? false) ? user!.name : 'Pengguna';
+    final goal = ref.watch(studyGoalProvider);
 
     final now = DateTime.now();
     final dateLabel =
@@ -70,6 +73,7 @@ class HomeScreen extends ConsumerWidget {
         _HeroCard(
           dateLabel: dateLabel,
           name: name,
+          goal: goal,
           scheduleCount: todaySchedules.length,
           taskCount: incomplete.length,
           percent: percent,
@@ -180,6 +184,7 @@ class _HeroCard extends StatelessWidget {
   const _HeroCard({
     required this.dateLabel,
     required this.name,
+    required this.goal,
     required this.scheduleCount,
     required this.taskCount,
     required this.percent,
@@ -189,6 +194,7 @@ class _HeroCard extends StatelessWidget {
 
   final String dateLabel;
   final String name;
+  final StudyGoal? goal;
   final int scheduleCount;
   final int taskCount;
   final double percent;
@@ -197,7 +203,9 @@ class _HeroCard extends StatelessWidget {
 
   String get _motivasi {
     if (scheduleCount == 0 && taskCount == 0) {
-      return 'Tidak ada jadwal maupun tugas mendesak. Manfaatkan waktumu! ✨';
+      // Saat tak ada jadwal/tugas, tampilkan saran personal sesuai tujuan.
+      return goal?.tip ??
+          'Tidak ada jadwal maupun tugas mendesak. Manfaatkan waktumu! ✨';
     }
     if (scheduleCount > 0) {
       return 'Kamu punya $scheduleCount jadwal'
@@ -225,6 +233,25 @@ class _HeroCard extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
+          if (goal != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${goal!.emoji} ${goal!.label}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: AppSpacing.xs),
           Text(
             _motivasi,

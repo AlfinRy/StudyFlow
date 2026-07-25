@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 
 import '../services/hive_service.dart';
 import '../services/notification_service.dart';
+import '../../features/auth/domain/study_goal.dart';
 import '../../features/tasks/task_providers.dart';
 
 /// Provider reaktif untuk pengaturan master notifikasi (on/off). Disimpan di
@@ -66,5 +67,38 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   Future<void> set(ThemeMode mode) async {
     await _box.put('theme_mode', mode.name);
     state = mode;
+  }
+}
+
+/// Tujuan belajar pengguna (FEATURE_ROADMAP #8 — onboarding personalisasi).
+/// Persisten di Hive box `settings` (key `study_goal`). `null` bila belum
+/// dipilih (user melewati langkah pemilihan). Dipakai Beranda untuk sapaan &
+/// saran personal, serta Profil untuk mengubah.
+final studyGoalProvider =
+    NotifierProvider<StudyGoalNotifier, StudyGoal?>(StudyGoalNotifier.new);
+
+class StudyGoalNotifier extends Notifier<StudyGoal?> {
+  late final Box<dynamic> _box;
+
+  @override
+  StudyGoal? build() {
+    _box = HiveService.instance.settings;
+    final raw = _box.get('study_goal') as String?;
+    if (raw == null) return null;
+    return StudyGoal.values.cast<StudyGoal?>().firstWhere(
+          (g) => g?.name == raw,
+          orElse: () => null,
+        );
+  }
+
+  Future<void> set(StudyGoal goal) async {
+    await _box.put('study_goal', goal.name);
+    state = goal;
+  }
+
+  /// Hanya untuk keperluan testing / reset.
+  Future<void> clear() async {
+    await _box.delete('study_goal');
+    state = null;
   }
 }

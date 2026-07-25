@@ -9,6 +9,7 @@ import '../../../shared_widgets/app_dialogs.dart';
 import 'edit_profile_screen.dart';
 import 'notification_settings_screen.dart';
 import '../../auth/auth_providers.dart';
+import '../../auth/domain/study_goal.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -99,6 +100,12 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () async => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const EditProfileScreen()),
             ),
+          ),
+          _MenuTile(
+            icon: Icons.flag_outlined,
+            label: 'Tujuan Belajar',
+            trailing: _goalLabel(ref.watch(studyGoalProvider)),
+            onTap: () => _showGoalPicker(context, ref),
           ),
           _MenuTile(
             icon: Icons.dark_mode_outlined,
@@ -327,5 +334,35 @@ Future<void> _showThemePicker(BuildContext context, WidgetRef ref) async {
   );
   if (picked != null && picked != current) {
     await ref.read(themeModeProvider.notifier).set(picked);
+  }
+}
+
+/// Label singkat tujuan belajar untuk tile Profil.
+String _goalLabel(StudyGoal? g) => g?.label ?? 'Belum dipilih';
+
+/// Pemilih tujuan belajar (dapat diubah kapan saja dari Profil).
+Future<void> _showGoalPicker(BuildContext context, WidgetRef ref) async {
+  final current = ref.read(studyGoalProvider);
+  final picked = await showDialog<StudyGoal>(
+    context: context,
+    builder: (ctx) => SimpleDialog(
+      title: const Text('Pilih Tujuan Belajar'),
+      children: [
+        for (final g in StudyGoal.values)
+          ListTile(
+            leading: Text(g.emoji, style: const TextStyle(fontSize: 22)),
+            title: Text(g.label),
+            subtitle:
+                Text(g.description, style: const TextStyle(fontSize: 12)),
+            trailing: g == current
+                ? const Icon(Icons.check_rounded, color: AppColors.accent)
+                : null,
+            onTap: () => Navigator.pop(ctx, g),
+          ),
+      ],
+    ),
+  );
+  if (picked != null && picked != current) {
+    await ref.read(studyGoalProvider.notifier).set(picked);
   }
 }

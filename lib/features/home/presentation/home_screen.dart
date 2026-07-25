@@ -15,6 +15,7 @@ import '../../materials/material_providers.dart';
 import '../../materials/presentation/materials_screen.dart';
 import '../../materials/presentation/widgets/material_card.dart';
 import '../../discussion/presentation/forum_screen.dart';
+import '../../search/presentation/search_screen.dart';
 import '../../tasks/presentation/widgets/task_card.dart';
 import '../../tasks/task_providers.dart';
 import '../../shell/shell_providers.dart';
@@ -70,6 +71,24 @@ class HomeScreen extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 96),
       children: [
+        // Search bar global (FEATURE_ROADMAP #10)
+        GestureDetector(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const SearchScreen()),
+          ),
+          child: AbsorbPointer(
+            child: TextField(
+              enabled: false,
+              decoration: InputDecoration(
+                hintText: 'Cari materi atau tugas...',
+                prefixIcon: const Icon(Icons.search_rounded),
+                filled: true,
+                fillColor: context.surface,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.lg),
         _HeroCard(
           dateLabel: dateLabel,
           name: name,

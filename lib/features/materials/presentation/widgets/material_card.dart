@@ -62,6 +62,7 @@ class MaterialCard extends StatelessWidget {
                     _TypeBadge(text: material.fileType.label, color: style.color),
                     if (material.category.isNotEmpty)
                       _CategoryChip(category: material.category),
+                    for (final t in material.tags) _TagChip(tag: t),
                   ],
                 ),
                 const SizedBox(height: 4),
@@ -206,6 +207,33 @@ class _CategoryChip extends StatelessWidget {
           fontSize: 10.5,
           fontWeight: FontWeight.w600,
           color: context.textSecondary,
+        ),
+      ),
+    );
+  }
+}
+
+/// Chip tag materi (aksen biru) — FEATURE_ROADMAP #10.
+class _TagChip extends StatelessWidget {
+  const _TagChip({required this.tag});
+  final String tag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(AppSpacing.pillRadius),
+      ),
+      child: Text(
+        '#$tag',
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: AppColors.accent,
         ),
       ),
     );

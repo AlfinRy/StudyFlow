@@ -33,6 +33,8 @@ class MaterialFormScreen extends ConsumerStatefulWidget {
 class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
   final _titleCtrl = TextEditingController();
   final _sourceCtrl = TextEditingController(); // dipakai untuk tipe link/note
+  final _tagCtrl = TextEditingController();
+  final List<String> _tags = [];
 
   late MaterialFileType _type;
   late String _category;
@@ -58,12 +60,14 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
     if (m != null && _isFileType) {
       _filePath = m.filePathOrUrl;
     }
+    if (m != null) _tags.addAll(m.tags);
   }
 
   @override
   void dispose() {
     _titleCtrl.dispose();
     _sourceCtrl.dispose();
+    _tagCtrl.dispose();
     super.dispose();
   }
 
@@ -189,6 +193,7 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
         filePathOrUrl: source,
         fileType: _type,
         category: _category,
+        tags: _tags,
       ));
     } else {
       await notifier.add(StudyMaterial(
@@ -197,6 +202,7 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
         filePathOrUrl: source,
         fileType: _type,
         category: _category,
+        tags: _tags,
         createdAt: DateTime.now(),
       ));
     }
@@ -211,6 +217,17 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
       );
       Navigator.of(context).pop();
     }
+  }
+
+  void _removeTag(String t) => setState(() => _tags.remove(t));
+
+  void _addTag() {
+    final t = _tagCtrl.text.trim();
+    if (t.isEmpty) return;
+    if (!_tags.any((e) => e.toLowerCase() == t.toLowerCase())) {
+      setState(() => _tags.add(t));
+    }
+    _tagCtrl.clear();
   }
 
   @override
@@ -318,6 +335,15 @@ class _MaterialFormScreenState extends ConsumerState<MaterialFormScreen> {
                   alignLabelWithHint: isNote,
                 ),
               ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Tag (FEATURE_ROADMAP #10)
+            _TagInput(
+              controller: _tagCtrl,
+              tags: _tags,
+              onAdd: _addTag,
+              onRemove: _removeTag,
+            ),
             const SizedBox(height: AppSpacing.xl),
 
             FilledButton.icon(
@@ -434,6 +460,63 @@ class _TypeDropdown extends StatelessWidget {
       onChanged: (v) {
         if (v != null) onChanged(v);
       },
+    );
+  }
+}
+
+/// Input tag materi (FEATURE_ROADMAP #10): TextField + tombol tambah, lalu
+/// chip yang dapat dihapus. Tag dipakai pencarian global & filter.
+class _TagInput extends StatelessWidget {
+  const _TagInput({
+    required this.controller,
+    required this.tags,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final TextEditingController controller;
+  final List<String> tags;
+  final VoidCallback onAdd;
+  final ValueChanged<String> onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: controller,
+          textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => onAdd(),
+          decoration: InputDecoration(
+            labelText: 'Tag (opsional)',
+            hintText: 'cth. ujian, bab 3, penting',
+            prefixIcon: const Icon(Icons.tag_outlined),
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.add_rounded),
+              tooltip: 'Tambah tag',
+              onPressed: onAdd,
+            ),
+          ),
+        ),
+        if (tags.isNotEmpty) ...[
+          const SizedBox(height: AppSpacing.sm),
+          Wrap(
+            spacing: AppSpacing.sm,
+            runSpacing: 4,
+            children: [
+              for (final t in tags)
+                Chip(
+                  label: Text(t),
+                  onDeleted: () => onRemove(t),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

@@ -103,8 +103,15 @@ Hadiah harian: +XP (skala dgn streak, 5–30) + bonus freeze tiap kelipatan 7
 hari. Bonus XP tergabung ke `totalXpProvider`. UI: kartu streak dengan jumlah
 freeze, rekor, & tombol klaim (confetti saat diklaim).
 
-### 10. Pencarian global + tag materi
+### 10. Pencarian global + tag materi ✅
 Saat data materi/forum tumbuh, search menjadi kebutuhan.
+**Status:** ✅ Selesai (Fase 19). (1) **Tag materi**: field `tags` pada
+`StudyMaterial` (backward-compat), input tag di form (chip dapat dihapus),
+chip `#tag` di kartu materi, & filter pencarian materi ikut tag. (2)
+**Pencarian global**: layar baru mencari materi (judul/kategori/tag) + tugas
+(judul/deskripsi) sekaligus, hasil bergrup. Entry point: search bar di
+Beranda (tap → buka layar pencarian). Tap hasil materi → buka Materi; tap
+hasil tugas → pindah tab Tugas.
 
 ---
 
@@ -138,10 +145,11 @@ ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11
 | 7 | **Bagikan pencapaian** (Tier 4) | ✅ Selesai (Fase 16) |
 | 8 | **Onboarding personalisasi** (Tier 3) | ✅ Selesai (Fase 17) |
 | 9 | **Impor Kalender .ics** (Tier 2) | ✅ Selesai (Fase 18) |
+| 10 | **Pencarian global + tag** (Tier 3) | ✅ Selesai (Fase 19) |
 
-Sembilan fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+Sepuluh fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
 (satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
-Android, pencarian global, grup belajar.
+Android, grup belajar.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

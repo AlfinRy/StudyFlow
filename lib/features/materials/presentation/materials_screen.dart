@@ -187,7 +187,10 @@ class _MaterialsScreenState extends ConsumerState<MaterialsScreen> {
   List<StudyMaterial> _applyFilters(List<StudyMaterial> all) {
     final q = _query.trim().toLowerCase();
     return all.where((m) {
-      final matchQuery = q.isEmpty || m.title.toLowerCase().contains(q);
+      final matchQuery = q.isEmpty ||
+          m.title.toLowerCase().contains(q) ||
+          m.category.toLowerCase().contains(q) ||
+          m.tags.any((t) => t.toLowerCase().contains(q));
       final matchCategory = _category == null || m.category == _category;
       return matchQuery && matchCategory;
     }).toList();

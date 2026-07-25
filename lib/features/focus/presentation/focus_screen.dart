@@ -26,8 +26,6 @@ class FocusScreen extends ConsumerStatefulWidget {
 
 class _FocusScreenState extends ConsumerState<FocusScreen>
     with WidgetsBindingObserver {
-  FocusPhase? _lastSeenPhase;
-
   @override
   void initState() {
     super.initState();
@@ -48,23 +46,19 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     }
   }
 
-  void _maybeCelebrate(PomodoroTimerState s) {
-    // Deteksi transisi fase fokus → jeda = satu pomodoro selesai (XP masuk).
-    if (_lastSeenPhase == FocusPhase.focus &&
-        (s.phase == FocusPhase.shortBreak ||
-            s.phase == FocusPhase.longBreak)) {
-      HapticFeedback.mediumImpact();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(s.phase == FocusPhase.longBreak
-              ? '🎯 Sesi fokus selesai! Nikmati jeda panjangmu.'
-              : '🎯 Sesi fokus selesai! Waktu istirahat sebentar.'),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-    _lastSeenPhase = s.phase;
+  void _celebrate(FocusPhase phase) {
+    // Satu pomodoro selesai (fokus → jeda) → XP masuk. Dipanggil dari
+    // ref.listen (BUKAN build) agar showSnackBar aman.
+    HapticFeedback.mediumImpact();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(phase == FocusPhase.longBreak
+            ? '🎯 Sesi fokus selesai! Nikmati jeda panjangmu.'
+            : '🎯 Sesi fokus selesai! Waktu istirahat sebentar.'),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   Color _phaseColor(FocusPhase p) => switch (p) {
@@ -84,13 +78,24 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     final timer = ref.watch(pomodoroTimerProvider);
     final config = ref.watch(pomodoroConfigProvider);
 
+    // Feeds the pomodoro state into the controller for wall-clock syncing
+    // via didChangeAppLifecycleState (handled in the controller provider).
+    // Side-effect (confetti/snackbar) dilakukan lewat ref.listen AGAR tidak
+    // memanggil showSnackBar saat build (bug "during build").
+    ref.listen<PomodoroTimerState>(pomodoroTimerProvider, (prev, next) {
+      if (prev != null &&
+          prev.phase == FocusPhase.focus &&
+          (next.phase == FocusPhase.shortBreak ||
+              next.phase == FocusPhase.longBreak)) {
+        _celebrate(next.phase);
+      }
+    });
     // Sinkronisasi bila config berubah saat idle (agar tampilan durasi tepat).
     ref.listen<PomodoroConfig>(pomodoroConfigProvider, (prev, next) {
       if (timer.status == TimerStatus.idle && prev != next) {
         ref.read(pomodoroTimerProvider.notifier).reset();
       }
     });
-    _maybeCelebrate(timer);
 
     final sessions = ref.watch(focusSessionListProvider);
     final now = DateTime.now();

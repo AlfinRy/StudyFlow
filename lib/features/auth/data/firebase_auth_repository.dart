@@ -347,7 +347,11 @@ String authErrorMessage(FirebaseAuthException e) {
     case 'invalid-action-code':
       return 'Tautan tidak valid atau sudah kedaluwarsa.';
     case 'email-already-in-use':
-      return 'Email sudah terdaftar.';
+      return 'Email ini sudah terdaftar. Jika Anda pernah masuk dengan Google, '
+          'gunakan tombol "Masuk dengan Google".';
+    case 'account-exists-with-different-credential':
+      return 'Email ini sudah dipakai dengan metode login lain (mis. Google). '
+          'Silakan masuk dengan metode tersebut.';
     case 'weak-password':
       return 'Kata sandi terlalu lemah (min. 6 karakter).';
     case 'network-request-failed':

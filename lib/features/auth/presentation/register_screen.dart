@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -301,10 +303,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ),
         // Overlay loading layar penuh saat mendaftar — MUSTAHIL tak terlihat.
         if (_loading)
-          const Positioned.fill(
-            child: ColoredBox(
-              color: Color(0x88000000),
-              child: Center(child: _RegisterLoadingCard()),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: ColoredBox(
+                color: AppColors.navyDark.withValues(alpha: 0.45),
+                child: const Center(child: _RegisterLoadingCard()),
+              ),
             ),
           ),
       ],
@@ -312,26 +317,73 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 }
 
-/// Kartu "Membuat akun..." ditengah overlay loading.
+/// Kartu "Menyiapkan akunmu…" di tengah overlay loading.
+/// Desain: ring progress + ikon brand (focal), judul tegas, mikrocopy hangat,
+/// backdrop blur premium. Kontras & spacing pakai token tema (reaktif mode).
 class _RegisterLoadingCard extends StatelessWidget {
   const _RegisterLoadingCard();
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      constraints: const BoxConstraints(maxWidth: 300),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xxl, AppSpacing.xl, AppSpacing.xl),
       decoration: BoxDecoration(
         color: context.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.lg),
+        borderRadius: BorderRadius.circular(AppSpacing.xl),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.navyDark.withValues(alpha: 0.18),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+        ],
       ),
-      child: const Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CircularProgressIndicator(color: AppColors.accent),
-          SizedBox(height: AppSpacing.md),
-          Text('Membuat akun...'),
-          SizedBox(height: AppSpacing.sm),
-          Text('Jangan tutup aplikasi.', style: TextStyle(fontSize: 12)),
+          // Ring progress + ikon brand sebagai focal point.
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              SizedBox(
+                width: 72,
+                height: 72,
+                child: CircularProgressIndicator(
+                  strokeWidth: 4.5,
+                  color: AppColors.accent,
+                  backgroundColor: AppColors.accent.withValues(alpha: 0.12),
+                ),
+              ),
+              const Icon(Icons.rocket_launch_rounded,
+                  color: AppColors.accent, size: 30),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            'Menyiapkan akunmu…',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: context.textPrimary,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            'Mengamankan & menyimpan data Anda.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 13, color: context.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.lock_outline, size: 14, color: context.textSecondary),
+              const SizedBox(width: 6),
+              Text('Jangan tutup aplikasi.',
+                  style: TextStyle(fontSize: 12, color: context.textSecondary)),
+            ],
+          ),
         ],
       ),
     );

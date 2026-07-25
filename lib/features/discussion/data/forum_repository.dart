@@ -83,4 +83,19 @@ class ForumRepository {
     );
     await batch.commit();
   }
+
+  /// Hapus topik beserta seluruh balasannya (cascade). Hanya boleh dipanggil
+  /// pembuat topik (dijaga Firestore rules: authorId == uid). Balasan dihapus
+  /// batch karena Firestore tidak cascade subkoleksi otomatis (batas batch
+  /// 500 dokumen — cukup untuk forum akademik).
+  Future<void> deleteTopic(String topicId) async {
+    final repliesSnap =
+        await _topics.doc(topicId).collection('replies').get();
+    final batch = _db.batch();
+    batch.delete(_topics.doc(topicId));
+    for (final doc in repliesSnap.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+  }
 }

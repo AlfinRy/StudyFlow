@@ -73,8 +73,9 @@ service cloud.firestore {
         && request.resource.data.title == resource.data.title
         && request.resource.data.content == resource.data.content;
 
-      // Hapus topik: belum ada fitur hapus.
-      allow delete: if false;
+      // Hapus topik: hanya pembuat (authorId == uid login).
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.authorId;
 
       // Balasan
       match /replies/{replyId} {
@@ -83,7 +84,14 @@ service cloud.firestore {
           && request.resource.data.authorId == request.auth.uid
           && isNonEmptyStr(request.resource.data.content)
           && request.resource.data.content.size() <= 5000;
-        allow update, delete: if false;
+        // Hapus balasan: pemilik balasan ATAU pembuat topik (moderasi saat
+        // menghapus topik — cascade). Dipakai deleteTopic untuk membersihkan
+        // seluruh balasan topik.
+        allow delete: if request.auth != null
+          && (request.auth.uid == resource.data.authorId
+              || request.auth.uid ==
+                  get(/databases/$(database)/documents/forum_topics/$(topicId)).data.authorId);
+        allow update: if false;
       }
     }
   }

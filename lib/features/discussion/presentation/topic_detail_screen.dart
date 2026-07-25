@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
+import '../../../core/security/rate_limiter.dart';
 import '../../../core/utils/date_labels.dart';
 import '../../../shared_widgets/app_avatar.dart';
 import '../../../shared_widgets/section_header.dart';
@@ -27,6 +28,8 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
   final _replyCtrl = TextEditingController();
   final _scrollCtrl = ScrollController();
   bool _sending = false;
+  bool _deleting = false;
+  String? _lastSent; // anti-duplikat konsekutif.
 
   @override
   void dispose() {
@@ -66,6 +69,20 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
       _showError('Belum login.');
       return;
     }
+    if (text == _lastSent) {
+      _showError('Balasan sama dengan sebelumnya. Tulis pesan berbeda ya 😊');
+      return;
+    }
+
+    // Anti-spam: batasi frekuensi balasan (5 / 30 detik).
+    final result = ref
+        .read(rateLimiterProvider)
+        .tryConsume(RateLimitedAction.forumReply);
+    if (!result.allowed) {
+      final secs = result.retryAfter.inSeconds + 1;
+      _showError('Pelan-pelan ya 😊 tunggu $secs detik sebelum balas lagi.');
+      return;
+    }
 
     setState(() => _sending = true);
     try {
@@ -76,12 +93,51 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
             authorName: user.name,
             authorPhoto: user.photoUrl,
           );
+      _lastSent = text;
       _replyCtrl.clear();
       _jumpToBottom();
     } catch (e) {
       _showError(e.toString());
     } finally {
       if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  /// Konfirmasi hapus topik (hanya pembuat). Minta persetujuan lalu cascade
+  /// hapus topik + balasan via repository.
+  Future<void> _confirmDelete() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus topik ini?'),
+        content: const Text(
+          'Topik beserta semua balasannya akan dihapus permanen. '
+          'Tindakan ini tidak dapat dibatalkan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+
+    setState(() => _deleting = true);
+    try {
+      await ref.read(forumRepositoryProvider).deleteTopic(widget.topic.id);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        _showError('Gagal menghapus topik. Coba lagi.');
+        setState(() => _deleting = false);
+      }
     }
   }
 
@@ -95,6 +151,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
     _jumpToBottom();
 
     final topic = widget.topic;
+    final isAuthor = ref.watch(currentUserProvider)?.uid == topic.authorId;
     return Scaffold(
       backgroundColor: context.background,
       appBar: AppBar(
@@ -108,6 +165,21 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        actions: [
+          if (isAuthor)
+            IconButton(
+              icon: _deleting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: AppColors.accent),
+                    )
+                  : const Icon(Icons.delete_outline_rounded),
+              tooltip: 'Hapus topik',
+              onPressed: _deleting ? null : _confirmDelete,
+            ),
+        ],
       ),
       body: SafeArea(
         child: Column(

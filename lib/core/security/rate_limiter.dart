@@ -77,7 +77,10 @@ enum RateLimitedAction {
   sendVerification(maxAttempts: 3, window: Duration(hours: 1)),
 
   /// Kirim email reset password (anti spam email).
-  sendPasswordReset(maxAttempts: 3, window: Duration(hours: 1));
+  sendPasswordReset(maxAttempts: 3, window: Duration(hours: 1)),
+
+  /// Kirim balasan forum (anti spam chat: maks 5 balasan / 30 detik).
+  forumReply(maxAttempts: 5, window: Duration(seconds: 30));
 
   const RateLimitedAction({
     required this.maxAttempts,

@@ -87,5 +87,10 @@ void main() {
       expect(RateLimitedAction.sendVerification.maxAttempts, 3);
       expect(RateLimitedAction.sendVerification.window, const Duration(hours: 1));
     });
+
+    test('forumReply: 5 / 30 detik (anti-spam chat)', () {
+      expect(RateLimitedAction.forumReply.maxAttempts, 5);
+      expect(RateLimitedAction.forumReply.window, const Duration(seconds: 30));
+    });
   });
 }

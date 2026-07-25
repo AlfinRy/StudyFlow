@@ -46,9 +46,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   Future<void> _submit() async {
-    debugPrint('[Register] tombol "Daftar" ditekan. '
-        'role=$_role agree=$_agree name="${_name.text}" email="${_email.text}" '
-        'pwLen=${_password.text.length}');
+    debugPrint(
+      '[Register] tombol "Daftar" ditekan. '
+      'role=$_role agree=$_agree name="${_name.text}" email="${_email.text}" '
+      'pwLen=${_password.text.length}',
+    );
     if (_role == null) {
       _showError('Pilih kategori "Daftar Sebagai".');
       return;
@@ -61,7 +63,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Validasi gagal (cth. sandi kurang kuat/konfirmasi tak cocok) — error
       // inline kadang tak terlihat pengguna. Beri snackbar agar jelas ada
       // yang harus diperbaiki (bug "tidak terjadi apa-apa").
-      debugPrint('[Register] validasi form GAGAL (cek sandi/konfirmasi/email).');
+      debugPrint(
+        '[Register] validasi form GAGAL (cek sandi/konfirmasi/email).',
+      );
       _showError('Periksa kembali isian Anda — ada field yang belum valid.');
       return;
     }
@@ -71,9 +75,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final result = limiter.tryConsume(RateLimitedAction.register);
     if (!result.allowed) {
       final secs = result.retryAfter.inSeconds;
-      _showError(secs > 60
-          ? 'Terlalu banyak percobaan. Coba lagi dalam ${secs ~/ 60} menit.'
-          : 'Terlalu banyak percobaan. Coba lagi dalam $secs detik.');
+      _showError(
+        secs > 60
+            ? 'Terlalu banyak percobaan. Coba lagi dalam ${secs ~/ 60} menit.'
+            : 'Terlalu banyak percobaan. Coba lagi dalam $secs detik.',
+      );
       return;
     }
 
@@ -82,16 +88,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Anti-hang: bila Firebase lambat/tidak merespons (umum di emulator
       // dengan jaringan tidak stabil), munculkan error setelah 25 detik agar
       // tombol tidak macet di status loading (terlihat seperti "diam").
-      await ref.read(authRepositoryProvider).register(
+      await ref
+          .read(authRepositoryProvider)
+          .register(
             name: _name.text,
             email: _email.text,
             password: _password.text,
             role: _role!,
-          ).timeout(
-        const Duration(seconds: 25),
-        onTimeout: () =>
-            throw Exception('Server lambat merespons. Periksa koneksi & coba lagi.'),
-      );
+          )
+          .timeout(
+            const Duration(seconds: 25),
+            onTimeout: () => throw Exception(
+              'Server lambat merespons. Periksa koneksi & coba lagi.',
+            ),
+          );
       limiter.reset(RateLimitedAction.register);
       // authStateProvider memancarkan user. Mode Firebase → status belum
       // verifikasi → app.dart mengarahkan ke VerifyEmailScreen.
@@ -99,7 +109,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-                'Akun dibuat! Cek email Anda untuk verifikasi sebelum masuk.'),
+              'Akun dibuat! Cek email Anda untuk verifikasi sebelum masuk.',
+            ),
           ),
         );
       }
@@ -112,156 +123,216 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   void _showError(String msg) {
     final clean = msg.replaceFirst('Exception: ', '');
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(clean)));
+    if (!mounted) return;
+    // Dialog modal agar feedback MUSTAHIL terlewat (bukan snackbar transient).
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Tidak bisa mendaftar'),
+        content: Text(clean),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Mengerti'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.background,
-      appBar: AppBar(title: const Text('Daftar Akun Baru')),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const _Intro(),
-                const SizedBox(height: AppSpacing.xl),
-                AuthTextField(
-                  controller: _name,
-                  label: 'Nama Lengkap',
-                  icon: Icons.person_outline,
-                  textInputAction: TextInputAction.next,
-                  validator: (v) => (v == null || v.trim().isEmpty)
-                      ? 'Nama wajib diisi.'
-                      : null,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AuthTextField(
-                  controller: _email,
-                  label: 'Alamat Email',
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  validator: validateEmail,
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Daftar Sebagai',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: context.textPrimary,
-                      )),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                RoleSelector(
-                  selected: _role,
-                  onChanged: (r) => setState(() => _role = r),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                AuthTextField(
-                  controller: _password,
-                  label: 'Kata Sandi',
-                  icon: Icons.lock_outline,
-                  obscure: true,
-                  textInputAction: TextInputAction.next,
-                  validator: (v) {
-                    final s = PasswordStrength.evaluate(v ?? '');
-                    return s.valid ? null : s.error;
-                  },
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                if (_password.text.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: PasswordStrengthIndicator(
-                        strength: PasswordStrength.evaluate(_password.text)),
-                  ),
-                const SizedBox(height: AppSpacing.md),
-                AuthTextField(
-                  controller: _confirm,
-                  label: 'Konfirmasi Sandi',
-                  icon: Icons.lock_outline,
-                  obscure: true,
-                  textInputAction: TextInputAction.done,
-                  validator: (v) {
-                    final s = PasswordStrength.evaluateConfirm(v,
-                        match: _password.text);
-                    return s.valid ? null : s.error;
-                  },
-                ),
-                const SizedBox(height: AppSpacing.md),
-                CheckboxListTile(
-                  value: _agree,
-                  onChanged: (v) => setState(() => _agree = v ?? false),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  title: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: const [
-                      Text('Saya menyetujui '),
-                      Text(
-                        'Ketentuan Layanan',
-                        style: TextStyle(
-                            color: AppColors.accent,
-                            decoration: TextDecoration.underline),
-                      ),
-                      Text(' & '),
-                      Text(
-                        'Kebijakan Privasi',
-                        style: TextStyle(
-                            color: AppColors.accent,
-                            decoration: TextDecoration.underline),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                FilledButton(
-                  onPressed: _loading ? null : _submit,
-                  child: _loading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Text('Daftar Sekarang'),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Batalkan'),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: context.background,
+          appBar: AppBar(title: const Text('Daftar Akun Baru')),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppSpacing.xl),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text('Sudah punya akun? '),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Text(
-                        'Masuk di sini',
+                    const _Intro(),
+                    const SizedBox(height: AppSpacing.xl),
+                    AuthTextField(
+                      controller: _name,
+                      label: 'Nama Lengkap',
+                      icon: Icons.person_outline,
+                      textInputAction: TextInputAction.next,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Nama wajib diisi.'
+                          : null,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AuthTextField(
+                      controller: _email,
+                      label: 'Alamat Email',
+                      icon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                      textInputAction: TextInputAction.next,
+                      validator: validateEmail,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Daftar Sebagai',
                         style: TextStyle(
-                          color: AppColors.accent,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: context.textPrimary,
                         ),
                       ),
                     ),
+                    const SizedBox(height: AppSpacing.sm),
+                    RoleSelector(
+                      selected: _role,
+                      onChanged: (r) => setState(() => _role = r),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AuthTextField(
+                      controller: _password,
+                      label: 'Kata Sandi',
+                      icon: Icons.lock_outline,
+                      obscure: true,
+                      textInputAction: TextInputAction.next,
+                      validator: (v) {
+                        final s = PasswordStrength.evaluate(v ?? '');
+                        return s.valid ? null : s.error;
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    if (_password.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: PasswordStrengthIndicator(
+                          strength: PasswordStrength.evaluate(_password.text),
+                        ),
+                      ),
+                    const SizedBox(height: AppSpacing.md),
+                    AuthTextField(
+                      controller: _confirm,
+                      label: 'Konfirmasi Sandi',
+                      icon: Icons.lock_outline,
+                      obscure: true,
+                      textInputAction: TextInputAction.done,
+                      validator: (v) {
+                        final s = PasswordStrength.evaluateConfirm(
+                          v,
+                          match: _password.text,
+                        );
+                        return s.valid ? null : s.error;
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    CheckboxListTile(
+                      value: _agree,
+                      onChanged: (v) => setState(() => _agree = v ?? false),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      title: Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: const [
+                          Text('Saya menyetujui '),
+                          Text(
+                            'Ketentuan Layanan',
+                            style: TextStyle(
+                              color: AppColors.accent,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                          Text(' & '),
+                          Text(
+                            'Kebijakan Privasi',
+                            style: TextStyle(
+                              color: AppColors.accent,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    FilledButton(
+                      onPressed: _loading ? null : _submit,
+                      child: _loading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Daftar Sekarang'),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Batalkan'),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Sudah punya akun? '),
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Text(
+                            'Masuk di sini',
+                            style: TextStyle(
+                              color: AppColors.accent,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
-                const SizedBox(height: AppSpacing.xl),
-              ],
+              ),
             ),
           ),
         ),
+        // Overlay loading layar penuh saat mendaftar — MUSTAHIL tak terlihat.
+        if (_loading)
+          const Positioned.fill(
+            child: ColoredBox(
+              color: Color(0x88000000),
+              child: Center(child: _RegisterLoadingCard()),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Kartu "Membuat akun..." ditengah overlay loading.
+class _RegisterLoadingCard extends StatelessWidget {
+  const _RegisterLoadingCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: context.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.lg),
+      ),
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircularProgressIndicator(color: AppColors.accent),
+          SizedBox(height: AppSpacing.md),
+          Text('Membuat akun...'),
+          SizedBox(height: AppSpacing.sm),
+          Text('Jangan tutup aplikasi.', style: TextStyle(fontSize: 12)),
+        ],
       ),
     );
   }
@@ -279,10 +350,7 @@ class _Intro extends StatelessWidget {
         Text(
           'Mulai perjalanan akademik cerdasmu hari ini.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            color: context.textSecondary,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: context.textSecondary, fontSize: 14),
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/services/hive_service.dart';
+import 'data/ical_parser.dart';
 import 'data/schedule_repository.dart';
 import 'domain/schedule.dart';
 
@@ -36,6 +37,29 @@ class ScheduleListNotifier extends Notifier<List<Schedule>> {
     await _repo.remove(id);
     state = _repo.getAll();
   }
+
+  /// Impor jadwal dari konten file .ics (FEATURE_ROADMAP #5). Tiap VEVENT
+  /// diurai menjadi slot mingguan, lalu hanya yang belum ada (dedup key
+  /// judul + hari + jam mulai) yang disimpan. Mengembalikan jumlah jadwal
+  /// baru yang ditambahkan.
+  Future<int> importFromIcs(String content) async {
+    final parsed = parseIcsToSchedules(content);
+    final existing = <String>{
+      for (final s in state) _dedupKey(s),
+    };
+    var added = 0;
+    for (final s in parsed) {
+      final key = _dedupKey(s);
+      if (!existing.add(key)) continue;
+      await _repo.add(s);
+      added++;
+    }
+    if (added > 0) state = _repo.getAll();
+    return added;
+  }
+
+  static String _dedupKey(Schedule s) =>
+      '${s.title}|${s.dayOfWeek}|${s.startTime}';
 
   void refresh() => state = _repo.getAll();
 }

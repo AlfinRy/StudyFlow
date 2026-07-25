@@ -56,10 +56,16 @@ Tampilkan tugas hari ini + countdown di home screen → *passive engagement*.
 **Effort:** tinggi (native Kotlin di `android/`), tapi *high impact* untuk
 retensi mobile.
 
-### 5. Impor Kalender (.ics) & Sinkronisasi
+### 5. Impor Kalender (.ics) & Sinkronisasi ✅
 Tombol placeholder "Import Kalender" sudah ada di empty state Jadwal
 (UI_DESIGN.md §5). Baca `.ics` → jadwal.
 **Effort:** sedang.
+**Status:** ✅ Selesai (Fase 18). Parser .ics murni (`ical_parser.dart`)
+memetakan tiap VEVENT → slot jadwal mingguan (dayOfWeek + jam). Mendukung
+line unfolding (RFC 5545), RRULE `FREQ=WEEKLY;BYDAY=...` (ekspansi multi-hari),
+event seharian dilewati, escape teks, & dedup. UI: tombol "Impor dari
+Kalender (.ics)" di empty state + ikon unduh persisten; file picker `.ics` →
+snackbar hasil (jumlah jadwal baru). Jadwal yang sudah ada tidak diimpor dobel.
 
 ### 6. Dark Mode & Theming
 **Effort:** rendah. Design tokens (`app_colors.dart`) tinggal dibuat adaptif.
@@ -131,10 +137,11 @@ ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11
 | 6 | **Streak freeze & reward harian** (Tier 3) | ✅ Selesai (Fase 15) |
 | 7 | **Bagikan pencapaian** (Tier 4) | ✅ Selesai (Fase 16) |
 | 8 | **Onboarding personalisasi** (Tier 3) | ✅ Selesai (Fase 17) |
+| 9 | **Impor Kalender .ics** (Tier 2) | ✅ Selesai (Fase 18) |
 
-Delapan fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
+Sembilan fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
 (satu fitur per commit). Kandidat lanjutan (Tier 2–4): widget layar utama
-Android, impor kalender .ics, pencarian global, grup belajar.
+Android, pencarian global, grup belajar.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

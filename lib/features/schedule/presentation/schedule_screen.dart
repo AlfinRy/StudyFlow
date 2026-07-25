@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,6 +44,42 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         builder: (_) => ScheduleFormScreen(schedule: schedule),
         fullscreenDialog: false,
       ),
+    );
+  }
+
+  /// Impor jadwal dari file .ics (FEATURE_ROADMAP #5).
+  Future<void> _importIcs() async {
+    final result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['ics'],
+    );
+    final path = result?.files.single.path;
+    if (path == null) return; // pengguna batal.
+    if (!mounted) return;
+
+    String content;
+    try {
+      content = await File(path).readAsString();
+    } catch (_) {
+      _importSnack('Tidak dapat membaca file.');
+      return;
+    }
+
+    try {
+      final count =
+          await ref.read(scheduleListProvider.notifier).importFromIcs(content);
+      if (!mounted) return;
+      _importSnack(count > 0
+          ? 'Berhasil mengimpor $count jadwal.'
+          : 'Tidak ada jadwal baru di file tersebut.');
+    } catch (_) {
+      if (mounted) _importSnack('Format .ics tidak valid.');
+    }
+  }
+
+  void _importSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -114,13 +153,24 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         ),
         const SizedBox(height: AppSpacing.xl),
 
-        Text(
-          sectionTitle,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: context.textPrimary,
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                sectionTitle,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: context.textPrimary,
+                ),
+              ),
+            ),
+            IconButton.outlined(
+              icon: const Icon(Icons.file_download_outlined),
+              tooltip: 'Impor dari Kalender (.ics)',
+              onPressed: _importIcs,
+            ),
+          ],
         ),
         const SizedBox(height: AppSpacing.sm),
 
@@ -131,10 +181,21 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                 ? 'Belum ada jadwal hari ini'
                 : 'Belum ada jadwal ${idnWeekday(_selected.weekday)}',
             subtitle: 'Mulai atur jadwal belajarmu agar lebih terorganisir.',
-            action: FilledButton.icon(
-              onPressed: () => _openForm(),
-              icon: const Icon(Icons.add),
-              label: const Text('Tambah Jadwal'),
+            action: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton.icon(
+                  onPressed: () => _openForm(),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Tambah Jadwal'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                OutlinedButton.icon(
+                  onPressed: _importIcs,
+                  icon: const Icon(Icons.file_download_outlined),
+                  label: const Text('Impor dari Kalender (.ics)'),
+                ),
+              ],
             ),
           )
         else

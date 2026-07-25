@@ -123,9 +123,15 @@ hasil tugas → pindah tab Tugas.
 
 ## 🔌 Tier 4 — Sosial / akuisisi viral
 
-### 11. Grup belajar / Jadwal bersama
+### 11. Grup belajar / Jadwal bersama ✅
 Perluas Forum → "Study Room" dengan jadwal/tugas bersama. Viral loop:
 satu user mengajak teman.
+**Status:** ✅ Selesai (Fase 21). Fitur Grup Belajar (cloud): buat grup
+(nama + deskripsi), daftar grup untuk penemuan, gabung/keluar (keanggotaan via
+subkoleksi `members/{uid}`, `memberCount` konsisten), & chat grup real-time
+(anti-spam reuse `forumReply`). Pembuat tidak bisa keluar (hanya hapus grup
+cascade). Chat hanya bisa dibaca/dikirim anggota. Entry point: tombol "Grup
+Belajar" di layar Forum. Aturan Firestore aman (membership + pesan gated).
 
 ### 12. Bagikan pencapaian (Share milestone) ✅
 Generate kartu prestasi → share ke IG/WA. Akuisisi organik.
@@ -153,10 +159,13 @@ ditambahkan ke AndroidManifest agar share sheet menemukan app target (Android 11
 | 9 | **Impor Kalender .ics** (Tier 2) | ✅ Selesai (Fase 18) |
 | 10 | **Pencarian global + tag** (Tier 3) | ✅ Selesai (Fase 19) |
 | 11 | **Widget home Android** (Tier 2) | ✅ Selesai (Fase 20) |
+| 12 | **Grup belajar** (Tier 4) | ✅ Selesai (Fase 21) |
 
-Sebelas fitur sudah terimplementasi. Progress berikutnya dilakukan bertahap
-(satu fitur per commit). Kandidat lanjutan (Tier 4): grup belajar / jadwal
-bersama.
+**🎉 Semua 12 fitur roadmap terimplementasi.** Seluruh kandidat Tier 1–4
+(Pomodoro, Confetti, Leaderboard, Dark mode, Tugas berulang, Streak freeze &
+reward, Share pencapaian, Onboarding personalisasi, Impor .ics, Pencarian
+global + tag, Widget home, Grup belajar) telah selesai satu per satu per
+commit. flutter analyze: 0 issues, flutter test: 195/195.
 
 ## Catatan skill (find-skills)
 Pencarian `npx skills find` untuk Flutter/gamifikasi mengembalikan skill

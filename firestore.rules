@@ -94,5 +94,55 @@ service cloud.firestore {
         allow update: if false;
       }
     }
+
+    // ===== Grup belajar (FEATURE_ROADMAP #11) =====
+    // Grup dapat dibaca semua user login (penemuan). Keanggotaan via
+    // subkoleksi members/{uid}; pesan hanya untuk anggota. memberCount
+    // dijaga konsisten oleh aturan (hanya boleh berubah saat join/leave).
+    match /study_groups/{groupId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && isNonEmptyStr(request.resource.data.name)
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.memberCount is int
+        && request.resource.data.memberCount == 1;
+      // Update: hanya memberCount yang boleh berubah (join/leave batch).
+      allow update: if request.auth != null
+        && request.resource.data.name == resource.data.name
+        && request.resource.data.ownerUid == resource.data.ownerUid
+        && request.resource.data.description == resource.data.description
+        && request.resource.data.memberCount is int;
+      // Hapus grup: hanya pembuat (cascade members & messages).
+      allow delete: if request.auth != null
+        && request.auth.uid == resource.data.ownerUid;
+
+      match /members/{uid} {
+        allow read: if request.auth != null;
+        // Bergabung: hanya uid sendiri.
+        allow create: if request.auth != null
+          && request.auth.uid == uid;
+        // Keluar: hanya uid sendiri.
+        allow delete: if request.auth != null
+          && request.auth.uid == uid;
+        allow update: if false;
+      }
+
+      match /messages/{messageId} {
+        allow read: if request.auth != null
+          && exists(/databases/$(database)/documents/study_groups/$(groupId)/members/$(request.auth.uid));
+        allow create: if request.auth != null
+          && request.resource.data.authorId == request.auth.uid
+          && isNonEmptyStr(request.resource.data.content)
+          && request.resource.data.content.size() <= 2000
+          && exists(/databases/$(database)/documents/study_groups/$(groupId)/members/$(request.auth.uid));
+        // Hapus: pembuat pesan ATAU pembuat grup (cascade/ moderasi).
+        allow delete: if request.auth != null
+          && (request.auth.uid == resource.data.authorId
+              || request.auth.uid ==
+                  get(/databases/$(database)/documents/study_groups/$(groupId)).data.ownerUid);
+        allow update: if false;
+      }
+    }
   }
 }

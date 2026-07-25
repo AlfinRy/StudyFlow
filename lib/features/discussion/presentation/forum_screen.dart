@@ -11,6 +11,7 @@ import '../domain/forum_topic.dart';
 import 'new_topic_screen.dart';
 import 'topic_detail_screen.dart';
 import 'widgets/topic_card.dart';
+import '../../study_groups/presentation/study_groups_screen.dart';
 
 /// Halaman Forum Diskusi (PRD §5.6, UI_DESIGN.md §9.2). Cloud-only: daftar
 /// topik real-time dari Firestore. Diakses via shortcut Beranda (bukan tab
@@ -78,6 +79,19 @@ class ForumScreen extends ConsumerWidget {
                   title: 'Forum butuh akun',
                   subtitle: 'Login dengan akun Firebase untuk mengakses forum '
                       '(tidak tersedia di mode demo).',
+                ),
+              ),
+            const SizedBox(height: AppSpacing.sm),
+            if (!isDemo)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => const StudyGroupsScreen()),
+                  ),
+                  icon: const Icon(Icons.groups_outlined),
+                  label: const Text('Grup Belajar'),
                 ),
               ),
             const SizedBox(height: AppSpacing.xl),

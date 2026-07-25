@@ -102,8 +102,8 @@ class RateLimiter {
 
   List<int> _read(RateLimitedAction a) {
     final raw = _box.get(_key(a));
-    if (raw is List) return raw.cast<int>();
-    return const <int>[];
+    if (raw is List) return List<int>.from(raw); // salinan BISA diubah
+    return <int>[]; // list kosong BISA diubah (bukan const)
   }
 
   /// Evaluasi tanpa merekam. Gunakan untuk menampilkan sisa percobaan ke UI

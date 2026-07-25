@@ -28,22 +28,22 @@ widget — termasuk yang `const` — otomatis di-build ulang** saat mode bergant
 `AppTheme`. Komponen overlay (dialog/sheet/menu) juga diberi tema eksplisit.
 **Hasil:** seluruh app kini konsisten ikut mode gelap/terang.
 
-## 3. Daftar melalui email — ✅ FIXED (+ logging diagnostik)
-**Gejala:** Klik "Daftar Sekarang" tidak terjadi apa-apa.
-**Penyebab utama:** Validasi form gagal **diam-diam** — kebijakan sandi (min 8
-+ huruf + angka) menolak sandi lemah, error hanya tampil inline (sering tak
-terlihat pengguna) → tombol terkesan "diam". Penyebab lain: panggilan Firebase
-bisa *hang* di emulator/hp (jaringan tidak stabil) tanpa feedback.
-**Fix:**
-- Validasi gagal kini memunculkan **snackbar** "Periksa kembali isian...".
-- Panggilan `register()` dibungkus **timeout 25 detik** → bila server lambat,
- muncul error (bukan macet di loading).
-- **Logging detail** `[Register]` & `[Auth]` di setiap tahap → jalankan
-  `flutter logs` untuk lihat titik henti tepatnya.
-- Catatan: setelah daftar sukses, app **sengaja** mengarah ke layar Verifikasi
-  Email (fitur keamanan) — bukan bug. Pesan "Akun dibuat! Cek email..." muncul.
-- **Penting:** bila masih "tidak terjadi apa-apa" → kemungkinan APK di hp MASIH
-  versi lama. Wajib **rebuild** (`flutter run` / install APK baru) agar fix aktif.
+## 3. Daftar melalui email — ✅ FIXED (akar: RateLimiter crash diam-diam)
+**Gejala:** Klik "Daftar Sekarang" tidak terjadi apa-apa (Kasus 3).
+**Akar masalah (DITEMUKAN via test):** `RateLimiter._read()` mengembalikan
+`const <int>[]` (list **tidak bisa diubah**) saat belum ada data tersimpan.
+`tryConsume()` lalu memanggil `ts.add(...)` → melempar `UnsupportedError:
+Cannot add to an unmodifiable list`. Panggilan rate limiter ini berada **di luar
+blok try/catch** di `_submit` → exception tidak tertangkap → **gagal diam-diam**
+→ tombol terkesan "diam". Bug ini ada di **semua versi APK** (kode rate limiter
+tak berubah sejak Phase 12) — bukan masalah APK stale! Berdampak pada register,
+login, verifikasi, & lupa sandi (semua gagal pada pemanggilan pertama).
+**Fix:** `_read()` kini mengembalikan list **bisa diubah** (`List<int>.from(raw)`
+atau `<int>[]`). Dikonfirmasi via test `register_button_test.dart` yang mereproduksi
+Kasus 3 (sebelumnya gagal, kini lulus — register end-to-end berfungsi).
+**Tambahan:** feedback daftar kini tidak mungkin terlewat — overlay loading
+layar penuh + dialog error (bukan snackbar transient); logging `[Register]`/
+`[Auth]` di setiap tahap.
 
 ## 4. Bagikan Pencapaian — ✅ FIXED
 **Gejala:** Klik Bagikan → "Gagal membagikan. Coba lagi".

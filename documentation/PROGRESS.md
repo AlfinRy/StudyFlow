@@ -26,7 +26,7 @@ Implementasi dilakukan bertahap mengikuti `PRD_StudyFlow.md` bagian 8.
 
 - **Fase 1 bisa langsung dijalankan** tanpa konfigurasi apapun (local-first).
 - **Firebase SUDAH terkonfigurasi (sesi ini):**
-  - Project: **`studyflow-umht`** (display "Study Flow") di akun Firebase user.
+  - Project: **`studyflow-umht`** (display "StudyFlow") di akun Firebase user.
   - `firebase` CLI 15.22.4 & `flutterfire` CLI 1.4.0 terpasang.
   - `flutterfire configure` dijalankan (android, package `com.example.study_flow`):
     - Generate `android/app/google-services.json` & `lib/firebase_options.dart`.

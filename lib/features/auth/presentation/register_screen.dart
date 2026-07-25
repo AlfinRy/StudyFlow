@@ -1,5 +1,3 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -144,247 +142,159 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: context.background,
-          appBar: AppBar(title: const Text('Daftar Akun Baru')),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const _Intro(),
-                    const SizedBox(height: AppSpacing.xl),
-                    AuthTextField(
-                      controller: _name,
-                      label: 'Nama Lengkap',
-                      icon: Icons.person_outline,
-                      textInputAction: TextInputAction.next,
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Nama wajib diisi.'
-                          : null,
+    return Scaffold(
+      backgroundColor: context.background,
+      appBar: AppBar(title: const Text('Daftar Akun Baru')),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const _Intro(),
+                const SizedBox(height: AppSpacing.xl),
+                AuthTextField(
+                  controller: _name,
+                  label: 'Nama Lengkap',
+                  icon: Icons.person_outline,
+                  textInputAction: TextInputAction.next,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Nama wajib diisi.'
+                      : null,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AuthTextField(
+                  controller: _email,
+                  label: 'Alamat Email',
+                  icon: Icons.email_outlined,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  validator: validateEmail,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Daftar Sebagai',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: context.textPrimary,
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    AuthTextField(
-                      controller: _email,
-                      label: 'Alamat Email',
-                      icon: Icons.email_outlined,
-                      keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      validator: validateEmail,
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                RoleSelector(
+                  selected: _role,
+                  onChanged: (r) => setState(() => _role = r),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                AuthTextField(
+                  controller: _password,
+                  label: 'Kata Sandi',
+                  icon: Icons.lock_outline,
+                  obscure: true,
+                  textInputAction: TextInputAction.next,
+                  validator: (v) {
+                    final s = PasswordStrength.evaluate(v ?? '');
+                    return s.valid ? null : s.error;
+                  },
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                if (_password.text.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: PasswordStrengthIndicator(
+                      strength: PasswordStrength.evaluate(_password.text),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Daftar Sebagai',
+                  ),
+                const SizedBox(height: AppSpacing.md),
+                AuthTextField(
+                  controller: _confirm,
+                  label: 'Konfirmasi Sandi',
+                  icon: Icons.lock_outline,
+                  obscure: true,
+                  textInputAction: TextInputAction.done,
+                  validator: (v) {
+                    final s = PasswordStrength.evaluateConfirm(
+                      v,
+                      match: _password.text,
+                    );
+                    return s.valid ? null : s.error;
+                  },
+                ),
+                const SizedBox(height: AppSpacing.md),
+                CheckboxListTile(
+                  value: _agree,
+                  onChanged: (v) => setState(() => _agree = v ?? false),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: const [
+                      Text('Saya menyetujui '),
+                      Text(
+                        'Ketentuan Layanan',
                         style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: context.textPrimary,
+                          color: AppColors.accent,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      Text(' & '),
+                      Text(
+                        'Kebijakan Privasi',
+                        style: TextStyle(
+                          color: AppColors.accent,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                FilledButton(
+                  onPressed: _loading ? null : _submit,
+                  child: _loading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Daftar Sekarang'),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Batalkan'),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Sudah punya akun? '),
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(),
+                      child: const Text(
+                        'Masuk di sini',
+                        style: TextStyle(
+                          color: AppColors.accent,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    RoleSelector(
-                      selected: _role,
-                      onChanged: (r) => setState(() => _role = r),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    AuthTextField(
-                      controller: _password,
-                      label: 'Kata Sandi',
-                      icon: Icons.lock_outline,
-                      obscure: true,
-                      textInputAction: TextInputAction.next,
-                      validator: (v) {
-                        final s = PasswordStrength.evaluate(v ?? '');
-                        return s.valid ? null : s.error;
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    if (_password.text.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        child: PasswordStrengthIndicator(
-                          strength: PasswordStrength.evaluate(_password.text),
-                        ),
-                      ),
-                    const SizedBox(height: AppSpacing.md),
-                    AuthTextField(
-                      controller: _confirm,
-                      label: 'Konfirmasi Sandi',
-                      icon: Icons.lock_outline,
-                      obscure: true,
-                      textInputAction: TextInputAction.done,
-                      validator: (v) {
-                        final s = PasswordStrength.evaluateConfirm(
-                          v,
-                          match: _password.text,
-                        );
-                        return s.valid ? null : s.error;
-                      },
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    CheckboxListTile(
-                      value: _agree,
-                      onChanged: (v) => setState(() => _agree = v ?? false),
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                      dense: true,
-                      title: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: const [
-                          Text('Saya menyetujui '),
-                          Text(
-                            'Ketentuan Layanan',
-                            style: TextStyle(
-                              color: AppColors.accent,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                          Text(' & '),
-                          Text(
-                            'Kebijakan Privasi',
-                            style: TextStyle(
-                              color: AppColors.accent,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    FilledButton(
-                      onPressed: _loading ? null : _submit,
-                      child: _loading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text('Daftar Sekarang'),
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Batalkan'),
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text('Sudah punya akun? '),
-                        GestureDetector(
-                          onTap: () => Navigator.of(context).pop(),
-                          child: const Text(
-                            'Masuk di sini',
-                            style: TextStyle(
-                              color: AppColors.accent,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
-              ),
+                const SizedBox(height: AppSpacing.xl),
+              ],
             ),
           ),
         ),
-        // Overlay loading layar penuh saat mendaftar — MUSTAHIL tak terlihat.
-        if (_loading)
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-              child: ColoredBox(
-                color: AppColors.navyDark.withValues(alpha: 0.45),
-                child: const Center(child: _RegisterLoadingCard()),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-/// Kartu "Menyiapkan akunmu…" di tengah overlay loading.
-/// Desain: ring progress + ikon brand (focal), judul tegas, mikrocopy hangat,
-/// backdrop blur premium. Kontras & spacing pakai token tema (reaktif mode).
-class _RegisterLoadingCard extends StatelessWidget {
-  const _RegisterLoadingCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 300),
-      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xxl, AppSpacing.xl, AppSpacing.xl),
-      decoration: BoxDecoration(
-        color: context.surface,
-        borderRadius: BorderRadius.circular(AppSpacing.xl),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.navyDark.withValues(alpha: 0.18),
-            blurRadius: 40,
-            offset: const Offset(0, 16),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Ring progress + ikon brand sebagai focal point.
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              SizedBox(
-                width: 72,
-                height: 72,
-                child: CircularProgressIndicator(
-                  strokeWidth: 4.5,
-                  color: AppColors.accent,
-                  backgroundColor: AppColors.accent.withValues(alpha: 0.12),
-                ),
-              ),
-              const Icon(Icons.rocket_launch_rounded,
-                  color: AppColors.accent, size: 30),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            'Menyiapkan akunmu…',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: context.textPrimary,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            'Mengamankan & menyimpan data Anda.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: context.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.lock_outline, size: 14, color: context.textSecondary),
-              const SizedBox(width: 6),
-              Text('Jangan tutup aplikasi.',
-                  style: TextStyle(fontSize: 12, color: context.textSecondary)),
-            ],
-          ),
-        ],
       ),
     );
   }

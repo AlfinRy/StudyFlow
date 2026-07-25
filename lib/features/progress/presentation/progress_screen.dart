@@ -421,7 +421,7 @@ class _CapaianCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: const Color(0xFFEEF4FF),
+        color: AppColors.accent.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
         border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
       ),

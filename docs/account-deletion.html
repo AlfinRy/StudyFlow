@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#0F2A47" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     /* === Token desain StudyFlow (sejalan app_colors.dart) === */
     :root {
@@ -31,7 +31,7 @@
     html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: "Lexend", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--ink);
       background: var(--bg);
       line-height: 1.7;
@@ -63,10 +63,10 @@
       font-weight: 800; font-size: 18px; letter-spacing: -0.02em;
       text-decoration: none; color: #fff;
     }
-    .brand .dot {
-      width: 13px; height: 13px; border-radius: 5px;
-      background: linear-gradient(135deg, var(--accent), #93c5fd);
-      box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+    .brand .logo {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: #fff; padding: 6px; object-fit: contain;
+      box-shadow: 0 6px 16px -6px rgba(0,0,0,0.45);
     }
     .brand b { color: #93c5fd; font-weight: 800; }
     .hero h1 {
@@ -184,7 +184,7 @@
 <body>
   <header class="hero">
     <div class="wrap">
-      <a class="brand rise" href="index.html"><span class="dot"></span>Study<b>Flow</b></a>
+      <a class="brand rise" href="index.html"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" />Study<b>Flow</b></a>
       <h1>Hapus Akun &amp; Data</h1>
       <p>Kendalikan data Anda sepenuhnya — kapan pun Anda mau, tanpa syarat.</p>
     </div>

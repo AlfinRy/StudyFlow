@@ -3,179 +3,268 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>StudyFlow — Hapus Akun & Data</title>
+  <title>StudyFlow — Hapus Akun &amp; Data</title>
   <meta name="description" content="Cara meminta penghapusan akun dan data Anda di StudyFlow." />
+  <meta name="theme-color" content="#0F2A47" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
+    /* === Token desain StudyFlow (sejalan app_colors.dart) === */
     :root {
       --navy: #0F2A47;
+      --navy-2: #16324F;
       --accent: #3B82F6;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --bg: #f8fafc;
+      --link: #2563EB;
+      --bg: #F7F9FC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --ink: #0F172A;
+      --ink-2: #475569;
+      --muted: #64748B;
+      --success: #16A34A;
+      --danger: #DC2626;
+      --r: 16px;
+      --maxw: 720px;
     }
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
       background: var(--bg);
-      line-height: 1.65;
+      line-height: 1.7;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    header {
-      background: linear-gradient(135deg, #0F2A47 0%, #1d4ed8 100%);
+    a { color: var(--link); }
+
+    /* === Hero navy (mirror app NavyHeroCard) === */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
       color: #fff;
-      padding: 40px 20px;
+      padding: clamp(48px, 9vw, 88px) 20px clamp(56px, 10vw, 96px);
       text-align: center;
     }
-    header .logo { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
-    header .logo span { color: #93c5fd; }
-    header h1 { font-size: 26px; margin: 18px 0 6px; }
-    header p { margin: 0; opacity: 0.85; font-size: 14px; }
-    main {
-      max-width: 760px;
-      margin: -28px auto 60px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(15, 42, 71, 0.08);
-      padding: 32px 24px;
+    .hero::after {
+      /* cahaya aksen sangat halus untuk kedalaman (tasteful, bukan gaudy) */
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(60% 80% at 82% 8%, rgba(59,130,246,0.28), transparent 70%);
+      pointer-events: none;
     }
+    .hero .wrap { position: relative; max-width: var(--maxw); margin: 0 auto; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-weight: 800; font-size: 18px; letter-spacing: -0.02em;
+      text-decoration: none; color: #fff;
+    }
+    .brand .dot {
+      width: 13px; height: 13px; border-radius: 5px;
+      background: linear-gradient(135deg, var(--accent), #93c5fd);
+      box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+    }
+    .brand b { color: #93c5fd; font-weight: 800; }
+    .hero h1 {
+      margin: 26px 0 12px;
+      font-size: clamp(1.9rem, 5.2vw, 2.7rem);
+      font-weight: 800; letter-spacing: -0.03em; line-height: 1.12;
+      text-wrap: balance;
+    }
+    .hero p {
+      margin: 0 auto; max-width: 46ch;
+      color: #cdd9ec; font-size: clamp(1rem, 2.4vw, 1.12rem);
+    }
+
+    /* === Konten dokumen === */
+    main { max-width: var(--maxw); margin: 0 auto; padding: clamp(28px, 5vw, 44px) 20px 64px; }
+    section { margin: 0 0 clamp(28px, 5vw, 40px); }
     h2 {
-      color: var(--navy);
-      font-size: 19px;
-      margin: 28px 0 10px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--line);
+      font-size: clamp(1.18rem, 3.2vw, 1.42rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      color: var(--navy); margin: 0 0 14px;
+      display: flex; align-items: center; gap: 11px;
     }
-    h2:first-child { margin-top: 0; }
-    h3 { color: var(--navy); font-size: 15px; margin: 18px 0 6px; }
-    p, li { font-size: 15px; }
-    ul { padding-left: 20px; }
-    .step {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      margin: 14px 0;
-    }
-    .step .num {
-      flex: none;
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      font-weight: 700;
+    h2 .ico {
+      flex: none; width: 30px; height: 30px; border-radius: 9px;
       display: grid; place-items: center;
-      font-size: 14px;
+      background: rgba(59,130,246,0.12); color: var(--accent); font-size: 16px;
     }
-    .box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 14px 16px;
+    h3 { font-size: 1.02rem; font-weight: 700; color: var(--ink); margin: 22px 0 4px; letter-spacing: -0.01em; }
+    p { margin: 0 0 14px; }
+    p, li { text-wrap: pretty; }
+    ul { margin: 0 0 14px; padding-left: 1.25em; }
+    li { margin: 0 0 7px; }
+    li::marker { color: var(--accent); }
+    .lead { font-size: 1.06rem; color: var(--ink-2); }
+    strong { color: var(--ink); font-weight: 600; }
+    .muted { color: var(--muted); }
+
+    /* === Callout (tinted penuh, BUKAN side-stripe) === */
+    .callout {
+      border-radius: var(--r);
+      padding: 16px 18px 16px 16px;
       margin: 16px 0;
+      display: flex; gap: 13px; align-items: flex-start;
+      font-size: 0.97rem;
     }
-    .box strong { color: var(--navy); }
-    a { color: var(--accent); }
+    .callout .em { flex: none; font-size: 18px; line-height: 1.4; }
+    .callout.info  { background: #EFF6FF; border: 1px solid #DBEAFE; color: #1e3a8a; }
+    .callout.warn  { background: #FFFBEB; border: 1px solid #FDE68A; color: #92400e; }
+    .callout.danger{ background: #FEF2F2; border: 1px solid #FECACA; color: #991b1b; }
+    .callout a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+
+    /* === Email CTA === */
+    .cta-row { margin: 18px 0 6px; }
     .btn {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff !important;
-      padding: 10px 18px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-top: 8px;
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--navy); color: #fff;
+      text-decoration: none; font-weight: 700; font-size: 1rem;
+      padding: 14px 22px; border-radius: 12px;
+      box-shadow: 0 8px 22px -10px rgba(15,42,71,0.55);
+      transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s, background .2s;
     }
-    .muted { color: var(--muted); font-size: 13px; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(15,42,71,0.6); background: #14375a; }
+    .btn:active { transform: translateY(0); }
+    .btn svg { width: 18px; height: 18px; }
+
+    /* === Langkah bernomor (sequence, jadi nomor wajar) === */
+    .steps { list-style: none; margin: 6px 0 8px; padding: 0; counter-reset: s; }
+    .steps li {
+      position: relative; padding: 4px 0 4px 46px; margin: 0 0 12px;
+    }
+    .steps li::before {
+      counter-increment: s; content: counter(s);
+      position: absolute; left: 0; top: 1px;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--navy); color: #fff;
+      font-weight: 700; font-size: 0.92rem;
+      display: grid; place-items: center;
+    }
+
+    .chip {
+      display: inline-block; font-size: 0.74rem; font-weight: 700;
+      letter-spacing: 0.02em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 999px; margin-bottom: 8px;
+    }
+    .chip.app  { background: rgba(22,163,74,0.12); color: #15803d; }
+    .chip.mail { background: rgba(37,99,235,0.12); color: #1d4ed8; }
+
+    hr.sep { border: 0; border-top: 1px solid var(--border); margin: 6px 0 26px; }
+    .nav-link { font-size: 0.95rem; }
+
     footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-      padding: 24px;
+      text-align: center; color: var(--muted); font-size: 0.85rem;
+      padding: 8px 20px 44px;
     }
-    @media (max-width: 520px) {
-      main { padding: 24px 18px; margin: -20px 12px 40px; }
-      header h1 { font-size: 22px; }
+    footer a { color: var(--muted); }
+
+    /* === Motion (gentle, failsafe) === */
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .rise   { animation: rise .65s cubic-bezier(.2,.7,.2,1) both; }
+    .hero h1, .hero p, .hero .brand { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+    .hero .brand { animation-delay: .02s; }
+    .hero h1     { animation-delay: .10s; }
+    .hero p      { animation-delay: .20s; }
+    main > section { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+    main > section:nth-child(1) { animation-delay: .26s; }
+    main > section:nth-child(2) { animation-delay: .32s; }
+    main > section:nth-child(3) { animation-delay: .38s; }
+    main > section:nth-child(4) { animation-delay: .44s; }
+    main > section:nth-child(5) { animation-delay: .50s; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">Study<span>Flow</span></div>
-    <h1>Hapus Akun &amp; Data</h1>
-    <p>Hak Anda untuk mengontrol dan menghapus data</p>
+  <header class="hero">
+    <div class="wrap">
+      <a class="brand rise" href="index.html"><span class="dot"></span>Study<b>Flow</b></a>
+      <h1>Hapus Akun &amp; Data</h1>
+      <p>Kendalikan data Anda sepenuhnya — kapan pun Anda mau, tanpa syarat.</p>
+    </div>
   </header>
 
   <main>
-    <h2>Hak Anda</h2>
-    <p>
-      Anda berhak meminta penghapusan akun dan seluruh data yang terkait kapan
-      saja. Kami akan menghapus akun Firebase beserta data yang tersimpan di
-      server (Firestore) dan di perangkat Anda. Tindakan ini <strong>permanen
-      dan tidak dapat dibatalkan</strong>.
-    </p>
+    <section>
+      <p class="lead">
+        Anda berhak meminta penghapusan akun dan seluruh data terkait kapan
+        saja. Permintaan langsung dari aplikasi diproses <strong>seketika</strong>;
+        lewat email paling lambat 14 hari kerja. Tindakan ini <strong>permanen</strong>
+        dan tidak dapat dibatalkan.
+      </p>
+    </section>
 
-    <h2>Cara Mengajukan Penghapusan</h2>
+    <section>
+      <h2><span class="ico">⚡</span>Cara Mengajukan</h2>
 
-    <h3>Opsi 1 — Langsung dari Aplikasi (paling cepat)</h3>
-    <div class="step">
-      <div class="num">1</div>
-      <div>Buka aplikasi <strong>StudyFlow</strong> → tab <strong>Profil</strong>.</div>
-    </div>
-    <div class="step">
-      <div class="num">2</div>
-      <div>Ketuk <strong>“Hapus Akun &amp; Data”</strong> di bagian bawah.</div>
-    </div>
-    <div class="step">
-      <div class="num">3</div>
-      <div>Konfirmasi penghapusan. Akun & data Anda akan langsung dihapus.</div>
-    </div>
+      <span class="chip app">Paling cepat</span>
+      <h3>Opsi 1 — Langsung dari aplikasi</h3>
+      <ol class="steps">
+        <li>Buka <strong>StudyFlow</strong> → tab <strong>Profil</strong>.</li>
+        <li>Gulir ke bawah lalu ketuk <strong>“Hapus Akun &amp; Data”</strong>.</li>
+        <li>Konfirmasi. Akun beserta seluruh data langsung dihapus.</li>
+      </ol>
 
-    <h3>Opsi 2 — Lewat Email</h3>
-    <p>Kirim email dengan subjek <strong>“Permintaan Hapus Akun StudyFlow”</strong>
-       dan cantumkan alamat email akun Anda ke:</p>
-    <div class="box">
-      <strong>Email:</strong>
-      <a href="mailto:studyflow.umth@gmail.com?subject=Permintaan%20Hapus%20Akun%20StudyFlow">
-        studyflow.umth@gmail.com
-      </a>
-      <br />
-      <a class="btn" href="mailto:studyflow.umth@gmail.com?subject=Permintaan%20Hapus%20Akun%20StudyFlow">
-        Kirim Permintaan
-      </a>
-    </div>
+      <hr class="sep" />
 
-    <h2>Data Apa Saja yang Dihapus?</h2>
-    <p>Saat akun dihapus, seluruh data berikut ikut terhapus:</p>
-    <ul>
-      <li>Profil pengguna (nama, email, peran, foto).</li>
-      <li>Tugas, jadwal belajar, dan catatan materi (data lokal di perangkat).</li>
-      <li>Sesi fokus (Pomodoro) dan riwayat streak.</li>
-      <li>Topik &amp; balasan forum diskusi yang Anda buat.</li>
-      <li>Grup belajar yang Anda miliki beserta anggota &amp; pesan, serta pesan/keanggotaan Anda di grup lain.</li>
-      <li>Entri papan peringkat (leaderboard).</li>
-      <li>Akun autentikasi Firebase Anda.</li>
-    </ul>
+      <span class="chip mail">Alternatif</span>
+      <h3>Opsi 2 — Lewat email</h3>
+      <p>
+        Kirim email dengan subjek <strong>“Permintaan Hapus Akun StudyFlow”</strong>
+        dan cantumkan alamat email akun Anda.
+      </p>
+      <div class="cta-row">
+        <a class="btn" href="mailto:studyflow.umth@gmail.com?subject=Permintaan%20Hapus%20Akun%20StudyFlow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+          studyflow.umth@gmail.com
+        </a>
+      </div>
+    </section>
 
-    <h2>Waktu Pemrosesan</h2>
-    <div class="box">
-      Permintaan lewat aplikasi diproses <strong>seketika</strong>. Permintaan
-      lewat email diproses paling lambat <strong>14 hari kerja</strong>.
-    </div>
+    <section>
+      <h2><span class="ico">🗑️</span>Data yang Dihapus</h2>
+      <p>Saat akun dihapus, seluruh data berikut ikut terhapus secara permanen:</p>
+      <ul>
+        <li>Profil pengguna — nama, email, peran, dan foto.</li>
+        <li>Tugas, jadwal belajar, dan catatan materi di perangkat Anda.</li>
+        <li>Sesi fokus (Pomodoro) beserta riwayat streak.</li>
+        <li>Topik &amp; balasan forum diskusi yang Anda buat.</li>
+        <li>Grup belajar milik Anda (beserta anggota &amp; pesan), serta pesan &amp; keanggotaan Anda di grup lain.</li>
+        <li>Entri papan peringkat (leaderboard).</li>
+        <li>Akun autentikasi Firebase Anda.</li>
+      </ul>
+      <div class="callout info">
+        <span class="em">💡</span>
+        <div>Data belajar (tugas, jadwal, materi) tersimpan <strong>lokal di perangkat</strong> — ikut terhapus saat akun dihapus atau aplikasi di-uninstal.</div>
+      </div>
+    </section>
 
-    <h2>Butuh Bantuan?</h2>
-    <p>
-      Jika tombol hapus akun bermasalah, hubungi kami lewat email di
-      <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>.
-    </p>
+    <section>
+      <h2><span class="ico">🕒</span>Waktu Pemrosesan</h2>
+      <div class="callout warn">
+        <span class="em">⏱️</span>
+        <div>Permintaan lewat aplikasi diproses <strong>seketika</strong>. Permintaan lewat email kami selesaikan paling lambat <strong>14 hari kerja</strong>.</div>
+      </div>
+    </section>
 
-    <p class="muted">
-      <a href="privacy-policy.html">← Kebijakan Privasi</a>
-    </p>
+    <section>
+      <h2><span class="ico">💬</span>Butuh Bantuan?</h2>
+      <p>
+        Tombol hapus akun bermasalah, atau ada pertanyaan soal data Anda?
+        Hubungi kami di <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>.
+      </p>
+      <p class="muted nav-link"><a href="privacy-policy.html">← Lihat Kebijakan Privasi</a></p>
+    </section>
   </main>
 
   <footer>
-    © 2026 StudyFlow · Kebahasaan Indonesia
+    © 2026 StudyFlow · Dibuat untuk pelajar Indonesia
   </footer>
 </body>
 </html>

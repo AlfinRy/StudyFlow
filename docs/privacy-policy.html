@@ -5,127 +5,233 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StudyFlow — Kebijakan Privasi</title>
   <meta name="description" content="Kebijakan privasi aplikasi StudyFlow." />
+  <meta name="theme-color" content="#0F2A47" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
+    /* === Token desain StudyFlow (sejalan app_colors.dart) === */
     :root {
       --navy: #0F2A47;
+      --navy-2: #16324F;
       --accent: #3B82F6;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --line: #e5e7eb;
-      --bg: #f8fafc;
+      --link: #2563EB;
+      --bg: #F7F9FC;
+      --surface: #FFFFFF;
+      --border: #E2E8F0;
+      --ink: #0F172A;
+      --ink-2: #475569;
+      --muted: #64748B;
+      --r: 16px;
+      --maxw: 720px;
     }
-    * { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
       background: var(--bg);
       line-height: 1.7;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    header {
-      background: linear-gradient(135deg, #0F2A47 0%, #1d4ed8 100%);
+    a { color: var(--link); }
+
+    .hero {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 100%);
       color: #fff;
-      padding: 40px 20px;
+      padding: clamp(48px, 9vw, 88px) 20px clamp(56px, 10vw, 96px);
       text-align: center;
     }
-    header .logo { font-size: 24px; font-weight: 800; }
-    header .logo span { color: #93c5fd; }
-    header h1 { font-size: 26px; margin: 18px 0 6px; }
-    header p { margin: 0; opacity: 0.85; font-size: 14px; }
-    main {
-      max-width: 760px;
-      margin: -28px auto 60px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(15, 42, 71, 0.08);
-      padding: 32px 24px;
+    .hero::after {
+      content: ""; position: absolute; inset: 0;
+      background: radial-gradient(60% 80% at 82% 8%, rgba(59,130,246,0.28), transparent 70%);
+      pointer-events: none;
     }
+    .hero .wrap { position: relative; max-width: var(--maxw); margin: 0 auto; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-weight: 800; font-size: 18px; letter-spacing: -0.02em;
+      text-decoration: none; color: #fff;
+    }
+    .brand .dot {
+      width: 13px; height: 13px; border-radius: 5px;
+      background: linear-gradient(135deg, var(--accent), #93c5fd);
+      box-shadow: 0 0 0 4px rgba(147,197,253,0.18);
+    }
+    .brand b { color: #93c5fd; font-weight: 800; }
+    .hero h1 {
+      margin: 26px 0 12px;
+      font-size: clamp(1.9rem, 5.2vw, 2.7rem);
+      font-weight: 800; letter-spacing: -0.03em; line-height: 1.12;
+      text-wrap: balance;
+    }
+    .hero .updated { color: #93a8c4; font-size: 0.9rem; font-weight: 500; }
+
+    main { max-width: var(--maxw); margin: 0 auto; padding: clamp(28px, 5vw, 44px) 20px 64px; }
+    section { margin: 0 0 clamp(28px, 5vw, 40px); }
     h2 {
-      color: var(--navy);
-      font-size: 18px;
-      margin: 28px 0 10px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--line);
+      font-size: clamp(1.18rem, 3.2vw, 1.42rem);
+      font-weight: 700; letter-spacing: -0.02em;
+      color: var(--navy); margin: 0 0 14px;
+      display: flex; align-items: center; gap: 11px;
     }
-    h2:first-child { margin-top: 0; }
-    p, li { font-size: 15px; }
-    ul { padding-left: 20px; }
-    a { color: var(--accent); }
-    .muted { color: var(--muted); font-size: 13px; }
-    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px; }
+    h2 .ico {
+      flex: none; width: 30px; height: 30px; border-radius: 9px;
+      display: grid; place-items: center;
+      background: rgba(59,130,246,0.12); color: var(--accent); font-size: 16px;
+    }
+    h3 { font-size: 1.02rem; font-weight: 700; color: var(--ink); margin: 18px 0 4px; letter-spacing: -0.01em; }
+    p { margin: 0 0 14px; }
+    p, li { text-wrap: pretty; }
+    ul { margin: 0 0 14px; padding-left: 1.25em; }
+    li { margin: 0 0 7px; }
+    li::marker { color: var(--accent); }
+    .lead { font-size: 1.06rem; color: var(--ink-2); }
+    strong { color: var(--ink); font-weight: 600; }
+    .muted { color: var(--muted); }
+
+    .callout {
+      border-radius: var(--r); padding: 16px 18px 16px 16px; margin: 16px 0;
+      display: flex; gap: 13px; align-items: flex-start; font-size: 0.97rem;
+    }
+    .callout .em { flex: none; font-size: 18px; line-height: 1.4; }
+    .callout.info { background: #EFF6FF; border: 1px solid #DBEAFE; color: #1e3a8a; }
+    .callout a { color: inherit; text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--navy); color: #fff; text-decoration: none;
+      font-weight: 700; font-size: 1rem;
+      padding: 14px 22px; border-radius: 12px;
+      box-shadow: 0 8px 22px -10px rgba(15,42,71,0.55);
+      transition: transform .25s cubic-bezier(.2,.7,.2,1), box-shadow .25s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(15,42,71,0.6); background: #14375a; }
+    .btn:active { transform: translateY(0); }
+    .btn svg { width: 18px; height: 18px; }
+    .nav-link { font-size: 0.95rem; }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 8px 20px 44px; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    .hero .brand, .hero h1, .hero .updated { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+    .hero .brand   { animation-delay: .02s; }
+    .hero h1       { animation-delay: .10s; }
+    .hero .updated { animation-delay: .20s; }
+    main > section { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
+    main > section:nth-child(1) { animation-delay: .26s; }
+    main > section:nth-child(2) { animation-delay: .32s; }
+    main > section:nth-child(3) { animation-delay: .38s; }
+    main > section:nth-child(4) { animation-delay: .44s; }
+    main > section:nth-child(5) { animation-delay: .50s; }
+    main > section:nth-child(6) { animation-delay: .56s; }
+    main > section:nth-child(7) { animation-delay: .62s; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">Study<span>Flow</span></div>
-    <h1>Kebijakan Privasi</h1>
-    <p>Terakhir diperbarui: Januari 2026</p>
+  <header class="hero">
+    <div class="wrap">
+      <a class="brand" href="index.html"><span class="dot"></span>Study<b>Flow</b></a>
+      <h1>Kebijakan Privasi</h1>
+      <div class="updated">Terakhir diperbarui: Januari 2026</div>
+    </div>
   </header>
 
   <main>
-    <p>
-      Aplikasi <strong>StudyFlow</strong> (“kami”) menghormati privasi Anda.
-      Halaman ini menjelaskan data yang kami kumpulkan, bagaimana data digunakan,
-      dan hak Anda atas data tersebut.
-    </p>
+    <section>
+      <p class="lead">
+        Aplikasi <strong>StudyFlow</strong> (“kami”) menghormati privasi Anda.
+        Halaman ini menjelaskan data yang kami kumpulkan, bagaimana digunakan,
+        dan hak Anda atas data tersebut — disampaikan secara jujur dan to-the-point.
+      </p>
+    </section>
 
-    <h2>1. Data yang Kami Kumpulkan</h2>
-    <p>Untuk menyediakan layanan, kami mengumpulkan:</p>
-    <ul>
-      <li><strong>Info akun:</strong> alamat email, nama tampilan, peran (siswa/mahasiswa/guru/umum), dan foto profil (opsional).</li>
-      <li><strong>Data belajar:</strong> jadwal, tugas, materi, catatan, sesi fokus, dan statistik progres/streak.</li>
-      <li><strong>Konten komunitas:</strong> topik, balasan forum, serta pesan &amp; keanggotaan grup belajar yang Anda buat.</li>
-      <li><strong>Data peringkat:</strong> poin mingguan untuk papan peringkat (opt-in, bisa dimatikan).</li>
-    </ul>
-    <p>Data belajar disimpan <strong>lokal di perangkat</strong> Anda (offline-first). Data akun &amp; komunitas disimpan di server Firebase (Google) yang diamankan.</p>
+    <section>
+      <h2><span class="ico">📋</span>Data yang Kami Kumpulkan</h2>
+      <p>Untuk menyediakan layanan, kami mengumpulkan:</p>
+      <ul>
+        <li><strong>Info akun:</strong> alamat email, nama tampilan, peran (siswa / mahasiswa / guru / umum), dan foto profil opsional.</li>
+        <li><strong>Data belajar:</strong> jadwal, tugas, materi, catatan, sesi fokus, serta statistik progres &amp; streak.</li>
+        <li><strong>Konten komunitas:</strong> topik, balasan forum, serta pesan &amp; keanggotaan grup belajar yang Anda buat.</li>
+        <li><strong>Data peringkat:</strong> poin mingguan untuk papan peringkat (opt-in, dapat dimatikan kapan saja).</li>
+      </ul>
+      <div class="callout info">
+        <span class="em">💾</span>
+        <div>Data belajar disimpan <strong>lokal di perangkat</strong> Anda (offline-first). Data akun &amp; komunitas disimpan di server Firebase (Google) yang diamankan.</div>
+      </div>
+    </section>
 
-    <h2>2. Bagaimana Data Digunakan</h2>
-    <ul>
-      <li>Menyediakan fitur manajemen belajar (jadwal, tugas, materi, fokus).</li>
-      <li>Menyinkronkan akun &amp; konten antar perangkat.</li>
-      <li>Memfasilitasi forum &amp; grup belajar.</li>
-      <li>Menampilkan papan peringkat (dengan persetujuan Anda).</li>
-    </ul>
-    <p>Kami <strong>tidak menjual</strong> data Anda kepada pihak ketiga.</p>
+    <section>
+      <h2><span class="ico">🎯</span>Bagaimana Data Digunakan</h2>
+      <ul>
+        <li>Menyediakan fitur manajemen belajar — jadwal, tugas, materi, dan fokus.</li>
+        <li>Menyinkronkan akun &amp; konten antar perangkat Anda.</li>
+        <li>Memfasilitasi forum &amp; grup belajar.</li>
+        <li>Menampilkan papan peringkat, hanya dengan persetujuan Anda.</li>
+      </ul>
+      <p>Kami <strong>tidak menjual</strong> data Anda kepada pihak ketiga.</p>
+    </section>
 
-    <h2>3. Penyimpanan &amp; Keamanan</h2>
-    <p>
-      Data disimpan menggunakan Google Firebase dengan aturan keamanan berbasis
-      pengguna (setiap pengguna hanya dapat mengakses/mengubah datanya sendiri).
-      Autentikasi memakai Firebase Authentication. Meski demikian, tidak ada
-      metode transmisi/internet yang 100% aman.
-    </p>
+    <section>
+      <h2><span class="ico">🔒</span>Penyimpanan &amp; Keamanan</h2>
+      <p>
+        Data disimpan menggunakan Google Firebase dengan aturan keamanan
+        berbasis pengguna — setiap pengguna hanya dapat mengakses dan mengubah
+        datanya sendiri. Autentikasi memakai Firebase Authentication. Meski
+        demikian, tidak ada metode transmisi atau penyimpanan daring yang
+        100% aman.
+      </p>
+    </section>
 
-    <h2>4. Hak Anda</h2>
-    <ul>
-      <li>Mengakses dan memperbarui data Anda dari dalam aplikasi (Profil).</li>
-      <li>Mematikan tampilan di papan peringkat kapan saja.</li>
-      <li><strong>Menghapus akun dan seluruh data</strong> — lihat
-        <a href="account-deletion.html">halaman Penghapusan Akun</a>.</li>
-    </ul>
+    <section>
+      <h2><span class="ico">✅</span>Hak Anda</h2>
+      <ul>
+        <li>Mengakses dan memperbarui data dari dalam aplikasi (menu Profil).</li>
+        <li>Menonaktifkan tampilan Anda di papan peringkat kapan saja.</li>
+        <li><strong>Menghapus akun dan seluruh data</strong> — kapan pun Anda mau.</li>
+      </ul>
+      <p style="margin-top:18px">
+        <a class="btn" href="account-deletion.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6M14 11v6"/></svg>
+          Hapus Akun &amp; Data
+        </a>
+      </p>
+    </section>
 
-    <h2>5. Anak di Bawah Umur</h2>
-    <p>
-      StudyFlow ditujukan untuk pelajar sekolah menengah hingga universitas
-      (13+ tahun). Kami tidak dengan sengaja mengumpulkan data dari anak di bawah
-      13 tahun. Jika yakin ada, hubungi kami untuk penghapusan.
-    </p>
+    <section>
+      <h2><span class="ico">🧒</span>Anak di Bawah Umur</h2>
+      <p>
+        StudyFlow ditujukan untuk pelajar menengah hingga universitas (usia
+        13 tahun ke atas). Kami tidak dengan sengaja mengumpulkan data dari
+        anak di bawah 13 tahun. Jika Anda yakin hal itu terjadi, hubungi kami
+        untuk segera menghapusnya.
+      </p>
+    </section>
 
-    <h2>6. Perubahan Kebijakan</h2>
-    <p>
-      Kebijakan ini dapat diperbarui sewaktu-waktu. Perubahan signifikan akan
-      diinformasikan di dalam aplikasi.
-    </p>
+    <section>
+      <h2><span class="ico">🔄</span>Perubahan Kebijakan</h2>
+      <p>
+        Kebijakan ini dapat diperbarui sewaktu-waktu. Perubahan signifikan akan
+        kami informasikan di dalam aplikasi.
+      </p>
+    </section>
 
-    <h2>7. Hubungi Kami</h2>
-    <p>
-      Pertanyaan soal privasi? Email:
-      <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>
-    </p>
-
-    <p class="muted"><a href="account-deletion.html">→ Penghapusan Akun &amp; Data</a></p>
+    <section>
+      <h2><span class="ico">💬</span>Hubungi Kami</h2>
+      <p>
+        Pertanyaan seputar privasi? Email kami di
+        <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>.
+      </p>
+    </section>
   </main>
 
-  <footer>© 2026 StudyFlow</footer>
+  <footer>© 2026 StudyFlow · Dibuat untuk pelajar Indonesia</footer>
 </body>
 </html>

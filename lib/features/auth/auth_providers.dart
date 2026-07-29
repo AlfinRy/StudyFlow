@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
 import '../../../core/security/rate_limiter.dart';
+import '../../../core/services/account_deletion_service.dart';
 import '../../../core/services/firebase_service.dart';
 import '../../../core/services/hive_service.dart';
 import 'data/auth_repository.dart';
@@ -27,6 +28,10 @@ final currentUserProvider =
 
 final isDemoModeProvider =
     Provider<bool>((ref) => ref.watch(authRepositoryProvider).isDemoMode);
+
+/// Layanan hapus akun + data (Firebase). Hanya tersedia di mode Firebase.
+final accountDeletionServiceProvider =
+    Provider<AccountDeletionService>((ref) => AccountDeletionService());
 
 /// Rate-limiter app-level (Hive). Membatasi brute-force login, pendaftaran
 /// massal, dan spam email verifikasi/reset sebelum memanggil Firebase.

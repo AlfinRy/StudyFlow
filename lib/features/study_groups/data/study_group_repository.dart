@@ -67,6 +67,7 @@ class StudyGroupRepository {
     batch.set(groupRef, group.toCreateMap());
     // Pembuat otomatis menjadi anggota.
     batch.set(groupRef.collection('members').doc(ownerUid), {
+      'uid': ownerUid,
       'joinedAt': FieldValue.serverTimestamp(),
     });
     await batch.commit();
@@ -78,6 +79,7 @@ class StudyGroupRepository {
   Future<void> joinGroup(String gid, String uid) async {
     final batch = _db.batch();
     batch.set(_groups.doc(gid).collection('members').doc(uid), {
+      'uid': uid,
       'joinedAt': FieldValue.serverTimestamp(),
     });
     batch.set(

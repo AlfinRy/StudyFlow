@@ -35,6 +35,71 @@ class ProfileScreen extends ConsumerWidget {
       await ref.read(authRepositoryProvider).signOut();
     }
 
+    Future<void> deleteAccount() async {
+      final ok = await showConfirmDialog(
+        context,
+        title: 'Hapus akun & data?',
+        message:
+            'Tindakan ini permanen dan tidak bisa dibatalkan. Semua data kamu '
+            '(profil, tugas, jadwal, materi, sesi fokus, topik & balasan '
+            'forum, serta grup belajar) akan dihapus dari server dan '
+            'perangkat ini. Akun Firebase kamu juga akan dihapus.',
+        confirmLabel: 'Hapus Permanen',
+        isDestructive: true,
+      );
+      if (!ok || !context.mounted) return;
+
+      // Loading sederhana (sesuai gaya app).
+      showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PopScope(
+          canPop: false,
+          child: Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(width: 16),
+                  Text('Menghapus akun...'),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final result = await ref
+          .read(accountDeletionServiceProvider)
+          .deleteAccount();
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // tutup loading
+
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: Icon(
+            result.isSuccess ? Icons.check_circle : Icons.info_outline,
+            color: result.isSuccess
+                ? AppColors.success
+                : AppColors.warning,
+          ),
+          title: Text(result.isSuccess ? 'Akun Dihapus' : 'Perhatian'),
+          content: Text(result.message),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      // Setelah sign-out (otomatis di dalam layanan), auth state → null dan
+      // app.dart mengarahkan ke layar login.
+    }
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, 96),
@@ -161,6 +226,28 @@ class ProfileScreen extends ConsumerWidget {
             onTap: logout,
           ),
         ]),
+        if (!isDemo) ...[
+          const SizedBox(height: AppSpacing.xl),
+          _MenuGroup(children: [
+            _MenuTile(
+              icon: Icons.person_remove_outlined,
+              label: 'Hapus Akun & Data',
+              iconColor: AppColors.danger,
+              textColor: AppColors.danger,
+              onTap: deleteAccount,
+            ),
+          ]),
+          const SizedBox(height: AppSpacing.sm),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+            child: Text(
+              'Minta penghapusan akun juga bisa lewat email/halaman web kami.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: context.textSecondary, fontSize: 11.5, height: 1.4),
+            ),
+          ),
+        ],
       ],
     );
   }

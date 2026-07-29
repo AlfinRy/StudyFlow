@@ -50,7 +50,9 @@ service cloud.firestore {
         && request.resource.data.weekId is string
         && request.resource.data.weeklyXp is int
         && request.resource.data.weeklyXp >= 0;
-      allow delete: if false;
+      // Hapus doc peringkat milik sendiri (pemenuhan account deletion).
+      allow delete: if request.auth != null
+        && request.auth.uid == uid;
     }
 
     // ===== Forum diskusi (PRD §5.6) =====
@@ -119,7 +121,8 @@ service cloud.firestore {
 
       match /members/{uid} {
         allow read: if request.auth != null;
-        // Bergabung: hanya uid sendiri.
+        // Bergabung: hanya uid sendiri (field uid disimpan untuk kemudahan
+        // penghapusan akun via collectionGroup).
         allow create: if request.auth != null
           && request.auth.uid == uid;
         // Keluar: hanya uid sendiri.

@@ -133,12 +133,14 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
     }
+      .ico svg { width: 17px; height: 17px; }
+    .em svg { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
   <header class="hero">
     <div class="wrap">
-      <a class="brand" href="index.html"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" />Study<b>Flow</b></a>
+      <a class="brand" href="index.html"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" /><span>Study<b>Flow</b></span></a>
       <h1>Kebijakan Privasi</h1>
       <div class="updated">Terakhir diperbarui: Juli 2026</div>
     </div>
@@ -154,7 +156,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">📋</span>Data yang Kami Kumpulkan</h2>
+      <h2><span class="ico"><i data-lucide="clipboard-list"></i></span>Data yang Kami Kumpulkan</h2>
       <p>Untuk menyediakan layanan, kami mengumpulkan:</p>
       <ul>
         <li><strong>Info akun:</strong> alamat email, nama tampilan, peran (siswa / mahasiswa / guru / umum), dan foto profil opsional.</li>
@@ -163,13 +165,13 @@
         <li><strong>Data peringkat:</strong> poin mingguan untuk papan peringkat (opt-in, dapat dimatikan kapan saja).</li>
       </ul>
       <div class="callout info">
-        <span class="em">💾</span>
+        <span class="em"><i data-lucide="hard-drive"></i></span>
         <div>Data belajar disimpan <strong>lokal di perangkat</strong> Anda (offline-first). Data akun &amp; komunitas disimpan di server Firebase (Google) yang diamankan.</div>
       </div>
     </section>
 
     <section>
-      <h2><span class="ico">🎯</span>Bagaimana Data Digunakan</h2>
+      <h2><span class="ico"><i data-lucide="target"></i></span>Bagaimana Data Digunakan</h2>
       <ul>
         <li>Menyediakan fitur manajemen belajar — jadwal, tugas, materi, dan fokus.</li>
         <li>Menyinkronkan akun &amp; konten antar perangkat Anda.</li>
@@ -180,7 +182,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">🔒</span>Penyimpanan &amp; Keamanan</h2>
+      <h2><span class="ico"><i data-lucide="shield-check"></i></span>Penyimpanan &amp; Keamanan</h2>
       <p>
         Data disimpan menggunakan Google Firebase dengan aturan keamanan
         berbasis pengguna — setiap pengguna hanya dapat mengakses dan mengubah
@@ -191,7 +193,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">✅</span>Hak Anda</h2>
+      <h2><span class="ico"><i data-lucide="badge-check"></i></span>Hak Anda</h2>
       <ul>
         <li>Mengakses dan memperbarui data dari dalam aplikasi (menu Profil).</li>
         <li>Menonaktifkan tampilan Anda di papan peringkat kapan saja.</li>
@@ -206,7 +208,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">🧒</span>Anak di Bawah Umur</h2>
+      <h2><span class="ico"><i data-lucide="baby"></i></span>Anak di Bawah Umur</h2>
       <p>
         StudyFlow ditujukan untuk pelajar menengah hingga universitas (usia
         13 tahun ke atas). Kami tidak dengan sengaja mengumpulkan data dari
@@ -216,7 +218,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">🔄</span>Perubahan Kebijakan</h2>
+      <h2><span class="ico"><i data-lucide="refresh-cw"></i></span>Perubahan Kebijakan</h2>
       <p>
         Kebijakan ini dapat diperbarui sewaktu-waktu. Perubahan signifikan akan
         kami informasikan di dalam aplikasi.
@@ -224,7 +226,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">💬</span>Hubungi Kami</h2>
+      <h2><span class="ico"><i data-lucide="mail"></i></span>Hubungi Kami</h2>
       <p>
         Pertanyaan seputar privasi? Email kami di
         <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>.
@@ -233,5 +235,7 @@
   </main>
 
   <footer>© 2026 StudyFlow · Dibuat untuk pelajar Indonesia</footer>
+  <script src="https://unpkg.com/lucide@1.27.0"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

@@ -32,7 +32,7 @@
     .brand b { color: var(--accent); }
     .sub { color: var(--muted); margin: 12px 0 30px; font-size: 0.98rem; line-height: 1.6; }
     .btn {
-      display: block; text-decoration: none; font-weight: 700; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; gap: 9px; text-decoration: none; font-weight: 700; font-size: 1rem;
       padding: 15px; border-radius: 12px; margin: 11px 0;
       transition: transform .22s cubic-bezier(.2,.7,.2,1), background .2s, box-shadow .2s;
     }
@@ -45,15 +45,18 @@
     @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
     .card { animation: rise .6s cubic-bezier(.2,.7,.2,1) both; }
     @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+      .btn svg { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="brand"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" /><span>Study<b>Flow</b></span></div>
     <p class="sub">Aplikasi manajemen belajar untuk pelajar Indonesia.<br/>Privasi &amp; akun Anda.</p>
-    <a class="btn primary" href="privacy-policy.html">Kebijakan Privasi</a>
-    <a class="btn ghost" href="account-deletion.html">Hapus Akun &amp; Data</a>
+    <a class="btn primary" href="privacy-policy.html"><i data-lucide="file-text"></i>Kebijakan Privasi</a>
+    <a class="btn ghost" href="account-deletion.html"><i data-lucide="trash-2"></i>Hapus Akun &amp; Data</a>
     <div class="muted">© 2026 StudyFlow</div>
   </div>
+  <script src="https://unpkg.com/lucide@1.27.0"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

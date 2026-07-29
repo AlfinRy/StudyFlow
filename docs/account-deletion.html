@@ -179,12 +179,14 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
     }
+      .ico svg { width: 17px; height: 17px; }
+    .em svg { width: 18px; height: 18px; }
   </style>
 </head>
 <body>
   <header class="hero">
     <div class="wrap">
-      <a class="brand rise" href="index.html"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" />Study<b>Flow</b></a>
+      <a class="brand rise" href="index.html"><img class="logo" src="logo-studyflow.png" alt="Logo StudyFlow" /><span>Study<b>Flow</b></span></a>
       <h1>Hapus Akun &amp; Data</h1>
       <p>Kendalikan data Anda sepenuhnya — kapan pun Anda mau, tanpa syarat.</p>
     </div>
@@ -201,7 +203,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">⚡</span>Cara Mengajukan</h2>
+      <h2><span class="ico"><i data-lucide="zap"></i></span>Cara Mengajukan</h2>
 
       <span class="chip app">Paling cepat</span>
       <h3>Opsi 1 — Langsung dari aplikasi</h3>
@@ -228,7 +230,7 @@
     </section>
 
     <section>
-      <h2><span class="ico">🗑️</span>Data yang Dihapus</h2>
+      <h2><span class="ico"><i data-lucide="trash-2"></i></span>Data yang Dihapus</h2>
       <p>Saat akun dihapus, seluruh data berikut ikut terhapus secara permanen:</p>
       <ul>
         <li>Profil pengguna — nama, email, peran, dan foto.</li>
@@ -240,21 +242,21 @@
         <li>Akun autentikasi Firebase Anda.</li>
       </ul>
       <div class="callout info">
-        <span class="em">💡</span>
+        <span class="em"><i data-lucide="lightbulb"></i></span>
         <div>Data belajar (tugas, jadwal, materi) tersimpan <strong>lokal di perangkat</strong> — ikut terhapus saat akun dihapus atau aplikasi di-uninstal.</div>
       </div>
     </section>
 
     <section>
-      <h2><span class="ico">🕒</span>Waktu Pemrosesan</h2>
+      <h2><span class="ico"><i data-lucide="clock"></i></span>Waktu Pemrosesan</h2>
       <div class="callout warn">
-        <span class="em">⏱️</span>
+        <span class="em"><i data-lucide="timer"></i></span>
         <div>Permintaan lewat aplikasi diproses <strong>seketika</strong>. Permintaan lewat email kami selesaikan paling lambat <strong>14 hari kerja</strong>.</div>
       </div>
     </section>
 
     <section>
-      <h2><span class="ico">💬</span>Butuh Bantuan?</h2>
+      <h2><span class="ico"><i data-lucide="life-buoy"></i></span>Butuh Bantuan?</h2>
       <p>
         Tombol hapus akun bermasalah, atau ada pertanyaan soal data Anda?
         Hubungi kami di <a href="mailto:studyflow.umth@gmail.com">studyflow.umth@gmail.com</a>.
@@ -266,5 +268,7 @@
   <footer>
     © 2026 StudyFlow · Dibuat untuk pelajar Indonesia
   </footer>
+  <script src="https://unpkg.com/lucide@1.27.0"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

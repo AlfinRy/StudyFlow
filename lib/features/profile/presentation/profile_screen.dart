@@ -437,7 +437,7 @@ Future<void> _showGoalPicker(BuildContext context, WidgetRef ref) async {
       children: [
         for (final g in StudyGoal.values)
           ListTile(
-            leading: Text(g.emoji, style: const TextStyle(fontSize: 22)),
+            leading: Icon(g.icon, color: AppColors.accent),
             title: Text(g.label),
             subtitle:
                 Text(g.description, style: const TextStyle(fontSize: 12)),

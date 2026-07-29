@@ -261,13 +261,20 @@ class _HeroCard extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                '${goal!.emoji} ${goal!.label}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(goal!.icon, size: 13, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    goal!.label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

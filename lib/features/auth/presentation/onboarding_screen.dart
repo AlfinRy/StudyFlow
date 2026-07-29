@@ -238,7 +238,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ),
             child: Row(
               children: [
-                Text(g.emoji, style: const TextStyle(fontSize: 26)),
+                Icon(g.icon, size: 28, color: Colors.white),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Column(

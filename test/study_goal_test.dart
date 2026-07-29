@@ -6,7 +6,7 @@ void main() {
   test('Semua StudyGoal punya metadata non-kosong', () {
     for (final g in StudyGoal.values) {
       expect(g.label.isNotEmpty, true, reason: '${g.name}: label kosong');
-      expect(g.emoji.isNotEmpty, true, reason: '${g.name}: emoji kosong');
+      expect(g.icon.codePoint != 0, true, reason: '${g.name}: icon kosong');
       expect(g.description.isNotEmpty, true,
           reason: '${g.name}: description kosong');
       expect(g.tip.isNotEmpty, true, reason: '${g.name}: tip kosong');

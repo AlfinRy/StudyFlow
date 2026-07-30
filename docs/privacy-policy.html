@@ -130,6 +130,17 @@
     main > section:nth-child(5) { animation-delay: .50s; }
     main > section:nth-child(6) { animation-delay: .56s; }
     main > section:nth-child(7) { animation-delay: .62s; }
+    /* === Mobile (<=540px) === */
+    @media (max-width: 540px) {
+      body { font-size: 16px; }
+      .hero { padding: 40px 18px 52px; }
+      .hero h1 { font-size: clamp(1.6rem, 7vw, 2rem); }
+      main { padding-left: 16px; padding-right: 16px; }
+      .callout { font-size: 0.94rem; }
+      /* Tombol CTA full-width (anti overflow, tap target besar). */
+      .btn { display: flex; width: 100%; justify-content: center; overflow-wrap: anywhere; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
     }

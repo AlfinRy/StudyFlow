@@ -176,6 +176,18 @@
     main > section:nth-child(3) { animation-delay: .38s; }
     main > section:nth-child(4) { animation-delay: .44s; }
     main > section:nth-child(5) { animation-delay: .50s; }
+    /* === Mobile (<=540px) === */
+    @media (max-width: 540px) {
+      body { font-size: 16px; }
+      .hero { padding: 40px 18px 52px; }
+      .hero h1 { font-size: clamp(1.6rem, 7vw, 2rem); }
+      .hero p { font-size: 1rem; }
+      main { padding-left: 16px; padding-right: 16px; }
+      .callout { font-size: 0.94rem; }
+      /* Tombol CTA full-width + email boleh pindah baris (anti overflow). */
+      .btn { display: flex; width: 100%; justify-content: center; overflow-wrap: anywhere; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
     }
